@@ -1,19 +1,19 @@
 # Everybody wants that line
 Actually minimalistic statusline for neovim
 
-![screenshot](https://imgur.com/a/6mRedZC)
+![screenshot](https://ibb.co/h26y1Qv)
 Theme [zenbones.nvim](https://github.com/mcchrish/zenbones.nvim)
 Font **SF Mono**
 
-![screenshot](https://imgur.com/a/ww7XnZ9)
+![screenshot](https://ibb.co/7rKfWkv)
 Diagnostics in action. From left to right:
 **Errors count (first error line), Warnings count (first warning line), Infos
 and Hints count (first info or hint line)**
 
-![screenshot](https://imgur.com/a/TSfH5c5)
+![screenshot](https://ibb.co/02qy7Xt)
 Theme [vscode.nvim](https://github.com/Mofiqul/vscode.nvim)
 
-![screenshot](https://imgur.com/a/A06wWe9)
+![screenshot](https://ibb.co/Yj1SsNr)
 Help
 
 ## Features
