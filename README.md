@@ -31,6 +31,10 @@ Help
 ```lua
 use "strash/everybody-wants-that-line.nvim"
 ```
+### [vim-plug](https://github.com/junegunn/vim-plug)
+```lua
+"strash/everybody-wants-that-line.nvim"
+```
 
 ## Configuration
 For now there is no configurations. Just `require("everybody-wants-that-line")`

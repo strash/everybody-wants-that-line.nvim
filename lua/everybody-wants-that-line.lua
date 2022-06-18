@@ -1,19 +1,16 @@
 local M = {}
-local api, cmd, opt, diag = vim.api, vim.cmd, vim.opt, vim.diagnostic
 
-local function get_hl_group_color(group, color)
-	local group_table = api.nvim_get_hl_by_name(group, true)
-	return string.format("#%06x", group_table[color])
-end
+local api, cmd, opt, diag = vim.api, vim.cmd, vim.opt, vim.diagnostic
+local util = require("everybody-wants-that-line.util")
 
 local colors = {}
 local function set_colors()
 	colors = {
-		bg_statusline = get_hl_group_color("StatusLine", "background"),
-		fg_diagnostic_error = get_hl_group_color("DiagnosticError", "foreground"),
-		fg_diagnostic_warn = get_hl_group_color("DiagnosticWarn", "foreground"),
-		fg_diagnostic_info = get_hl_group_color("DiagnosticInfo", "foreground"),
-		fg_comment = get_hl_group_color("Comment", "foreground"),
+		bg_statusline = util.get_hl_group_color("StatusLine", "background"),
+		fg_diagnostic_error = util.get_hl_group_color("DiagnosticError", "foreground"),
+		fg_diagnostic_warn = util.get_hl_group_color("DiagnosticWarn", "foreground"),
+		fg_diagnostic_info = util.get_hl_group_color("DiagnosticInfo", "foreground"),
+		fg_comment = util.get_hl_group_color("Comment", "foreground"),
 	}
 end
 
