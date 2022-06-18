@@ -33,7 +33,7 @@ use "strash/everybody-wants-that-line.nvim"
 ```
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 ```lua
-"strash/everybody-wants-that-line.nvim"
+Plug "strash/everybody-wants-that-line.nvim"
 ```
 
 ## Configuration
