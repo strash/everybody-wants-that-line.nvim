@@ -39,7 +39,9 @@ Plug "strash/everybody-wants-that-line.nvim"
 
 ## Configuration
 ```lua
-require("everybody-wants-that-line").setup({
+local that_line = require("everybody-wants-that-line")
+
+that_line.setup({
 	buffer_number_symbol_count = 5,
 	separator = "│",
 })
