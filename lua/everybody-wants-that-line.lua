@@ -74,7 +74,7 @@ function C:right_side_col()
 	return "→" .. self.space .. self.column_idx
 end
 
--- linse of code
+-- lines of code
 function C:right_side_loc()
 	return self.loc .. self.space .. "LOC" .. self.space
 end
