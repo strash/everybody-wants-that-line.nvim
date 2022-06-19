@@ -25,7 +25,7 @@ Help
 - [x] Current file
 - [x] Clean ruller
 - [x] Support for NvimTree, Help, Packer, Fugitive
-- [ ] Support for Quickfix List, Location List
+- [ ] Support for Quickfix List, Location List, Prompt
 
 ## Installation
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
@@ -40,8 +40,8 @@ Plug "strash/everybody-wants-that-line.nvim"
 ## Configuration
 ```lua
 require("everybody-wants-that-line").setup({
-	buffer_number_symbol_count = 3,
-	separator = "|",
+	buffer_number_symbol_count = 5,
+	separator = "│",
 })
 ```
 
