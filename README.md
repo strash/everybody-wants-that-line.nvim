@@ -18,13 +18,14 @@ Theme [vscode.nvim](https://github.com/Mofiqul/vscode.nvim)
 Help
 
 ## Features
-- Adaptive colors
-- Current buffer number and buffer status
-- LSP diagnostics
-- Current git branch
-- Current file
-- Clean ruller
-- Support for NvimTree, Help, Packer, Fugitive
+- [x] Adaptive colors
+- [x] Current buffer number and buffer modified flag
+- [x] LSP diagnostics
+- [x] Current git branch
+- [x] Current file
+- [x] Clean ruller
+- [x] Support for NvimTree, Help, Packer, Fugitive
+- [ ] Support for Quickfix List, Location List
 
 ## Installation
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
@@ -37,5 +38,10 @@ Plug "strash/everybody-wants-that-line.nvim"
 ```
 
 ## Configuration
-For now there is no configurations. Just `require("everybody-wants-that-line")`
-somewhere in your config and that's it.
+```lua
+require("everybody-wants-that-line").setup({
+	buffer_number_symbol_count = 3,
+	separator = "|",
+})
+```
+

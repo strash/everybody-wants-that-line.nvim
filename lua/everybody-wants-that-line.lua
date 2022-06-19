@@ -1,121 +1,90 @@
+local gitbranch = require("everybody-wants-that-line.gitbranch")
+local settings = require("everybody-wants-that-line.settings")
+local util = require("everybody-wants-that-line.util")
+local diagnostics = require("everybody-wants-that-line.diagnostics")
+local colors = require("everybody-wants-that-line.colors")
+
 local M = {}
 
-local api, cmd, opt, diag = vim.api, vim.cmd, vim.opt, vim.diagnostic
-local util = require("everybody-wants-that-line.util")
+local S = {
+	spacer = "%=",
+	separator = "",
+	eocg = "%*",
+	percent = "%%",
+	buffer_modified_flag = "%M",
+	path_to_the_file = "%f",
+	percentage_in_lines = "%p",
+	column_idx = "%c",
+	loc = "%L",
+}
 
-local colors = {}
-local function set_colors()
-	colors = {
-		bg_statusline = util.get_hl_group_color("StatusLine", "background"),
-		fg_diagnostic_error = util.get_hl_group_color("DiagnosticError", "foreground"),
-		fg_diagnostic_warn = util.get_hl_group_color("DiagnosticWarn", "foreground"),
-		fg_diagnostic_info = util.get_hl_group_color("DiagnosticInfo", "foreground"),
-		fg_comment = util.get_hl_group_color("Comment", "foreground"),
-	}
+local function get_separator()
+	local separator_color_group = colors.get_statusline_group(colors.color_groups.separator)
+	return separator_color_group .. " " .. settings.separator .. " " .. S.eocg
 end
 
-set_colors()
+S.separator = get_separator()
 
-local max_zeroes_count = 3
-
-local function get_formatted_buffer_number()
-	local buffer_number = api.nvim_get_current_buf()
-	local zeroes = string.rep("0", max_zeroes_count - #string.format("%s", buffer_number))
+local function get_buffer_number()
+	local buffer_zeroes, buffer_number = util.get_formatted_buffer_number()
+	local buffer_color_group = ""
+	local zeroes = ""
+	if #buffer_zeroes > 0 then
+		buffer_color_group = colors.get_statusline_group(colors.color_groups.buffer_number_zero)
+		zeroes = buffer_color_group .. buffer_zeroes .. S.eocg
+	end
 	return zeroes .. buffer_number
 end
 
 local function get_git_branch()
-	local branch = ""
-	if vim.fn.isdirectory ".git" ~= 0 then
-		branch = vim.fn.system("git branch --show-current | tr -d '\n'")
-	else
-		branch = "not a git"
-	end
-	cmd("hi StrBranch cterm=bold guifg=" .. colors.fg_comment .. " guibg=" .. colors.bg_statusline)
-	return "%#StrBranch#" .. branch .. "%*"
-end
-
-local function get_diagnostics()
-	local errors = diag.get(0, { severity = diag.severity.ERROR })
-	local warnings = diag.get(0, { severity = diag.severity.WARN })
-	local hints_infos = diag.get(0, { severity = { min = diag.severity.HINT, max = diag.severity.INFO } })
-
-	local error_group, warnings_group, hints_and_info_group = "", "", ""
-	local err, warn, info = 0, 0, 0
-
-	if #errors > 0 then
-		cmd("hi StrErr cterm=bold guifg=" .. colors.fg_diagnostic_error .. " guibg=" .. colors.bg_statusline)
-		error_group = "%#StrErr#"
-		err = #errors .. " (" .. errors[1].lnum + 1 .. ")"
-	end
-	if #warnings > 0 then
-		cmd("hi StrWarning cterm=bold guifg=" .. colors.fg_diagnostic_warn .. " guibg=" .. colors.bg_statusline)
-		warnings_group = "%#StrWarning#"
-		warn = #warnings .. " (" .. warnings[1].lnum + 1 .. ")"
-	end
-	if #hints_infos > 0 then
-		cmd("hi StrInfo cterm=bold guifg=" .. colors.fg_diagnostic_info .. " guibg=" .. colors.bg_statusline)
-		hints_and_info_group = "%#StrInfo#"
-		info = #hints_infos .. " (" .. hints_infos[1].lnum + 1 .. ")"
-	end
-
-	return error_group .. err .. "%*, " .. warnings_group .. warn .. "%*, " .. hints_and_info_group .. info .. "%*"
+	local git_branch = gitbranch.get_git_branch()
+	local gitbranch_color_group = colors.get_statusline_group(colors.color_groups.gitbranch)
+	return gitbranch_color_group .. git_branch .. S.eocg
 end
 
 local function set_statusline_content()
-	local persent_sign = "%%"
-	local left_side = " b %M" .. get_formatted_buffer_number()
-	local right_side = string.format("↓ %%p%s | → %%c | %%L LOC ", persent_sign)
+	local left_side = " b" .. S.buffer_modified_flag .. " " .. get_buffer_number()
+	local right_side = "↓ " .. S.percentage_in_lines .. S.percent .. S.separator .. "→ " .. S.column_idx .. S.separator .. S.loc .. " LOC "
 
-	local buffer_name = api.nvim_buf_get_name(0)
+	local buffer_name = vim.api.nvim_buf_get_name(0)
 	local buffer_name_nvimtree = string.find(buffer_name, "NvimTree")
 	local buffer_name_packer = string.match(buffer_name, "%[%w-%]$")
 	local buffer_name_doc = string.find(buffer_name, "/doc/") and string.find(buffer_name, ".txt")
 	local buffer_name_fugitive = string.find(buffer_name, ".git/index")
-	local string_format = "%%=%s%%="
 
 	local content = ""
 	if buffer_name_nvimtree then
-		content = string.format(string_format, "NvimTree")
+		content = S.spacer .. "NvimTree" .. S.spacer
 	elseif buffer_name_doc then
-		content = left_side .. string.format("%%=Help - %s%%=", string.match(buffer_name, "[%s%w_]-%.%w-$")) .. right_side
+		local help_file_name = string.match(buffer_name, "[%s%w_]-%.%w-$")
+		content = left_side .. S.spacer .. "Help - " .. help_file_name .. S.spacer .. right_side
 	elseif buffer_name_packer then
-		content = string.format(string_format, "Packer")
+		content = S.spacer .. "Packer" .. S.spacer
 	elseif buffer_name_fugitive then
-		content = string.format(string_format, "Fugitive")
+		content = S.spacer .. "Fugitive" .. S.spacer
 	else
-		local diagnostics = string.format(" | %s%%=", get_diagnostics())
-		local center = string.format("%s - %%f%%=", get_git_branch())
-		content = left_side .. diagnostics .. center .. right_side
+		local diag = S.separator .. diagnostics.get_diagnostics() .. S.spacer
+		local center = get_git_branch() .. S.separator .. S.path_to_the_file .. S.spacer
+		content = left_side .. diag .. center .. right_side
 	end
 
-	opt.statusline = content
+	vim.opt.statusline = content
 end
 
-local statusline_group = api.nvim_create_augroup("StatuslineGroup", {
+M.setup = function(opts)
+	if opts.buffer_number_symbol_count ~= nil and type(opts.buffer_number_symbol_count) == "number" then
+		settings.buffer_number_symbol_count = opts.buffer_number_symbol_count
+	end
+	if opts.separator ~= nil and type(opts.separator) == "string" then
+		settings.separator = opts.separator
+	end
+end
+
+local everybody_wants_that_line_group = vim.api.nvim_create_augroup("EverybodyWantsThatLineGroup", {
 	clear = true,
 })
 
-api.nvim_create_autocmd({
-	"OptionSet",
-}, {
-	pattern = "background",
-	callback = set_colors,
-	group = statusline_group,
-})
-
-api.nvim_create_autocmd({
-	"BufAdd",
-	"BufEnter",
-	"FocusGained",
-	"ColorScheme",
-}, {
-	pattern = "*",
-	callback = set_colors,
-	group = statusline_group,
-})
-
-api.nvim_create_autocmd({
+vim.api.nvim_create_autocmd({
 	"BufAdd",
 	"BufEnter",
 	"BufWritePost",
@@ -125,7 +94,7 @@ api.nvim_create_autocmd({
 }, {
 	pattern = "*",
 	callback = set_statusline_content,
-	group = statusline_group,
+	group = everybody_wants_that_line_group,
 })
 
 return M
