@@ -2,15 +2,15 @@ local M = {}
 
 local prefix = "EverybodyWantsThat"
 
-M.colors = {}
+local colors = {}
 
 M.color_groups = {
 	error = prefix .. "Err",
 	warning = prefix .. "Warning",
 	hint_and_info = prefix .. "Info",
-	buffer_number_zero = prefix .. "BuffNumZero",
 	separator = prefix .. "Separator",
 	secondary = prefix .. "Secondary",
+	secondary_bold = prefix .. "SecondaryBold",
 }
 
 local function get_hl_group_color(group_name, color)
@@ -27,26 +27,25 @@ local function set_hl_groups(color_group, fg, cterm)
 	if cterm ~= nil and type(cterm) == "string" and #cterm > 0 then
 		opt = " cterm=" .. cterm .. " gui=" .. cterm .. " "
 	end
-	vim.cmd("hi " .. color_group .. opt .. "guifg=" .. fg .. " guibg=" .. M.colors.bg_statusline)
+	vim.cmd("hi " .. color_group .. opt .. "guifg=" .. fg .. " guibg=" .. colors.bg_statusline)
 end
 
 local function set_colors()
-	M.colors = {
+	colors = {
 		bg_statusline = get_hl_group_color("StatusLine", "background"),
 		fg_diagnostic_error = get_hl_group_color("DiagnosticError", "foreground"),
 		fg_diagnostic_warn = get_hl_group_color("DiagnosticWarn", "foreground"),
 		fg_diagnostic_info = get_hl_group_color("DiagnosticInfo", "foreground"),
-		fg_buffer_number_zero = get_hl_group_color("LineNr", "foreground"),
 		fg_separator = get_hl_group_color("VertSplit", "foreground"),
-		fg_gitbranch = get_hl_group_color("NonText", "foreground"),
+		fg_secondary = get_hl_group_color("NonText", "foreground"),
 	}
 
-	set_hl_groups(M.color_groups.error, M.colors.fg_diagnostic_error, "bold")
-	set_hl_groups(M.color_groups.warning, M.colors.fg_diagnostic_warn, "bold")
-	set_hl_groups(M.color_groups.hint_and_info, M.colors.fg_diagnostic_info, "bold")
-	set_hl_groups(M.color_groups.buffer_number_zero, M.colors.fg_separator, nil)
-	set_hl_groups(M.color_groups.separator, M.colors.fg_separator, nil)
-	set_hl_groups(M.color_groups.secondary, M.colors.fg_gitbranch, "bold")
+	set_hl_groups(M.color_groups.error, colors.fg_diagnostic_error, "bold")
+	set_hl_groups(M.color_groups.warning, colors.fg_diagnostic_warn, "bold")
+	set_hl_groups(M.color_groups.hint_and_info, colors.fg_diagnostic_info, "bold")
+	set_hl_groups(M.color_groups.separator, colors.fg_separator, nil)
+	set_hl_groups(M.color_groups.secondary, colors.fg_secondary, nil)
+	set_hl_groups(M.color_groups.secondary_bold, colors.fg_secondary, "bold")
 end
 
 M.get_statusline_group = function(color_group)

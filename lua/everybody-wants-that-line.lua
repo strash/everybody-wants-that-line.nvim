@@ -26,20 +26,21 @@ end
 
 S.separator = get_separator()
 
-local function get_buffer_number()
-	local buffer_zeroes, buffer_number = util.get_formatted_buffer_number()
-	local buffer_color_group = ""
-	local zeroes = ""
-	if #buffer_zeroes > 0 then
-		buffer_color_group = colors.get_statusline_group(colors.color_groups.buffer_number_zero)
-		zeroes = buffer_color_group .. buffer_zeroes .. S.eocg
+local function get_secondory_text(text, is_bold)
+	local color_group = colors.get_statusline_group(colors.color_groups.secondary)
+	if is_bold then
+		color_group = colors.get_statusline_group(colors.color_groups.secondary_bold)
 	end
-	return zeroes .. buffer_number
+	return color_group .. text .. S.eocg
 end
 
-local function get_secondory_text(text)
-	local color_group = colors.get_statusline_group(colors.color_groups.secondary)
-	return color_group .. text .. S.eocg
+local function get_buffer_number()
+	local buffer_zeroes, buffer_number = util.get_formatted_buffer_number()
+	local zeroes = ""
+	if #buffer_zeroes > 0 then
+		zeroes = get_secondory_text(buffer_zeroes, false)
+	end
+	return zeroes .. buffer_number
 end
 
 local function set_statusline_content()
@@ -59,7 +60,7 @@ local function set_statusline_content()
 		content = S.spacer .. "NvimTree" .. S.spacer
 	elseif buffer_name_doc then
 		local help_file_name = buffer_name:match("[%s%w_]-%.%w-$")
-		content = left_side .. S.spacer .. get_secondory_text("Help") .. S.space .. help_file_name .. S.spacer .. line .. S.separator .. loc
+		content = left_side .. S.spacer .. get_secondory_text("Help", true) .. S.space .. help_file_name .. S.spacer .. line .. S.separator .. loc
 	elseif buffer_name_packer then
 		content = S.spacer .. "Packer" .. S.spacer
 	elseif buffer_name_fugitive then
@@ -67,7 +68,7 @@ local function set_statusline_content()
 	else
 		local branch_name = gitbranch.get_git_branch()
 		local diag = S.separator .. diagnostics.get_diagnostics() .. S.spacer
-		local center = get_secondory_text(gitbranch.get_git_branch()) .. S.space .. S.path_to_the_file .. S.spacer
+		local center = get_secondory_text(gitbranch.get_git_branch(), true) .. S.space .. S.path_to_the_file .. S.spacer
 		if #branch_name == 0 then
 			center = S.path_to_the_file .. S.spacer
 		end
