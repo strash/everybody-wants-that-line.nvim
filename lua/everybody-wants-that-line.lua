@@ -8,6 +8,7 @@ local M = {}
 
 local S = {
 	spacer = "%=",
+	space = " ",
 	separator = "",
 	eocg = "%*",
 	percent = "%%",
@@ -20,7 +21,7 @@ local S = {
 
 local function get_separator()
 	local separator_color_group = colors.get_statusline_group(colors.color_groups.separator)
-	return separator_color_group .. " " .. settings.separator .. " " .. S.eocg
+	return separator_color_group .. S.space .. settings.separator .. S.space .. S.eocg
 end
 
 S.separator = get_separator()
@@ -36,39 +37,46 @@ local function get_buffer_number()
 	return zeroes .. buffer_number
 end
 
-local function get_git_branch()
-	local git_branch = gitbranch.get_git_branch()
-	local gitbranch_color_group = colors.get_statusline_group(colors.color_groups.gitbranch)
-	return gitbranch_color_group .. git_branch .. S.eocg
+local function get_secondory_text(text)
+	local color_group = colors.get_statusline_group(colors.color_groups.secondary)
+	return color_group .. text .. S.eocg
 end
 
 local function set_statusline_content()
-	local left_side = " b" .. S.buffer_modified_flag .. " " .. get_buffer_number()
-	local right_side = "↓ " .. S.percentage_in_lines .. S.percent .. S.separator .. "→ " .. S.column_idx .. S.separator .. S.loc .. " LOC "
+	local left_side = S.space .. "b" .. S.buffer_modified_flag .. S.space .. get_buffer_number()
+	local line = "↓" .. S.space .. S.percentage_in_lines .. S.percent
+	local column = "→" .. S.space .. S.column_idx
+	local loc = S.loc .. S.space .. "LOC" .. S.space
 
 	local buffer_name = vim.api.nvim_buf_get_name(0)
-	local buffer_name_nvimtree = string.find(buffer_name, "NvimTree")
-	local buffer_name_packer = string.match(buffer_name, "%[%w-%]$")
-	local buffer_name_doc = string.find(buffer_name, "/doc/") and string.find(buffer_name, ".txt")
-	local buffer_name_fugitive = string.find(buffer_name, ".git/index")
+	local buffer_name_nvimtree = buffer_name:find("NvimTree")
+	local buffer_name_packer = buffer_name:match("%[%w-%]$")
+	local buffer_name_doc = buffer_name:find("/doc/") and buffer_name:find(".txt")
+	local buffer_name_fugitive = buffer_name:find(".git/index")
 
 	local content = ""
 	if buffer_name_nvimtree then
 		content = S.spacer .. "NvimTree" .. S.spacer
 	elseif buffer_name_doc then
-		local help_file_name = string.match(buffer_name, "[%s%w_]-%.%w-$")
-		content = left_side .. S.spacer .. "Help - " .. help_file_name .. S.spacer .. right_side
+		local help_file_name = buffer_name:match("[%s%w_]-%.%w-$")
+		content = left_side .. S.spacer .. get_secondory_text("Help") .. S.space .. help_file_name .. S.spacer .. line .. S.separator .. loc
 	elseif buffer_name_packer then
 		content = S.spacer .. "Packer" .. S.spacer
 	elseif buffer_name_fugitive then
 		content = S.spacer .. "Fugitive" .. S.spacer
 	else
+		local branch_name = gitbranch.get_git_branch()
 		local diag = S.separator .. diagnostics.get_diagnostics() .. S.spacer
-		local center = get_git_branch() .. S.separator .. S.path_to_the_file .. S.spacer
-		content = left_side .. diag .. center .. right_side
+		local center = get_secondory_text(gitbranch.get_git_branch()) .. S.space .. S.path_to_the_file .. S.spacer
+		if #branch_name == 0 then
+			center = S.path_to_the_file .. S.spacer
+		end
+		content = left_side .. diag .. center .. line .. S.separator .. column .. S.separator .. loc
 	end
 
 	vim.opt.statusline = content
+
+	--vim.pretty_print(vim.api.nvim_eval_statusline(content, {}))
 end
 
 M.setup = function(opts)
