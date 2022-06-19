@@ -151,6 +151,7 @@ local everybody_wants_that_line_group = vim.api.nvim_create_augroup("EverybodyWa
 vim.api.nvim_create_autocmd({
 	"BufAdd",
 	"BufEnter",
+	"BufModifiedSet",
 	"BufWritePost",
 	"FocusGained",
 	"ColorScheme",
