@@ -2,19 +2,19 @@
 Actually minimalistic statusline for neovim
 
 ## Screenshots
-![screenshot](https://i.ibb.co/MPvs5wL/Screen-Shot-2022-06-17-at-10-05-12.png)
+![screenshot](https://i.ibb.co/tJpW79G/Screen-Shot-2022-06-19-at-20-32-59.png)
 Theme [zenbones.nvim](https://github.com/mcchrish/zenbones.nvim). Font **SF Mono**
 
-![screenshot](https://i.ibb.co/p4d7zh2/Screen-Shot-2022-06-17-at-10-05-59.png)
+![screenshot](https://i.ibb.co/YpJCM1H/Screen-Shot-2022-06-19-at-20-33-26.png)
 Diagnostics in action. From left to right:
 + Errors count (first error line),
 + Warnings count (first warning line),
 + Infos and Hints count (first info or hint line)
 
-![screenshot](https://i.ibb.co/LRSdFP5/Screen-Shot-2022-06-17-at-10-22-30.png)
+![screenshot](https://i.ibb.co/HH7T7GP/Screen-Shot-2022-06-19-at-20-34-29.png)
 Theme [vscode.nvim](https://github.com/Mofiqul/vscode.nvim)
 
-![screenshot](https://i.ibb.co/ysZCjN3/Screen-Shot-2022-06-17-at-10-23-02.png)
+![screenshot](https://i.ibb.co/34NqFPb/Screen-Shot-2022-06-19-at-20-35-31.png)
 Help
 
 ## Features
@@ -26,6 +26,7 @@ Help
 - [x] Clean ruller
 - [x] Support for NvimTree, Help, Packer, Fugitive
 - [ ] Support for Quickfix List, Location List, Prompt
+- [ ] Support for StatusLineNC (if multiple statuslines)
 
 ## Installation
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
