@@ -6,10 +6,10 @@ local colors = require("everybody-wants-that-line.colors")
 
 local M = {}
 
-local S = {
+-- components
+local C = {
 	spacer = "%=",
 	space = " ",
-	separator = "",
 	eocg = "%*",
 	percent = "%%",
 	buffer_modified_flag = "%M",
@@ -19,60 +19,115 @@ local S = {
 	loc = "%L",
 }
 
-local function get_separator()
+-- separator
+C.separator = (function ()
 	local separator_color_group = colors.get_statusline_group(colors.color_groups.separator)
-	return separator_color_group .. S.space .. settings.separator .. S.space .. S.eocg
-end
+	return separator_color_group .. C.space .. settings.separator .. C.space .. C.eocg
+end)()
 
-S.separator = get_separator()
-
-local function get_secondary_text(text, is_bold)
+-- highlighted text with secondary style
+function C:get_secondary_text(text, is_bold)
+	is_bold = is_bold or true
 	local color_group = colors.get_statusline_group(colors.color_groups.secondary)
 	if is_bold then
 		color_group = colors.get_statusline_group(colors.color_groups.secondary_bold)
 	end
-	return color_group .. text .. S.eocg
+	return color_group .. text .. self.eocg
 end
 
-local function get_buffer_number()
+-- text with spacers
+function C:get_simple_line(text)
+	return self.spacer .. text .. self.spacer
+end
+
+-- buffer modified flag
+function C:left_side_buff_flag()
+	return self.space .. "b" .. self.buffer_modified_flag .. self.space
+end
+
+-- buffer number
+function C:get_buffer_number()
 	local buffer_zeroes, buffer_number = util.get_formatted_buffer_number()
 	local zeroes = ""
 	if #buffer_zeroes > 0 then
-		zeroes = get_secondary_text(buffer_zeroes, false)
+		zeroes = self:get_secondary_text(buffer_zeroes, false)
 	end
 	return zeroes .. buffer_number
 end
 
-local function set_statusline_content()
-	local left_side = S.space .. "b" .. S.buffer_modified_flag .. S.space .. get_buffer_number()
-	local line = "↓" .. S.space .. S.percentage_in_lines .. S.percent
-	local column = "→" .. S.space .. S.column_idx
-	local loc = S.loc .. S.space .. "LOC" .. S.space
+-- center
+function C:center()
+	local branch_name = gitbranch.get_git_branch()
+	if #branch_name == 0 then
+		return self.path_to_the_file
+	end
+	return self:get_secondary_text(branch_name) .. self.space .. self.path_to_the_file
+end
 
-	local buffer_name = vim.api.nvim_buf_get_name(0)
-	local buffer_name_nvimtree = buffer_name:find("NvimTree")
-	local buffer_name_packer = buffer_name:match("%[%w-%]$")
-	local buffer_name_doc = buffer_name:find("/doc/") and buffer_name:find(".txt")
-	local buffer_name_fugitive = buffer_name:find(".git/index")
+-- percentage through file in lines
+function C:right_side_ln()
+	return "↓" .. self.space .. self.percentage_in_lines .. self.percent
+end
+
+-- column number
+function C:right_side_col()
+	return "→" .. self.space .. self.column_idx
+end
+
+-- linse of code
+function C:right_side_loc()
+	return self.loc .. self.space .. "LOC" .. self.space
+end
+
+-- setting the line
+local function set_statusline_content()
+	local buff_name = vim.api.nvim_buf_get_name(0)
+	local is_nvimtree = buff_name:find("NvimTree") ~= nil
+	local is_packer = buff_name:match("%[%w-%]$")
+	local is_help = buff_name:find("/doc/") ~= nil and buff_name:find(".txt") ~= nil
+	local is_fugitive = buff_name:find(".git/index") ~= nil
 
 	local content = ""
-	if buffer_name_nvimtree then
-		content = S.spacer .. "NvimTree" .. S.spacer
-	elseif buffer_name_doc then
-		local help_file_name = buffer_name:match("[%s%w_]-%.%w-$")
-		content = left_side .. S.spacer .. get_secondary_text("Help", true) .. S.space .. help_file_name .. S.spacer .. line .. S.separator .. loc
-	elseif buffer_name_packer then
-		content = S.spacer .. "Packer" .. S.spacer
-	elseif buffer_name_fugitive then
-		content = S.spacer .. "Fugitive" .. S.spacer
+
+	-- NvimTree
+	if is_nvimtree then
+		content = C:get_simple_line("NvimTree")
+	-- Help
+	elseif is_help then
+		content = table.concat({
+			C:left_side_buff_flag(),
+			C:get_buffer_number(),
+			C.spacer,
+			C:get_secondary_text("Help"),
+			C.space,
+			buff_name:match("[%s%w_]-%.%w-$"),
+			C.spacer,
+			C:right_side_ln(),
+			C.separator,
+			C:right_side_loc(),
+		})
+	-- Packer
+	elseif is_packer then
+		content = C:get_simple_line("Packer")
+	-- Fugitive
+	elseif is_fugitive then
+		content = C:get_simple_line("Fugitive")
+		-- Other
 	else
-		local branch_name = gitbranch.get_git_branch()
-		local diag = S.separator .. diagnostics.get_diagnostics() .. S.spacer
-		local center = get_secondary_text(gitbranch.get_git_branch(), true) .. S.space .. S.path_to_the_file .. S.spacer
-		if #branch_name == 0 then
-			center = S.path_to_the_file .. S.spacer
-		end
-		content = left_side .. diag .. center .. line .. S.separator .. column .. S.separator .. loc
+		content = table.concat({
+			C:left_side_buff_flag(),
+			C:get_buffer_number(),
+			C.separator,
+			diagnostics.get_diagnostics(),
+			C.spacer,
+			C:center(),
+			C.spacer,
+			C:right_side_ln(),
+			C.separator,
+			C:right_side_col(),
+			C.separator,
+			C:right_side_loc(),
+		})
 	end
 
 	vim.opt.statusline = content
