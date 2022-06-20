@@ -26,13 +26,9 @@ C.separator = (function ()
 end)()
 
 -- highlighted text with secondary style
-function C:get_secondary_text(text, is_bold)
-	is_bold = is_bold or true
-	local color_group = colors.get_statusline_group(colors.color_groups.secondary)
-	if is_bold then
-		color_group = colors.get_statusline_group(colors.color_groups.secondary_bold)
-	end
-	return color_group .. text .. self.eocg
+function C:get_highlighted_text(text, color_group)
+	local cg = colors.get_statusline_group(color_group)
+	return cg .. text .. self.eocg
 end
 
 -- text with spacers
@@ -50,9 +46,9 @@ function C:get_buffer_number()
 	local buffer_zeroes, buffer_number = util.get_formatted_buffer_number()
 	local zeroes = ""
 	if #buffer_zeroes > 0 then
-		zeroes = self:get_secondary_text(buffer_zeroes, false)
+		zeroes = self:get_highlighted_text(buffer_zeroes, colors.color_groups.secondary)
 	end
-	return zeroes .. buffer_number
+	return zeroes .. self:get_highlighted_text(buffer_number, colors.color_groups.primary_bold)
 end
 
 -- center
@@ -61,7 +57,7 @@ function C:center()
 	if #branch_name == 0 then
 		return self.path_to_the_file
 	end
-	return self:get_secondary_text(branch_name) .. self.space .. self.path_to_the_file
+	return self:get_highlighted_text(branch_name, colors.color_groups.secondary_bold) .. self.space .. self.path_to_the_file
 end
 
 -- percentage through file in lines
@@ -98,7 +94,7 @@ local function set_statusline_content()
 			C:left_side_buff_flag(),
 			C:get_buffer_number(),
 			C.spacer,
-			C:get_secondary_text("Help"),
+			C:get_highlighted_text("Help", colors.color_groups.secondary_bold),
 			C.space,
 			buff_name:match("[%s%w_]-%.%w-$"),
 			C.spacer,
