@@ -23,7 +23,7 @@ Help
 - [x] LSP diagnostics
 - [x] Current git branch
 - [x] Current file
-- [x] Clean ruller
+- [x] Clean ruler
 - [x] Support for NvimTree, Help, Packer, Fugitive
 - [ ] Support for Quickfix List, Location List, Prompt
 - [ ] Support for StatusLineNC (if multiple statuslines)

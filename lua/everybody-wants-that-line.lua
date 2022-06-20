@@ -62,17 +62,17 @@ end
 
 -- percentage through file in lines
 function C:right_side_ln()
-	return "↓" .. self.space .. self.percentage_in_lines .. self.percent
+	return self:get_highlighted_text("↓", colors.color_groups.secondary) .. self.space .. self.percentage_in_lines .. self.percent
 end
 
 -- column number
 function C:right_side_col()
-	return "→" .. self.space .. self.column_idx
+	return self:get_highlighted_text("→", colors.color_groups.secondary) .. self.space .. self.column_idx
 end
 
 -- lines of code
 function C:right_side_loc()
-	return self.loc .. self.space .. "LOC" .. self.space
+	return self.loc .. self.space .. self:get_highlighted_text("LOC", colors.color_groups.secondary) .. self.space
 end
 
 -- setting the line
