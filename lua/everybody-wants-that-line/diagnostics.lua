@@ -1,5 +1,4 @@
-
-local colors = require("everybody-wants-that-line.colors")
+local C = require("everybody-wants-that-line.colors")
 
 local M = {}
 
@@ -12,15 +11,15 @@ M.get_diagnostics = function ()
 	local err, warn, info = 0, 0, 0
 
 	if #errors > 0 then
-		error_group = colors.get_statusline_group(colors.color_group_names.fg_error)
+		error_group = C.get_statusline_group(C.color_group_names.fg_error)
 		err = #errors .. " ↓ " .. errors[1].lnum + 1
 	end
 	if #warnings > 0 then
-		warnings_group = colors.get_statusline_group(colors.color_group_names.fg_warn)
+		warnings_group = C.get_statusline_group(C.color_group_names.fg_warn)
 		warn = #warnings .. " ↓ " .. warnings[1].lnum + 1
 	end
 	if #hints_infos > 0 then
-		hints_and_info_group = colors.get_statusline_group(colors.color_group_names.fg_info)
+		hints_and_info_group = C.get_statusline_group(C.color_group_names.fg_info)
 		info = #hints_infos .. " ↓ " .. hints_infos[1].lnum + 1
 	end
 

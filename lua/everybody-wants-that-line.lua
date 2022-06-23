@@ -1,16 +1,16 @@
-local components = require("everybody-wants-that-line.components")
-local settings = require("everybody-wants-that-line.settings")
-local diagnostics = require("everybody-wants-that-line.diagnostics")
-local colors = require("everybody-wants-that-line.colors")
+local B = require("everybody-wants-that-line.components")
+local S = require("everybody-wants-that-line.settings")
+local D = require("everybody-wants-that-line.diagnostics")
+local C = require("everybody-wants-that-line.colors")
 
 local M = {}
 
 -- DONE: move C to util or somewhere else
+-- DONE: move setup to settings and call a callback from here
 -- TODO: use get_highlighted_text in diagnostics
 -- TODO: add highlights to arrows in diagnostics
+-- TODO: update settings. breaking_changes
 -- TODO: update README
--- TODO: update settings
--- TODO: move setup to settings and call a callback from here
 
 -- setting the line
 local function set_statusline_content()
@@ -24,42 +24,42 @@ local function set_statusline_content()
 
 	-- NvimTree
 	if is_nvimtree then
-		content = components:get_simple_line("NvimTree")
+		content = B:spaced_text("NvimTree")
 	-- Help
 	elseif is_help then
 		content = table.concat({
-			components:left_side_buff_flag(),
-			components:get_buffer_number(),
-			components.spacer,
-			components:get_highlighted_text("Help", colors.color_group_names.fg_60_bold),
-			components.space,
+			B:buff_mod_flag(),
+			B:buff_nr(),
+			B.spacer,
+			B:highlight_text("Help", C.color_group_names.fg_60_bold),
+			B.space,
 			buff_name:match("[%s%w_]-%.%w-$"),
-			components.spacer,
-			components:right_side_ln(),
-			components.separator,
-			components:right_side_loc(),
+			B.spacer,
+			B:ln(),
+			B.separator,
+			B:loc(),
 		})
 	-- Packer
 	elseif is_packer then
-		content = components:get_simple_line("Packer")
+		content = B:spaced_text("Packer")
 	-- Fugitive
 	elseif is_fugitive then
-		content = components:get_simple_line("Fugitive")
+		content = B:spaced_text("Fugitive")
 		-- Other
 	else
 		content = table.concat({
-			components:left_side_buff_flag(),
-			components:get_buffer_number(),
-			components.separator,
-			diagnostics.get_diagnostics(),
-			components.spacer,
-			components:center(),
-			components.spacer,
-			components:right_side_ln(),
-			components.separator,
-			components:right_side_col(),
-			components.separator,
-			components:right_side_loc(),
+			B:buff_mod_flag(),
+			B:buff_nr(),
+			B.separator,
+			D.get_diagnostics(),
+			B.spacer,
+			B:center(),
+			B.spacer,
+			B:ln(),
+			B.separator,
+			B:col(),
+			B.separator,
+			B:loc(),
 		})
 	end
 
@@ -68,13 +68,8 @@ local function set_statusline_content()
 	--vim.pretty_print(vim.api.nvim_eval_statusline(content, {}))
 end
 
-M.setup = function(opts)
-	if opts.buffer_number_symbol_count ~= nil and type(opts.buffer_number_symbol_count) == "number" then
-		settings.buffer_number_symbol_count = opts.buffer_number_symbol_count
-	end
-	if opts.separator ~= nil and type(opts.separator) == "string" then
-		settings.separator = opts.separator
-	end
+function M.setup(opts)
+	S:setup(opts)
 end
 
 local everybody_wants_that_line_group = vim.api.nvim_create_augroup("EverybodyWantsThatLineGroup", {

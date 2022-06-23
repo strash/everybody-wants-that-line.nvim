@@ -1,4 +1,4 @@
-local util = require("everybody-wants-that-line.util")
+local U = require("everybody-wants-that-line.util")
 
 local M = {}
 
@@ -29,7 +29,7 @@ local function blend_colors(intensity, from, to)
 	local hex = ""
 	local rgb = {}
 	for i = 1, 3 do
-		local l = math.floor(util.lerp(intensity, from[i], to[i]))
+		local l = math.floor(U.lerp(intensity, from[i], to[i]))
 		hex = hex .. string.format("%02x", l)
 		table.insert(rgb, l)
 	end
@@ -61,14 +61,14 @@ end
 -- setting color groups names
 local function set_color_group_names()
 	for k, _ in pairs(colors) do
-		M.color_group_names[k] = prefix .. util.pascalcase(k)
-		M.color_group_names[k .. "_bold"] = prefix .. util.pascalcase(k .. "_bold")
+		M.color_group_names[k] = prefix .. U.pascalcase(k)
+		M.color_group_names[k .. "_bold"] = prefix .. U.pascalcase(k .. "_bold")
 	end
 end
 
 -- setting hightlight group
 local function set_hl_group(color_group, fg, cterm)
-	vim.cmd("hi " .. color_group .. util.cterm(cterm) .. "guifg=#" .. fg .. " guibg=#" .. colors.bg.hex)
+	vim.cmd("hi " .. color_group .. U.cterm(cterm) .. "guifg=#" .. fg .. " guibg=#" .. colors.bg.hex)
 end
 
 -- setting hightlight groups
