@@ -2,8 +2,10 @@
 Actually minimalistic statusline for neovim
 
 ## Screenshots
+### Examples
 ![screenshot](https://i.ibb.co/3ym5jsb/Group-14.png)
-Font **SF Mono**
+
+### What is what
 ![screenshot](https://i.ibb.co/GtLSRQg/Group-14-2.png)
 
 ## Features
