@@ -27,7 +27,7 @@ local function blend_colors(intensity, from, to)
 	local hex = ""
 	local rgb = {}
 	for i = 1, 3 do
-		local l = math.floor(U.lerp(intensity, from[i], to[i]))
+		local l = math.floor(U.lerp(intensity, from[i], to[i]) or 255)
 		hex = hex .. string.format("%02x", l)
 		table.insert(rgb, l)
 	end

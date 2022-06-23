@@ -9,7 +9,11 @@ end
 
 --- linear interpolation
 function M.lerp(v, a, b)
-	return (1.0 - v) * a + b * v
+	if a and b then
+		return (1.0 - v) * a + b * v
+	else
+		return b
+	end
 end
 
 --- get cterm for a highlight group

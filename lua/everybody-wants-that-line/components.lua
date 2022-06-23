@@ -64,14 +64,11 @@ function M:center()
 		return self.path_to_the_file
 	end
 	if #ins > 0 then
-		ins = self:highlight_text(ins, C.color_group_names.fg_add)
-		ins = ins .. self:highlight_text("+", C.color_group_names.fg_add_50)
-		if #del > 0 then
-			ins = ins .. self.space
-		end
+		ins = self:highlight_text(ins, C.color_group_names.fg_add_bold)
+		ins = ins .. self:highlight_text("+", C.color_group_names.fg_add_50) .. self.space
 	end
 	if #del > 0 then
-		del = self:highlight_text(del, C.color_group_names.fg_remove)
+		del = self:highlight_text(del, C.color_group_names.fg_remove_bold)
 		del = del .. self:highlight_text("-", C.color_group_names.fg_remove_50) .. self.space
 	end
 	return table.concat({
