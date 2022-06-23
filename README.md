@@ -1,5 +1,5 @@
 # Everybody wants that line
-Actually minimalistic statusline for neovim
+Minimalistic, informative and elegant statusline for neovim.
 
 ## Screenshots
 ### Examples
