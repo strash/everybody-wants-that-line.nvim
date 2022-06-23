@@ -2,8 +2,6 @@ local U = require("everybody-wants-that-line.util")
 
 local M = {}
 
-local prefix = "EverybodyWantsThat"
-
 -- colors
 local colors = {}
 
@@ -17,9 +15,9 @@ local function get_hl_group_color(group_name, color)
 	local group_table = vim.api.nvim_get_hl_by_name(group_name, true)
 	if group_table[color] ~= nil then
 		hex = string.format("%06x", group_table[color]):upper()
-		table.insert(rgb, tonumber(hex:sub(1,2), 16))
-		table.insert(rgb, tonumber(hex:sub(3,4), 16))
-		table.insert(rgb, tonumber(hex:sub(5,6), 16))
+		table.insert(rgb, tonumber(hex:sub(1, 2), 16))
+		table.insert(rgb, tonumber(hex:sub(3, 4), 16))
+		table.insert(rgb, tonumber(hex:sub(5, 6), 16))
 	end
 	return { hex = hex, rgb = rgb }
 end
@@ -61,8 +59,8 @@ end
 -- setting color groups names
 local function set_color_group_names()
 	for k, _ in pairs(colors) do
-		M.color_group_names[k] = prefix .. U.pascalcase(k)
-		M.color_group_names[k .. "_bold"] = prefix .. U.pascalcase(k .. "_bold")
+		M.color_group_names[k] = U.prefix .. U.pascalcase(k)
+		M.color_group_names[k .. "_bold"] = U.prefix .. U.pascalcase(k .. "_bold")
 	end
 end
 
@@ -92,33 +90,31 @@ set_colors()
 set_color_group_names()
 set_hl_groups()
 
-local everybody_wants_that_line_color_group = vim.api.nvim_create_augroup("EverybodyWantsThatLineColorGroup", {
-	clear = true,
-})
+function M.setup_autocmd(group_name)
+	vim.api.nvim_create_autocmd({
+		"OptionSet",
+	}, {
+		pattern = "background",
+		callback = function()
+			set_colors()
+			set_color_group_names()
+			set_hl_groups()
+		end,
+		group = group_name,
+	})
 
-vim.api.nvim_create_autocmd({
-	"OptionSet",
-}, {
-	pattern = "background",
-	callback = function ()
-		set_colors()
-		set_color_group_names()
-		set_hl_groups()
-	end,
-	group = everybody_wants_that_line_color_group,
-})
-
-vim.api.nvim_create_autocmd({
-	"VimEnter",
-	"ColorScheme",
-}, {
-	pattern = "*",
-	callback = function ()
-		set_colors()
-		set_color_group_names()
-		set_hl_groups()
-	end,
-	group = everybody_wants_that_line_color_group,
-})
+	vim.api.nvim_create_autocmd({
+		"VimEnter",
+		"ColorScheme",
+	}, {
+		pattern = "*",
+		callback = function()
+			set_colors()
+			set_color_group_names()
+			set_hl_groups()
+		end,
+		group = group_name,
+	})
+end
 
 return M

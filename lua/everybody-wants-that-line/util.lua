@@ -1,5 +1,7 @@
 local M = {}
 
+M.prefix = "EverybodyWantsThatLine"
+
 --- fill string with value n times
 function M.fill_string(s, v, n)
 	return string.rep(v, n), s

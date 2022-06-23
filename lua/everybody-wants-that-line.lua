@@ -2,6 +2,7 @@ local B = require("everybody-wants-that-line.components")
 local S = require("everybody-wants-that-line.settings")
 local D = require("everybody-wants-that-line.diagnostics")
 local C = require("everybody-wants-that-line.colors")
+local U = require("everybody-wants-that-line.util")
 
 local M = {}
 
@@ -45,7 +46,7 @@ local function set_statusline_content()
 	-- Fugitive
 	elseif is_fugitive then
 		content = B:spaced_text("Fugitive")
-		-- Other
+	-- Other
 	else
 		content = table.concat({
 			B:buff_mod_flag(),
@@ -64,17 +65,17 @@ local function set_statusline_content()
 	end
 
 	vim.opt.statusline = content
-
-	--vim.pretty_print(vim.api.nvim_eval_statusline(content, {}))
 end
 
 function M.setup(opts)
 	S:setup(opts)
 end
 
-local everybody_wants_that_line_group = vim.api.nvim_create_augroup("EverybodyWantsThatLineGroup", {
+local everybody_wants_that_line_group = vim.api.nvim_create_augroup(U.prefix .. "Group", {
 	clear = true,
 })
+
+C.setup_autocmd(everybody_wants_that_line_group)
 
 vim.api.nvim_create_autocmd({
 	"BufAdd",
