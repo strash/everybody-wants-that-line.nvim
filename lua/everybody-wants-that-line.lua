@@ -21,13 +21,13 @@ local C = {
 
 -- separator
 C.separator = (function ()
-	local separator_color_group = colors.get_statusline_group(colors.color_groups.separator)
+	local separator_color_group = colors.get_statusline_group(colors.color_group_names.fg_20)
 	return separator_color_group .. C.space .. settings.separator .. C.space .. C.eocg
 end)()
 
 -- highlighted text with secondary style
-function C:get_highlighted_text(text, color_group)
-	local cg = colors.get_statusline_group(color_group)
+function C:get_highlighted_text(text, color_group_name)
+	local cg = colors.get_statusline_group(color_group_name)
 	return cg .. text .. self.eocg
 end
 
@@ -46,9 +46,9 @@ function C:get_buffer_number()
 	local buffer_zeroes, buffer_number = util.get_formatted_buffer_number()
 	local zeroes = ""
 	if #buffer_zeroes > 0 then
-		zeroes = self:get_highlighted_text(buffer_zeroes, colors.color_groups.secondary)
+		zeroes = self:get_highlighted_text(buffer_zeroes, colors.color_group_names.fg_40)
 	end
-	return zeroes .. self:get_highlighted_text(buffer_number, colors.color_groups.primary_bold)
+	return zeroes .. self:get_highlighted_text(buffer_number, colors.color_group_names.fg_bold)
 end
 
 -- center
@@ -57,22 +57,22 @@ function C:center()
 	if #branch_name == 0 then
 		return self.path_to_the_file
 	end
-	return self:get_highlighted_text(branch_name, colors.color_groups.secondary_bold) .. self.space .. self.path_to_the_file
+	return self:get_highlighted_text(branch_name, colors.color_group_names.fg_60_bold) .. self.space .. self.path_to_the_file
 end
 
 -- percentage through file in lines
 function C:right_side_ln()
-	return self:get_highlighted_text("↓", colors.color_groups.secondary) .. self.space .. self.percentage_in_lines .. self.percent
+	return self:get_highlighted_text("↓", colors.color_group_names.fg_40) .. self.space .. self.percentage_in_lines .. self.percent
 end
 
 -- column number
 function C:right_side_col()
-	return self:get_highlighted_text("→", colors.color_groups.secondary) .. self.space .. self.column_idx
+	return self:get_highlighted_text("→", colors.color_group_names.fg_40) .. self.space .. self.column_idx
 end
 
 -- lines of code
 function C:right_side_loc()
-	return self.loc .. self.space .. self:get_highlighted_text("LOC", colors.color_groups.secondary) .. self.space
+	return self.loc .. self.space .. self:get_highlighted_text("LOC", colors.color_group_names.fg_40) .. self.space
 end
 
 -- setting the line
@@ -94,7 +94,7 @@ local function set_statusline_content()
 			C:left_side_buff_flag(),
 			C:get_buffer_number(),
 			C.spacer,
-			C:get_highlighted_text("Help", colors.color_groups.secondary_bold),
+			C:get_highlighted_text("Help", colors.color_group_names.fg_60_bold),
 			C.space,
 			buff_name:match("[%s%w_]-%.%w-$"),
 			C.spacer,
