@@ -43,7 +43,10 @@ Plug "strash/everybody-wants-that-line.nvim"
 local that_line = require("everybody-wants-that-line")
 
 that_line.setup({
-	buffer_number_symbol_count = 5,
+	buffer = {
+		symbol = "0",
+		max_symbols = 5,
+	},
 	separator = "│",
 })
 ```

@@ -8,10 +8,10 @@ local M = {}
 
 -- DONE: move C to util or somewhere else
 -- DONE: move setup to settings and call a callback from here
--- TODO: use get_highlighted_text in diagnostics
+-- TODO: use get_highlighted_text in diagnostics from components
 -- TODO: add highlights to arrows in diagnostics
 -- TODO: update settings. breaking_changes
--- TODO: update README
+-- TODO: update README and screenshots
 
 -- setting the line
 local function set_statusline_content()
