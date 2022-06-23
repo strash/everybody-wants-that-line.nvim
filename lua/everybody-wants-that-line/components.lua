@@ -1,6 +1,6 @@
 local C = require("everybody-wants-that-line.colors")
 local S = require("everybody-wants-that-line.settings")
-local G = require("everybody-wants-that-line.gitbranch")
+local G = require("everybody-wants-that-line.git")
 local U = require("everybody-wants-that-line.util")
 
 -- components
@@ -59,10 +59,28 @@ end
 -- center
 function M:center()
 	local branch_name = G.get_git_branch()
+	local ins, del = G.get_diff_info()
 	if #branch_name == 0 then
 		return self.path_to_the_file
 	end
-	return self:highlight_text(branch_name, C.color_group_names.fg_60_bold) .. self.space .. self.path_to_the_file
+	if #ins > 0 then
+		ins = self:highlight_text(ins, C.color_group_names.fg_add)
+		ins = ins .. self:highlight_text("+", C.color_group_names.fg_add_50)
+		if #del > 0 then
+			ins = ins .. self.space
+		end
+	end
+	if #del > 0 then
+		del = self:highlight_text(del, C.color_group_names.fg_remove)
+		del = del .. self:highlight_text("-", C.color_group_names.fg_remove_50) .. self.space
+	end
+	return table.concat({
+		self:highlight_text(branch_name, C.color_group_names.fg_60_bold),
+		self.space,
+		ins,
+		del,
+		self.path_to_the_file
+	})
 end
 
 -- percentage through file in lines

@@ -45,6 +45,8 @@ local function set_colors()
 		fg_error = get_hl_group_color("DiagnosticError", "foreground"),
 		fg_warn = get_hl_group_color("DiagnosticWarn", "foreground"),
 		fg_info = get_hl_group_color("DiagnosticInfo", "foreground"),
+		fg_add = get_hl_group_color("diffAdded", "foreground"),
+		fg_remove = get_hl_group_color("diffRemoved", "foreground"),
 	}
 	-- blended colors
 	for i = 10, 90, 10 do
@@ -54,6 +56,8 @@ local function set_colors()
 	colors.fg_error_50 = blend_colors(0.5, colors.bg.rgb, colors.fg_error.rgb)
 	colors.fg_warn_50 = blend_colors(0.5, colors.bg.rgb, colors.fg_warn.rgb)
 	colors.fg_info_50 = blend_colors(0.5, colors.bg.rgb, colors.fg_info.rgb)
+	colors.fg_add_50 = blend_colors(0.5, colors.bg.rgb, colors.fg_add.rgb)
+	colors.fg_remove_50 = blend_colors(0.5, colors.bg.rgb, colors.fg_remove.rgb)
 end
 
 -- setting color groups names

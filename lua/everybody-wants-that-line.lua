@@ -10,9 +10,9 @@ local M = {}
 -- DONE: move setup to settings and call a callback from here
 -- DONE: use get_highlighted_text in diagnostics from components
 -- DONE: add highlights to arrows in diagnostics
+-- DONE: add git status (additions/deletions)
 -- TODO: add options to filename format
 -- TODO: update settings. breaking_changes
--- TODO: add git status (additions/deletions)
 -- TODO: support for Quickfix List, Location List, Prompt(telescope)
 -- TODO: support for StatusLineNC (if multiple statuslines)
 -- TODO: update README and screenshots
