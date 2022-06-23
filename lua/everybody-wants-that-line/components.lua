@@ -17,7 +17,7 @@ local M = {
 }
 
 -- separator
-M.separator = (function ()
+M.separator = (function()
 	local separator_color_group = C.get_statusline_group(C.color_group_names.fg_20)
 	return separator_color_group .. M.space .. S.separator .. M.space .. M.eocg
 end)()
@@ -27,6 +27,10 @@ function M:highlight_text(text, color_group_name)
 	local cg = C.get_statusline_group(color_group_name)
 	return cg .. text .. self.eocg
 end
+
+M.comma = (function()
+	return M:highlight_text(",", C.color_group_names.fg_50)
+end)()
 
 -- text with spacers
 function M:spaced_text(text)
@@ -47,7 +51,7 @@ function M:buff_nr()
 	end
 	local zeroes = ""
 	if #buffer_zeroes > 0 then
-		zeroes = self:highlight_text(buffer_zeroes, C.color_group_names.fg_40)
+		zeroes = self:highlight_text(buffer_zeroes, C.color_group_names.fg_30)
 	end
 	return zeroes .. self:highlight_text(buffer_number, C.color_group_names.fg_bold)
 end
@@ -63,17 +67,17 @@ end
 
 -- percentage through file in lines
 function M:ln()
-	return self:highlight_text("↓", C.color_group_names.fg_40) .. self.space .. self.percentage_in_lines .. self.percent
+	return self:highlight_text("↓", C.color_group_names.fg_50) .. self.percentage_in_lines .. self.percent
 end
 
 -- column number
 function M:col()
-	return self:highlight_text("→", C.color_group_names.fg_40) .. self.space .. self.column_idx
+	return self:highlight_text("→", C.color_group_names.fg_50) .. self.column_idx
 end
 
 -- lines of code
 function M:loc()
-	return self.lines_of_code .. self.space .. self:highlight_text("LOC", C.color_group_names.fg_40) .. self.space
+	return self.lines_of_code .. self:highlight_text("LOC", C.color_group_names.fg_50) .. self.space
 end
 
 return M
