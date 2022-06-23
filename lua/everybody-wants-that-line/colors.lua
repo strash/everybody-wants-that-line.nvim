@@ -102,6 +102,7 @@ vim.api.nvim_create_autocmd({
 	pattern = "background",
 	callback = function ()
 		set_colors()
+		set_color_group_names()
 		set_hl_groups()
 	end,
 	group = everybody_wants_that_line_color_group,
@@ -114,6 +115,7 @@ vim.api.nvim_create_autocmd({
 	pattern = "*",
 	callback = function ()
 		set_colors()
+		set_color_group_names()
 		set_hl_groups()
 	end,
 	group = everybody_wants_that_line_color_group,

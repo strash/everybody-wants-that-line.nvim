@@ -1,79 +1,16 @@
-local gitbranch = require("everybody-wants-that-line.gitbranch")
+local components = require("everybody-wants-that-line.components")
 local settings = require("everybody-wants-that-line.settings")
-local util = require("everybody-wants-that-line.util")
 local diagnostics = require("everybody-wants-that-line.diagnostics")
 local colors = require("everybody-wants-that-line.colors")
 
 local M = {}
 
--- components
-local C = {
-	spacer = "%=",
-	space = " ",
-	eocg = "%*",
-	percent = "%%",
-	buffer_modified_flag = "%M",
-	path_to_the_file = "%f",
-	percentage_in_lines = "%p",
-	column_idx = "%c",
-	loc = "%L",
-}
-
--- separator
-C.separator = (function ()
-	local separator_color_group = colors.get_statusline_group(colors.color_group_names.fg_20)
-	return separator_color_group .. C.space .. settings.separator .. C.space .. C.eocg
-end)()
-
--- highlighted text with secondary style
-function C:get_highlighted_text(text, color_group_name)
-	local cg = colors.get_statusline_group(color_group_name)
-	return cg .. text .. self.eocg
-end
-
--- text with spacers
-function C:get_simple_line(text)
-	return self.spacer .. text .. self.spacer
-end
-
--- buffer modified flag
-function C:left_side_buff_flag()
-	return self.space .. "b" .. self.buffer_modified_flag .. self.space
-end
-
--- buffer number
-function C:get_buffer_number()
-	local buffer_zeroes, buffer_number = util.get_formatted_buffer_number()
-	local zeroes = ""
-	if #buffer_zeroes > 0 then
-		zeroes = self:get_highlighted_text(buffer_zeroes, colors.color_group_names.fg_40)
-	end
-	return zeroes .. self:get_highlighted_text(buffer_number, colors.color_group_names.fg_bold)
-end
-
--- center
-function C:center()
-	local branch_name = gitbranch.get_git_branch()
-	if #branch_name == 0 then
-		return self.path_to_the_file
-	end
-	return self:get_highlighted_text(branch_name, colors.color_group_names.fg_60_bold) .. self.space .. self.path_to_the_file
-end
-
--- percentage through file in lines
-function C:right_side_ln()
-	return self:get_highlighted_text("↓", colors.color_group_names.fg_40) .. self.space .. self.percentage_in_lines .. self.percent
-end
-
--- column number
-function C:right_side_col()
-	return self:get_highlighted_text("→", colors.color_group_names.fg_40) .. self.space .. self.column_idx
-end
-
--- lines of code
-function C:right_side_loc()
-	return self.loc .. self.space .. self:get_highlighted_text("LOC", colors.color_group_names.fg_40) .. self.space
-end
+-- DONE: move C to util or somewhere else
+-- TODO: use get_highlighted_text in diagnostics
+-- TODO: add highlights to arrows in diagnostics
+-- TODO: update README
+-- TODO: update settings
+-- TODO: move setup to settings and call a callback from here
 
 -- setting the line
 local function set_statusline_content()
@@ -87,42 +24,42 @@ local function set_statusline_content()
 
 	-- NvimTree
 	if is_nvimtree then
-		content = C:get_simple_line("NvimTree")
+		content = components:get_simple_line("NvimTree")
 	-- Help
 	elseif is_help then
 		content = table.concat({
-			C:left_side_buff_flag(),
-			C:get_buffer_number(),
-			C.spacer,
-			C:get_highlighted_text("Help", colors.color_group_names.fg_60_bold),
-			C.space,
+			components:left_side_buff_flag(),
+			components:get_buffer_number(),
+			components.spacer,
+			components:get_highlighted_text("Help", colors.color_group_names.fg_60_bold),
+			components.space,
 			buff_name:match("[%s%w_]-%.%w-$"),
-			C.spacer,
-			C:right_side_ln(),
-			C.separator,
-			C:right_side_loc(),
+			components.spacer,
+			components:right_side_ln(),
+			components.separator,
+			components:right_side_loc(),
 		})
 	-- Packer
 	elseif is_packer then
-		content = C:get_simple_line("Packer")
+		content = components:get_simple_line("Packer")
 	-- Fugitive
 	elseif is_fugitive then
-		content = C:get_simple_line("Fugitive")
+		content = components:get_simple_line("Fugitive")
 		-- Other
 	else
 		content = table.concat({
-			C:left_side_buff_flag(),
-			C:get_buffer_number(),
-			C.separator,
+			components:left_side_buff_flag(),
+			components:get_buffer_number(),
+			components.separator,
 			diagnostics.get_diagnostics(),
-			C.spacer,
-			C:center(),
-			C.spacer,
-			C:right_side_ln(),
-			C.separator,
-			C:right_side_col(),
-			C.separator,
-			C:right_side_loc(),
+			components.spacer,
+			components:center(),
+			components.spacer,
+			components:right_side_ln(),
+			components.separator,
+			components:right_side_col(),
+			components.separator,
+			components:right_side_loc(),
 		})
 	end
 
