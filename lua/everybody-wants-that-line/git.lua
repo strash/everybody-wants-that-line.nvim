@@ -24,6 +24,4 @@ function M.get_diff_info()
 	return insertions, deletions
 end
 
-M.get_diff_info()
-
 return M

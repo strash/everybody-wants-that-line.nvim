@@ -16,17 +16,17 @@ local M = {
 	lines_of_code = "%L",
 }
 
--- separator
-M.separator = (function()
-	local separator_color_group = C.get_statusline_group(C.color_group_names.fg_20)
-	return separator_color_group .. M.space .. S.separator .. M.space .. M.eocg
-end)()
-
 -- highlighted text
 function M:highlight_text(text, color_group_name)
 	local cg = C.get_statusline_group(color_group_name)
 	return cg .. text .. self.eocg
 end
+
+-- separator
+M.separator = (function()
+	local separator_color_group = C.get_statusline_group(C.color_group_names.fg_20)
+	return separator_color_group .. M.space .. S.separator .. M.space .. M.eocg
+end)()
 
 M.comma = (function()
 	return M:highlight_text(",", C.color_group_names.fg_50)
@@ -56,8 +56,7 @@ function M:buff_nr()
 	return zeroes .. self:highlight_text(buffer_number, C.color_group_names.fg_bold)
 end
 
--- center
-function M:center()
+function M:branch_and_status()
 	local branch_name = G.get_git_branch()
 	local ins, del = G.get_diff_info()
 	if #branch_name == 0 then
@@ -76,8 +75,17 @@ function M:center()
 		self.space,
 		ins,
 		del,
-		self.path_to_the_file
 	})
+end
+
+-- center
+function M:center()
+	return self:branch_and_status() .. self.path_to_the_file
+end
+
+-- Fugitive
+function M:fugitive()
+	return self:branch_and_status() .. "Fugitive"
 end
 
 -- percentage through file in lines
