@@ -12,7 +12,7 @@ Minimalistic, informative and elegant statusline for neovim.
 - [x] Adaptive colors
 - [x] Current buffer number and buffer modified flag
 - [x] LSP diagnostics
-- [x] Current git branch and git status (additions/deletions)
+- [x] Current git branch and git status (additions and deletions throughout current project)
 - [x] Current filename
 - [x] Clean ruler
 - [x] Support for NvimTree, Help, Packer, Fugitive
@@ -35,10 +35,16 @@ local that_line = require("everybody-wants-that-line")
 
 that_line.setup({
 	buffer = {
+		-- symbol before buffer number, e.g. 00011.
+		-- if you don't want additional symbols to be displayed, set "max_symbols" to 0
 		symbol = "0",
+		-- maximum number of symbols including buffer number
 		max_symbols = 5,
 	},
+	-- a separator between blocks,
+	-- e.g. ` b+ 00001 │ 0, 0, 0 │ master README.md │ ↓87%, →58, 47LOC `
 	separator = "│",
+
 })
 ```
 
