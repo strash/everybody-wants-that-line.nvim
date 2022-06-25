@@ -45,7 +45,7 @@ local function set_statusline_content()
 		content = B:spaced_text("Packer")
 	-- Fugitive
 	elseif is_fugitive then
-		content = B:spaced_text("Fugitive")
+		content = B:spaced_text(B:fugitive())
 	-- Other
 	else
 		content = table.concat({

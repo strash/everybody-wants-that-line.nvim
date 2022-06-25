@@ -3,7 +3,7 @@ local C = require("everybody-wants-that-line.colors")
 
 local M = {}
 
-M.get_diagnostics = function ()
+function M.get_diagnostics()
 	local errors = vim.diagnostic.get(0, {
 		severity = vim.diagnostic.severity.ERROR
 	})
