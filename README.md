@@ -30,6 +30,7 @@ Plug "strash/everybody-wants-that-line.nvim"
 ```
 
 ## Configuration
+These are the defaults.
 ```lua
 local that_line = require("everybody-wants-that-line")
 
@@ -42,7 +43,7 @@ that_line.setup({
 		max_symbols = 5,
 	},
 	-- a separator between blocks,
-	-- e.g. ` b+ 00001 │ 0, 0, 0 │ master README.md │ ↓87%, →58, 47LOC `
+	-- e.g. ` b+ 00001 │ 0, 0, 0 │ main README.md │ ↓87%, →58, 47LOC `
 	separator = "│",
 
 })
