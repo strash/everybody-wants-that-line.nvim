@@ -8,9 +8,10 @@ assignees: ''
 ---
 
 **Prerequisites**
-- [ ] neovim version =
-- [ ] I'm using LSP = (select one - yes/no)
-- [ ] [laststatus](https://neovim.io/doc/user/options.html#'laststatus') = (select one - 0, 1, 2, 3)
+- neovim version =
+- I'm using LSP = (select one - yes/no)
+- [laststatus](https://neovim.io/doc/user/options.html#'laststatus') = (select one - 0, 1, 2, 3)
+- colorscheme = ("name/colorscheme_name" or link to it)
 
 **Describe the bug**
 A clear and concise description of what the bug is.
