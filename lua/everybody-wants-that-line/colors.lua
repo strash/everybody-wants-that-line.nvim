@@ -49,9 +49,9 @@ local function set_colors()
 		fg_remove = get_hl_group_color("diffRemoved", "foreground"),
 	}
 	-- blended colors
-	for i = 10, 90, 10 do
-		colors["fg_" .. i] = blend_colors(i / 100, colors.bg.rgb, colors.fg.rgb)
-		colors["fg_nc_" .. i] = blend_colors(i / 100, colors.bg_nc.rgb, colors.fg_nc.rgb)
+	for _, v in ipairs({ 20, 30, 50, 60 }) do
+		colors["fg_" .. v] = blend_colors(v / 100, colors.bg.rgb, colors.fg.rgb)
+		colors["fg_nc_" .. v] = blend_colors(v / 100, colors.bg_nc.rgb, colors.fg_nc.rgb)
 	end
 	colors.fg_error_50 = blend_colors(0.5, colors.bg.rgb, colors.fg_error.rgb)
 	colors.fg_warn_50 = blend_colors(0.5, colors.bg.rgb, colors.fg_warn.rgb)
