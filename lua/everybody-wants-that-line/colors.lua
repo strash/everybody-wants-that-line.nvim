@@ -96,18 +96,6 @@ set_hl_groups()
 
 function M.setup_autocmd(group_name)
 	vim.api.nvim_create_autocmd({
-		"OptionSet",
-	}, {
-		pattern = "background",
-		callback = function()
-			set_colors()
-			set_color_group_names()
-			set_hl_groups()
-		end,
-		group = group_name,
-	})
-
-	vim.api.nvim_create_autocmd({
 		"VimEnter",
 		"ColorScheme",
 	}, {
