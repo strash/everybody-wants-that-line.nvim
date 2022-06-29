@@ -16,6 +16,32 @@ function M.lerp(v, a, b)
 	end
 end
 
+--- math round
+function M.round(v)
+	if tostring(v):find("%.") == nil then
+		return v
+	else
+		local dec = tonumber(tostring(v):match("%.%d+"))
+		if dec >= 0.5 then
+			return math.ceil(v)
+		else
+			return math.floor(v)
+		end
+	end
+end
+
+--- check if a value exist in an enumerated table
+function M.is_value_exist(t, v)
+	local is_value_exist = false
+	for _, _v in ipairs(t) do
+		if _v == v then
+			is_value_exist = true
+			break
+		end
+	end
+	return is_value_exist
+end
+
 --- get cterm for a highlight group
 function M.cterm(v)
 	local c = " "

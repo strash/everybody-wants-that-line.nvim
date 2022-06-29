@@ -34,6 +34,44 @@ local function blend_colors(intensity, from, to)
 	return { hex = hex, rgb = rgb }
 end
 
+-- return { h, s, b }
+local function rgb_to_hsb(r, g, b)
+	local _r, _g, _b = r / 255, g / 255, b / 255
+	local max, min = math.max(_r, _g, _b), math.min(_r, _g, _b)
+	local d, h, s, v
+	v = max
+	d = max - min
+	s = max == 0 and 0 or d / max
+	if max == min then h = 0
+	else
+		if     max == _r then h = (_g - _b) / d + (_g < _b and 6 or 0)
+		elseif max == _g then h = (_b - _r) / d + 2
+		elseif max == _b then h = (_r - _g) / d + 4
+		end
+	end
+	return { U.round(h / 6 * 360), U.round(s * 100), U.round(v * 100) }
+end
+
+-- return { r, g, b }
+local function hsb_to_rgb(h, s, v)
+	local _h, _s, _v = h / 360, s / 100, v / 100
+	local r, g, b, i, f, p, q, t, a
+	i = math.floor(_h * 6)
+	f = _h * 6 - i
+	p = _v * (1 - _s)
+	q = _v * (1 - f * _s)
+	t = _v * (1 - (1 - f) * _s)
+	a = i % 6
+	if     a == 0 then r = _v g = t  b = p
+	elseif a == 1 then r = q  g = _v b = p
+	elseif a == 2 then r = p  g = _v b = t
+	elseif a == 3 then r = p  g = q  b = _v
+	elseif a == 4 then r = t  g = p  b = _v
+	elseif a == 5 then r = _v g = p  b = q
+	end
+	return { U.round(r * 255), U.round(g * 255), U.round(b * 255) }
+end
+
 -- setting colors
 local function set_colors()
 	-- base colors
