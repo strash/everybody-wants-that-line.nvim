@@ -10,16 +10,24 @@ M.color_group_names = {}
 
 -- getting hightlight group color
 local function get_hl_group_color(group_name, color)
-	local hex = "FFFFFF"
+	local hex = ""
 	local rgb = {}
-	local group_table = vim.api.nvim_get_hl_by_name(group_name, true)
-	if group_table[color] ~= nil then
-		hex = string.format("%06x", group_table[color]):upper()
-		table.insert(rgb, tonumber(hex:sub(1, 2), 16))
-		table.insert(rgb, tonumber(hex:sub(3, 4), 16))
-		table.insert(rgb, tonumber(hex:sub(5, 6), 16))
+	local hlid = vim.fn.hlID(group_name)
+	if hlid ~= 0 then
+		local group_table = vim.api.nvim_get_hl_by_id(hlid, true)
+		if group_table[color] ~= nil then
+			hex = string.format("%06x", group_table[color]):upper()
+			table.insert(rgb, tonumber(hex:sub(1, 2), 16))
+			table.insert(rgb, tonumber(hex:sub(3, 4), 16))
+			table.insert(rgb, tonumber(hex:sub(5, 6), 16))
+			return { hex = hex, rgb = rgb }
+		end
 	end
-	return { hex = hex, rgb = rgb }
+	if vim.o.background == "dark" then
+		return { hex = "FFFFFF", rgb = { 255, 255, 255 } }
+	else
+		return { hex = "000000", rgb = { 0, 0, 0 } }
+	end
 end
 
 -- blend colors
