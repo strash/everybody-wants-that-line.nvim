@@ -169,4 +169,11 @@ function M.adjust_color(color_palette, by_color_palette)
 	return { hex = hex, rgb = rgb, hsb = hsb }
 end
 
+---Returns formatted color group name
+---@param color_group string
+---@return string
+function M.format_group_name(color_group)
+	return "%#" .. color_group .. "#"
+end
+
 return M

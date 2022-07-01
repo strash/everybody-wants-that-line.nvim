@@ -35,7 +35,8 @@ local function get_diff_info()
 end
 
 -- auto commands
-function M.setup_autocmd(group_name)
+function M.setup_autocmd(group_name, callback)
+	-- branch name
 	vim.api.nvim_create_autocmd({
 		"VimEnter",
 		"BufEnter",
@@ -44,18 +45,22 @@ function M.setup_autocmd(group_name)
 		pattern = "*",
 		callback = function()
 			M.cache.branch = get_git_branch()
+			callback()
 		end,
 		group = group_name,
 	})
 
+	-- diff info
 	vim.api.nvim_create_autocmd({
 		"VimEnter",
 		"BufWritePost",
 		"BufReadPost",
+		"FocusGained",
 	}, {
 		pattern = "*",
 		callback = function()
 			M.cache.diff_info = get_diff_info()
+			callback()
 		end,
 		group = group_name,
 	})

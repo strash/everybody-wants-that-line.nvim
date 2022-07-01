@@ -21,6 +21,7 @@ local function set_colors()
 		fg_warn = CU.get_hl_group_color("DiagnosticWarn", "foreground"),
 		fg_info = CU.get_hl_group_color("DiagnosticInfo", "foreground"),
 	}
+	-- diff colors
 	local fg_diff_add = CU.choose_right_color("DiffAdd", 2)
 	local fg_diff_delete = CU.choose_right_color("DiffDelete", 1)
 	colors.fg_diff_add = CU.adjust_color(fg_diff_add, colors.fg_info)
@@ -62,18 +63,13 @@ local function set_hl_groups()
 	end
 end
 
--- formatted color group
-function M.get_statusline_group(color_group)
-	return "%#" .. color_group .. "#"
-end
+-- auto commands
+function M.setup_autocmd(group_name, callback)
+	set_colors()
+	set_color_group_names()
+	set_hl_groups()
 
-set_colors()
-set_color_group_names()
-set_hl_groups()
-
-function M.setup_autocmd(group_name)
 	vim.api.nvim_create_autocmd({
-		"VimEnter",
 		"ColorScheme",
 	}, {
 		pattern = "*",
@@ -81,6 +77,7 @@ function M.setup_autocmd(group_name)
 			set_colors()
 			set_color_group_names()
 			set_hl_groups()
+			callback()
 		end,
 		group = group_name,
 	})
