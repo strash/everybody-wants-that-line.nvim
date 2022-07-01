@@ -1,6 +1,7 @@
 local B = require("everybody-wants-that-line.components")
 local C = require("everybody-wants-that-line.colors")
 local D = require("everybody-wants-that-line.diagnostics")
+local G = require("everybody-wants-that-line.git")
 local S = require("everybody-wants-that-line.settings")
 local U = require("everybody-wants-that-line.util")
 
@@ -67,14 +68,17 @@ local function set_statusline_content()
 	vim.opt.statusline = content
 end
 
+-- setup method
 function M.setup(opts)
 	S:setup(opts)
 end
 
+-- auto commands
 local everybody_wants_that_line_group = vim.api.nvim_create_augroup(U.prefix .. "Group", {
 	clear = true,
 })
 
+G.setup_autocmd(everybody_wants_that_line_group)
 C.setup_autocmd(everybody_wants_that_line_group)
 
 vim.api.nvim_create_autocmd({

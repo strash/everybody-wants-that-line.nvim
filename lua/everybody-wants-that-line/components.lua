@@ -58,24 +58,24 @@ end
 
 -- branch and status
 function M:branch_and_status()
-	local branch_name = G.get_git_branch()
-	local ins, del = G.get_diff_info()
-	if #branch_name == 0 then
+	local insertions = G.cache.diff_info.insertions
+	local deletions = G.cache.diff_info.deletions
+	if #G.cache.branch == 0 then
 		return self.path_to_the_file
 	end
-	if #ins > 0 then
-		ins = self:highlight_text(ins, C.color_group_names.fg_diff_add_bold)
-		ins = ins .. self:highlight_text("+", C.color_group_names.fg_diff_add_50) .. self.space
+	if #insertions > 0 then
+		insertions = self:highlight_text(insertions, C.color_group_names.fg_diff_add_bold)
+		insertions = insertions .. self:highlight_text("+", C.color_group_names.fg_diff_add_50) .. self.space
 	end
-	if #del > 0 then
-		del = self:highlight_text(del, C.color_group_names.fg_diff_delete_bold)
-		del = del .. self:highlight_text("-", C.color_group_names.fg_diff_delete_50) .. self.space
+	if #deletions > 0 then
+		deletions = self:highlight_text(deletions, C.color_group_names.fg_diff_delete_bold)
+		deletions = deletions .. self:highlight_text("-", C.color_group_names.fg_diff_delete_50) .. self.space
 	end
 	return table.concat({
-		self:highlight_text(branch_name, C.color_group_names.fg_60_bold),
+		self:highlight_text(G.cache.branch, C.color_group_names.fg_60_bold),
 		self.space,
-		ins,
-		del,
+		insertions,
+		deletions,
 	})
 end
 
