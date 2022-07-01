@@ -1,6 +1,7 @@
 local B = require("everybody-wants-that-line.components")
 local C = require("everybody-wants-that-line.colors")
 local D = require("everybody-wants-that-line.diagnostics")
+local G = require("everybody-wants-that-line.git")
 local S = require("everybody-wants-that-line.settings")
 local U = require("everybody-wants-that-line.util")
 
@@ -11,8 +12,8 @@ local M = {}
 -- TODO: support for StatusLineNC (if multiple statuslines)
 -- TODO: inverted colors like in gruvbox theme
 
--- setting the line
-local function set_statusline_content()
+-- setting that line
+local function set_statusline()
 	local buff_name = vim.api.nvim_buf_get_name(0)
 	local is_nvimtree = buff_name:find("NvimTree") ~= nil
 	local is_packer = buff_name:match("%[%w-%]$")
@@ -28,15 +29,15 @@ local function set_statusline_content()
 	elseif is_help then
 		local help = B:highlight_text("Help", C.color_group_names.fg_60_bold)
 		content = table.concat({
-			B:buff_mod_flag(),
-			B:buff_nr(),
-			B.separator,
+			B.cache.buff_mod_flag,
+			B.cache.buff_nr,
+			B.cache.separator,
 			B:spaced_text(help .. B.space .. buff_name:match("[%s%w_]-%.%w-$")),
-			B.separator,
-			B:ln(),
-			B.comma,
+			B.cache.separator,
+			B.cache.ln,
+			B.cache.comma,
 			B.space,
-			B:loc(),
+			B.cache.loc,
 		})
 	-- Packer
 	elseif is_packer then
@@ -47,48 +48,39 @@ local function set_statusline_content()
 	-- Other
 	else
 		content = table.concat({
-			B:buff_mod_flag(),
-			B:buff_nr(),
-			B.separator,
-			D.get_diagnostics(),
-			B.separator,
+			B.cache.buff_mod_flag,
+			B.cache.buff_nr,
+			B.cache.separator,
+			D.cache.diagnostics,
+			B.cache.separator,
 			B:spaced_text(B:center()),
-			B.separator,
-			B:ln(),
-			B.comma,
+			B.cache.separator,
+			B.cache.ln,
+			B.cache.comma,
 			B.space,
-			B:col(),
-			B.comma,
+			B.cache.col,
+			B.cache.comma,
 			B.space,
-			B:loc(),
+			B.cache.loc,
 		})
 	end
 
 	vim.opt.statusline = content
 end
 
+-- setup method
 function M.setup(opts)
 	S:setup(opts)
 end
 
-local everybody_wants_that_line_group = vim.api.nvim_create_augroup(U.prefix .. "Group", {
+-- auto commands
+local autocmd_group = vim.api.nvim_create_augroup(U.prefix .. "Group", {
 	clear = true,
 })
 
-C.setup_autocmd(everybody_wants_that_line_group)
-
-vim.api.nvim_create_autocmd({
-	"BufAdd",
-	"BufEnter",
-	"BufModifiedSet",
-	"BufWritePost",
-	"FocusGained",
-	"ColorScheme",
-	"DiagnosticChanged",
-}, {
-	pattern = "*",
-	callback = set_statusline_content,
-	group = everybody_wants_that_line_group,
-})
+G.setup_autocmd(autocmd_group, set_statusline)
+C.setup_autocmd(autocmd_group, set_statusline)
+B.setup_autocmd(autocmd_group, set_statusline)
+D.setup_autocmd(autocmd_group, set_statusline)
 
 return M

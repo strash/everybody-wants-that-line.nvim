@@ -3,6 +3,10 @@ local C = require("everybody-wants-that-line.colors")
 
 local M = {}
 
+M.cache = {
+	diagnostics = ""
+}
+
 function M.get_diagnostics()
 	local errors = vim.diagnostic.get(0, {
 		severity = vim.diagnostic.severity.ERROR
@@ -17,7 +21,7 @@ function M.get_diagnostics()
 		}
 	})
 
-	local err, warn, info = 0, 0, 0
+	local err, warn, info = "0", "0", "0"
 
 	if #errors > 0 then
 		err = table.concat({
@@ -44,7 +48,22 @@ function M.get_diagnostics()
 		})
 	end
 
-	return err .. B.comma .. B.space .. warn .. B.comma .. B.space .. info
+	return err .. B.cache.comma .. B.space .. warn .. B.cache.comma .. B.space .. info
+end
+
+function M.setup_autocmd(group_name, callback)
+	M.cache.diagnostics = M.get_diagnostics()
+
+	vim.api.nvim_create_autocmd({
+		"DiagnosticChanged",
+	}, {
+		pattern = "*",
+		callback = function ()
+			M.cache.diagnostics = M.get_diagnostics()
+			callback()
+		end,
+		group = group_name,
+	})
 end
 
 return M
