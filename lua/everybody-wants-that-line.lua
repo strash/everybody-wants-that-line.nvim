@@ -78,9 +78,9 @@ local autocmd_group = vim.api.nvim_create_augroup(U.prefix .. "Group", {
 	clear = true,
 })
 
-G.setup_autocmd(autocmd_group, set_statusline)
 C.setup_autocmd(autocmd_group, set_statusline)
 B.setup_autocmd(autocmd_group, set_statusline)
 D.setup_autocmd(autocmd_group, set_statusline)
+G.setup_autocmd(autocmd_group, set_statusline)
 
 return M
