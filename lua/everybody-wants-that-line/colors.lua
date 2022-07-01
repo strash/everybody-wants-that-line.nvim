@@ -1,3 +1,4 @@
+local CU = require("everybody-wants-that-line.color-util")
 local U = require("everybody-wants-that-line.util")
 
 local M = {}
@@ -8,64 +9,32 @@ local colors = {}
 -- color groups
 M.color_group_names = {}
 
--- getting hightlight group color
-local function get_hl_group_color(group_name, color)
-	local hex = ""
-	local rgb = {}
-	local hlid = vim.fn.hlID(group_name)
-	if hlid ~= 0 then
-		local group_table = vim.api.nvim_get_hl_by_id(hlid, true)
-		if group_table[color] ~= nil then
-			hex = string.format("%06x", group_table[color]):upper()
-			table.insert(rgb, tonumber(hex:sub(1, 2), 16))
-			table.insert(rgb, tonumber(hex:sub(3, 4), 16))
-			table.insert(rgb, tonumber(hex:sub(5, 6), 16))
-			return { hex = hex, rgb = rgb }
-		end
-	end
-	if vim.o.background == "dark" then
-		return { hex = "FFFFFF", rgb = { 255, 255, 255 } }
-	else
-		return { hex = "000000", rgb = { 0, 0, 0 } }
-	end
-end
-
--- blend colors
-local function blend_colors(intensity, from, to)
-	local hex = ""
-	local rgb = {}
-	for i = 1, 3 do
-		local l = math.floor(U.lerp(intensity, from[i], to[i]) or 255)
-		hex = hex .. string.format("%02x", l)
-		table.insert(rgb, l)
-	end
-	return { hex = hex, rgb = rgb }
-end
-
 -- setting colors
 local function set_colors()
 	-- base colors
 	colors = {
-		bg = get_hl_group_color("StatusLine", "background"),
-		fg = get_hl_group_color("StatusLine", "foreground"),
-		bg_nc = get_hl_group_color("StatusLineNC", "background"),
-		fg_nc = get_hl_group_color("StatusLineNC", "foreground"),
-		fg_error = get_hl_group_color("DiagnosticError", "foreground"),
-		fg_warn = get_hl_group_color("DiagnosticWarn", "foreground"),
-		fg_info = get_hl_group_color("DiagnosticInfo", "foreground"),
-		fg_add = get_hl_group_color("diffAdded", "foreground"),
-		fg_remove = get_hl_group_color("diffRemoved", "foreground"),
+		bg = CU.get_hl_group_color("StatusLine", "background"),
+		fg = CU.get_hl_group_color("StatusLine", "foreground"),
+		bg_nc = CU.get_hl_group_color("StatusLineNC", "background"),
+		fg_nc = CU.get_hl_group_color("StatusLineNC", "foreground"),
+		fg_error = CU.get_hl_group_color("DiagnosticError", "foreground"),
+		fg_warn = CU.get_hl_group_color("DiagnosticWarn", "foreground"),
+		fg_info = CU.get_hl_group_color("DiagnosticInfo", "foreground"),
 	}
+	local fg_diff_add = CU.choose_right_color("DiffAdd", 2)
+	local fg_diff_delete = CU.choose_right_color("DiffDelete", 1)
+	colors.fg_diff_add = CU.adjust_color(fg_diff_add, colors.fg_info)
+	colors.fg_diff_delete = CU.adjust_color(fg_diff_delete, colors.fg_info)
 	-- blended colors
-	for i = 10, 90, 10 do
-		colors["fg_" .. i] = blend_colors(i / 100, colors.bg.rgb, colors.fg.rgb)
-		colors["fg_nc_" .. i] = blend_colors(i / 100, colors.bg_nc.rgb, colors.fg_nc.rgb)
+	for _, v in ipairs({ 20, 30, 50, 60 }) do
+		colors["fg_" .. v] = CU.blend_colors(v / 100, colors.bg, colors.fg)
+		colors["fg_nc_" .. v] = CU.blend_colors(v / 100, colors.bg_nc, colors.fg_nc)
 	end
-	colors.fg_error_50 = blend_colors(0.5, colors.bg.rgb, colors.fg_error.rgb)
-	colors.fg_warn_50 = blend_colors(0.5, colors.bg.rgb, colors.fg_warn.rgb)
-	colors.fg_info_50 = blend_colors(0.5, colors.bg.rgb, colors.fg_info.rgb)
-	colors.fg_add_50 = blend_colors(0.5, colors.bg.rgb, colors.fg_add.rgb)
-	colors.fg_remove_50 = blend_colors(0.5, colors.bg.rgb, colors.fg_remove.rgb)
+	colors.fg_error_50 = CU.blend_colors(0.5, colors.bg, colors.fg_error)
+	colors.fg_warn_50 = CU.blend_colors(0.5, colors.bg, colors.fg_warn)
+	colors.fg_info_50 = CU.blend_colors(0.5, colors.bg, colors.fg_info)
+	colors.fg_diff_add_50 = CU.blend_colors(0.5, colors.bg, colors.fg_diff_add)
+	colors.fg_diff_delete_50 = CU.blend_colors(0.5, colors.bg, colors.fg_diff_delete)
 end
 
 -- setting color groups names
@@ -103,18 +72,6 @@ set_color_group_names()
 set_hl_groups()
 
 function M.setup_autocmd(group_name)
-	vim.api.nvim_create_autocmd({
-		"OptionSet",
-	}, {
-		pattern = "background",
-		callback = function()
-			set_colors()
-			set_color_group_names()
-			set_hl_groups()
-		end,
-		group = group_name,
-	})
-
 	vim.api.nvim_create_autocmd({
 		"VimEnter",
 		"ColorScheme",

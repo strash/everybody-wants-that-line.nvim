@@ -7,10 +7,8 @@ local U = require("everybody-wants-that-line.util")
 local M = {}
 
 -- TODO: add options to filename format
--- TODO: update settings. breaking_changes
 -- TODO: support for Quickfix List, Location List, Prompt(telescope) - use vim.fn.win_gettype()
 -- TODO: support for StatusLineNC (if multiple statuslines)
--- TODO: update README and screenshots
 -- TODO: inverted colors like in gruvbox theme
 
 -- setting the line
