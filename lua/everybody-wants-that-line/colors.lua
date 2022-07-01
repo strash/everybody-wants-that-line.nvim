@@ -20,9 +20,11 @@ local function set_colors()
 		fg_error = CU.get_hl_group_color("DiagnosticError", "foreground"),
 		fg_warn = CU.get_hl_group_color("DiagnosticWarn", "foreground"),
 		fg_info = CU.get_hl_group_color("DiagnosticInfo", "foreground"),
-		fg_add = CU.get_hl_group_color("diffAdded", "foreground"),
-		fg_remove = CU.get_hl_group_color("diffRemoved", "foreground"),
 	}
+	local fg_diff_add = CU.choose_right_color("DiffAdd", 2)
+	local fg_diff_delete = CU.choose_right_color("DiffDelete", 1)
+	colors.fg_diff_add = CU.adjust_color(fg_diff_add, colors.fg_info)
+	colors.fg_diff_delete = CU.adjust_color(fg_diff_delete, colors.fg_info)
 	-- blended colors
 	for _, v in ipairs({ 20, 30, 50, 60 }) do
 		colors["fg_" .. v] = CU.blend_colors(v / 100, colors.bg, colors.fg)
@@ -31,8 +33,8 @@ local function set_colors()
 	colors.fg_error_50 = CU.blend_colors(0.5, colors.bg, colors.fg_error)
 	colors.fg_warn_50 = CU.blend_colors(0.5, colors.bg, colors.fg_warn)
 	colors.fg_info_50 = CU.blend_colors(0.5, colors.bg, colors.fg_info)
-	colors.fg_add_50 = CU.blend_colors(0.5, colors.bg, colors.fg_add)
-	colors.fg_remove_50 = CU.blend_colors(0.5, colors.bg, colors.fg_remove)
+	colors.fg_diff_add_50 = CU.blend_colors(0.5, colors.bg, colors.fg_diff_add)
+	colors.fg_diff_delete_50 = CU.blend_colors(0.5, colors.bg, colors.fg_diff_delete)
 end
 
 -- setting color groups names

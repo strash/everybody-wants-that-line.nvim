@@ -56,6 +56,7 @@ function M:buff_nr()
 	return zeroes .. self:highlight_text(buffer_number, C.color_group_names.fg_bold)
 end
 
+-- branch and status
 function M:branch_and_status()
 	local branch_name = G.get_git_branch()
 	local ins, del = G.get_diff_info()
@@ -63,12 +64,12 @@ function M:branch_and_status()
 		return self.path_to_the_file
 	end
 	if #ins > 0 then
-		ins = self:highlight_text(ins, C.color_group_names.fg_add_bold)
-		ins = ins .. self:highlight_text("+", C.color_group_names.fg_add_50) .. self.space
+		ins = self:highlight_text(ins, C.color_group_names.fg_diff_add_bold)
+		ins = ins .. self:highlight_text("+", C.color_group_names.fg_diff_add_50) .. self.space
 	end
 	if #del > 0 then
-		del = self:highlight_text(del, C.color_group_names.fg_remove_bold)
-		del = del .. self:highlight_text("-", C.color_group_names.fg_remove_50) .. self.space
+		del = self:highlight_text(del, C.color_group_names.fg_diff_delete_bold)
+		del = del .. self:highlight_text("-", C.color_group_names.fg_diff_delete_50) .. self.space
 	end
 	return table.concat({
 		self:highlight_text(branch_name, C.color_group_names.fg_60_bold),
