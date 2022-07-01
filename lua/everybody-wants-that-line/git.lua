@@ -8,6 +8,7 @@ M.cache = {
 	},
 }
 
+-- getting branch name
 local function get_git_branch()
 	local branch = ""
 	if vim.fn.isdirectory(".git") ~= 0 then
@@ -16,6 +17,7 @@ local function get_git_branch()
 	return branch
 end
 
+-- getting diff info numbers
 local function get_diff_info()
 	local insertions = ""
 	local deletions = ""
@@ -36,23 +38,24 @@ end
 function M.setup_autocmd(group_name)
 	vim.api.nvim_create_autocmd({
 		"VimEnter",
-		"BufWritePost",
-	}, {
-		pattern = "*",
-		callback = function()
-			M.cache.diff_info = get_diff_info()
-		end,
-		group = group_name,
-	})
-
-	vim.api.nvim_create_autocmd({
-		"VimEnter",
 		"BufEnter",
 		"FocusGained",
 	}, {
 		pattern = "*",
 		callback = function()
 			M.cache.branch = get_git_branch()
+		end,
+		group = group_name,
+	})
+
+	vim.api.nvim_create_autocmd({
+		"VimEnter",
+		"BufWritePost",
+		"BufReadPost",
+	}, {
+		pattern = "*",
+		callback = function()
+			M.cache.diff_info = get_diff_info()
 		end,
 		group = group_name,
 	})
