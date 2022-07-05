@@ -93,4 +93,16 @@ function M.pascalcase(s)
 	return table.concat(parts)
 end
 
+---Check if statusline on focused window
+---@return boolean
+function M.is_focused()
+  return tonumber(vim.g.actual_curwin) == vim.api.nvim_get_current_win()
+end
+
+---Get laststatus
+---@return number
+function M.laststatus()
+	return vim.o.laststatus
+end
+
 return M

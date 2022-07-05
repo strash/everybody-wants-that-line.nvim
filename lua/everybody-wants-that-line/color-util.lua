@@ -169,11 +169,21 @@ function M.adjust_color(color_palette, by_color_palette)
 	return { hex = hex, rgb = rgb, hsb = hsb }
 end
 
----Returns formatted color group name
----@param color_group string
+---Get right group name. `Nc` or regular
+---@param group_name string
 ---@return string
-function M.format_group_name(color_group)
-	return "%#" .. color_group .. "#"
+function M.get_group_name(group_name)
+	if U.laststatus() == 3 then
+		return group_name
+	end
+	return U.is_focused() and group_name or U.prefix .. group_name:sub(#U.prefix + 1, #U.prefix + 2) .. "Nc" .. group_name:sub(#U.prefix + 3)
+end
+
+---Returns formatted color group name
+---@param group_name string Not `Nc` group name
+---@return string
+function M.format_group_name(group_name)
+	return "%#" .. M.get_group_name(group_name) .. "#"
 end
 
 return M

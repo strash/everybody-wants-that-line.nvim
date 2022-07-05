@@ -9,63 +9,65 @@ local M = {}
 
 -- TODO: add options to filename format
 -- TODO: support for Quickfix List, Location List, Prompt(telescope) - use vim.fn.win_gettype()
--- TODO: support for StatusLineNC (if multiple statuslines)
--- TODO: inverted colors like in gruvbox theme
 
 -- setting that line
-local function set_statusline()
+function M.set_statusline()
 	local buff_name = vim.api.nvim_buf_get_name(0)
 	local is_nvimtree = buff_name:find("NvimTree") ~= nil
 	local is_packer = buff_name:match("%[%w-%]$")
 	local is_help = buff_name:find("/doc/") ~= nil and buff_name:find(".txt") ~= nil
 	local is_fugitive = buff_name:find(".git/index") ~= nil
 
-	local content = ""
+	local content
 
 	-- NvimTree
 	if is_nvimtree then
-		content = B:spaced_text("NvimTree")
+		content = B.spaced_text("NvimTree")
 	-- Help
 	elseif is_help then
-		local help = B:highlight_text("Help", C.color_group_names.fg_60_bold)
-		content = table.concat({
-			B.cache.buff_mod_flag,
-			B.cache.buff_nr,
-			B.cache.separator,
-			B:spaced_text(help .. B.space .. buff_name:match("[%s%w_]-%.%w-$")),
-			B.cache.separator,
-			B.cache.ln,
-			B.cache.comma,
+		local help = B.highlight_text("Help", C.color_group_names.fg_60_bold)
+		content = {
+			B.buff_mod_flag(),
+			B.buff_nr(),
+			B.separator(),
+			B.spaced_text(help .. B.space .. buff_name:match("[%s%w_]-%.%w-$")),
+			B.separator(),
+			B.ln(),
+			B.comma(),
 			B.space,
-			B.cache.loc,
-		})
+			B.loc(),
+		}
 	-- Packer
 	elseif is_packer then
-		content = B:spaced_text("Packer")
+		content = { B.spaced_text("Packer") }
 	-- Fugitive
 	elseif is_fugitive then
-		content = B:spaced_text(B:fugitive())
+		content = { B.spaced_text(B.fugitive()) }
 	-- Other
 	else
-		content = table.concat({
-			B.cache.buff_mod_flag,
-			B.cache.buff_nr,
-			B.cache.separator,
-			D.cache.diagnostics,
-			B.cache.separator,
-			B:spaced_text(B:center()),
-			B.cache.separator,
-			B.cache.ln,
-			B.cache.comma,
+		content = {
+			B.buff_mod_flag(),
+			B.buff_nr(),
+			B.separator(),
+			D.get_diagnostics(),
+			B.separator(),
+			B.spaced_text(B.center()),
+			B.separator(),
+			B.ln(),
+			B.comma(),
 			B.space,
-			B.cache.col,
-			B.cache.comma,
+			B.col(),
+			B.comma(),
 			B.space,
-			B.cache.loc,
-		})
+			B.loc(),
+		}
 	end
 
-	vim.opt.statusline = content
+	return table.concat(content)
+end
+
+local function callback()
+	vim.cmd([[set stl=%{%v:lua.require('everybody-wants-that-line').set_statusline()%}]])
 end
 
 -- setup method
@@ -78,9 +80,9 @@ local autocmd_group = vim.api.nvim_create_augroup(U.prefix .. "Group", {
 	clear = true,
 })
 
-C.setup_autocmd(autocmd_group, set_statusline)
-B.setup_autocmd(autocmd_group, set_statusline)
-D.setup_autocmd(autocmd_group, set_statusline)
-G.setup_autocmd(autocmd_group, set_statusline)
+C.setup_autocmd(autocmd_group, callback)
+B.setup_autocmd(autocmd_group, callback)
+D.setup_autocmd(autocmd_group, callback)
+G.setup_autocmd(autocmd_group, callback)
 
 return M
