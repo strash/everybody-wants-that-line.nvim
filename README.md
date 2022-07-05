@@ -9,15 +9,15 @@ Minimalistic, informative and elegant statusline for neovim.
 ![screenshot](https://i.ibb.co/GtLSRQg/Group-14-2.png)
 
 ## Features
-- [x] Adaptive colors
-- [x] Current buffer number and buffer modified flag
-- [x] LSP diagnostics
-- [x] Current git branch and git status (additions and deletions throughout current project)
-- [x] Current filename
-- [x] Clean ruler
-- [x] Support for NvimTree, Help, Packer, Fugitive
-- [x] Support for multiple StatusLines
-- [ ] Support for Quickfix List, Location List, Prompt
+- Adaptive colors
+- Current buffer number and buffer modified flag
+- LSP diagnostics
+- Current git branch and git status (additions and deletions throughout current project)
+- Current filename
+- Clean ruler
+- Support for Quickfix List, Location List, Help
+- Support for Telescope, Packer, Fugitive, NvimTree
+- Support for global and multiple StatusLines
 
 ## Installation
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)

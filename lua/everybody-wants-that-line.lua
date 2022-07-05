@@ -8,43 +8,15 @@ local U = require("everybody-wants-that-line.util")
 local M = {}
 
 -- TODO: add options to filename format
--- TODO: support for Quickfix List, Location List, Prompt(telescope) - use vim.fn.win_gettype()
 
 -- setting that line
 function M.set_statusline()
-	local buff_name = vim.api.nvim_buf_get_name(0)
-	local is_nvimtree = buff_name:find("NvimTree") ~= nil
-	local is_packer = buff_name:match("%[%w-%]$")
-	local is_help = buff_name:find("/doc/") ~= nil and buff_name:find(".txt") ~= nil
-	local is_fugitive = buff_name:find(".git/index") ~= nil
+	local wintype = U.get_wintype()
 
 	local content
 
-	-- NvimTree
-	if is_nvimtree then
-		content = B.spaced_text("NvimTree")
-	-- Help
-	elseif is_help then
-		local help = B.highlight_text("Help", C.color_group_names.fg_60_bold)
-		content = {
-			B.buff_mod_flag(),
-			B.buff_nr(),
-			B.separator(),
-			B.spaced_text(help .. B.space .. buff_name:match("[%s%w_]-%.%w-$")),
-			B.separator(),
-			B.ln(),
-			B.comma(),
-			B.space,
-			B.loc(),
-		}
-	-- Packer
-	elseif is_packer then
-		content = { B.spaced_text("Packer") }
-	-- Fugitive
-	elseif is_fugitive then
-		content = { B.spaced_text(B.fugitive()) }
-	-- Other
-	else
+	-- NORMAL
+	if wintype == U.wintype.NORMAL then
 		content = {
 			B.buff_mod_flag(),
 			B.buff_nr(),
@@ -60,6 +32,61 @@ function M.set_statusline()
 			B.comma(),
 			B.space,
 			B.loc(),
+		}
+	-- LOCLIST
+	elseif wintype == U.wintype.LOCLIST then
+		content = {
+			B.spaced_text("Location List"),
+		}
+	-- QUICKFIX
+	elseif wintype == U.wintype.QUICKFIX then
+		content = {
+			B.spaced_text("Quickfix List"),
+		}
+	-- PREVIEW
+	elseif wintype == U.wintype.PREVIEW then
+		content = {
+			B.spaced_text("Preview"),
+		}
+	-- HELP
+	elseif wintype == U.wintype.HELP then
+		local help = B.highlight_text("Help", C.color_group_names.fg_60_bold)
+		local buff_name = vim.api.nvim_buf_get_name(0)
+		content = {
+			B.buff_mod_flag(),
+			B.buff_nr(),
+			B.separator(),
+			B.spaced_text(help .. B.space .. buff_name:match("[%s%w_]-%.%w-$")),
+			B.separator(),
+			B.ln(),
+			B.comma(),
+			B.space,
+			B.loc(),
+		}
+	-- NVIMTREE
+	elseif wintype == U.wintype.NVIMTREE then
+		content = {
+			B.spaced_text("NvimTree"),
+		}
+	-- PACKER
+	elseif wintype == U.wintype.PACKER then
+		content = {
+			B.spaced_text("Packer")
+		}
+	-- FUGITIVE
+	elseif wintype == U.wintype.FUGITIVE then
+		content = {
+			B.spaced_text(B.fugitive())
+		}
+	-- TELESCOPE
+	elseif wintype == U.wintype.TELESCOPE then
+		content = {
+			B.spaced_text("Telescope")
+		}
+	-- UNKNOWN
+	elseif wintype == U.wintype.UNKNOWN then
+		content = {
+			B.spaced_text([[¯\_(ツ)_/¯]])
 		}
 	end
 
