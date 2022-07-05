@@ -16,8 +16,8 @@ Minimalistic, informative and elegant statusline for neovim.
 - [x] Current filename
 - [x] Clean ruler
 - [x] Support for NvimTree, Help, Packer, Fugitive
+- [x] Support for multiple StatusLines
 - [ ] Support for Quickfix List, Location List, Prompt
-- [ ] Support for StatusLineNC (if multiple statuslines)
 
 ## Installation
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
