@@ -21,21 +21,33 @@ local function set_colors()
 		fg_warn = CU.get_hl_group_color("DiagnosticWarn", "foreground"),
 		fg_info = CU.get_hl_group_color("DiagnosticInfo", "foreground"),
 	}
+	colors.fg_nc_error = colors.fg_error
+	colors.fg_nc_warn = colors.fg_warn
+	colors.fg_nc_info = colors.fg_info
 	-- diff colors
 	local fg_diff_add = CU.choose_right_color("DiffAdd", 2)
 	local fg_diff_delete = CU.choose_right_color("DiffDelete", 1)
 	colors.fg_diff_add = CU.adjust_color(fg_diff_add, colors.fg_info)
 	colors.fg_diff_delete = CU.adjust_color(fg_diff_delete, colors.fg_info)
+	colors.fg_nc_diff_add = colors.fg_diff_add
+	colors.fg_nc_diff_delete = colors.fg_diff_delete
 	-- blended colors
 	for _, v in ipairs({ 20, 30, 50, 60 }) do
 		colors["fg_" .. v] = CU.blend_colors(v / 100, colors.bg, colors.fg)
 		colors["fg_nc_" .. v] = CU.blend_colors(v / 100, colors.bg_nc, colors.fg_nc)
 	end
+	-- diagnostics
 	colors.fg_error_50 = CU.blend_colors(0.5, colors.bg, colors.fg_error)
 	colors.fg_warn_50 = CU.blend_colors(0.5, colors.bg, colors.fg_warn)
 	colors.fg_info_50 = CU.blend_colors(0.5, colors.bg, colors.fg_info)
 	colors.fg_diff_add_50 = CU.blend_colors(0.5, colors.bg, colors.fg_diff_add)
 	colors.fg_diff_delete_50 = CU.blend_colors(0.5, colors.bg, colors.fg_diff_delete)
+
+	colors.fg_nc_error_50 = CU.blend_colors(0.5, colors.bg_nc, colors.fg_error)
+	colors.fg_nc_warn_50 = CU.blend_colors(0.5, colors.bg_nc, colors.fg_warn)
+	colors.fg_nc_info_50 = CU.blend_colors(0.5, colors.bg_nc, colors.fg_info)
+	colors.fg_nc_diff_add_50 = CU.blend_colors(0.5, colors.bg_nc, colors.fg_diff_add)
+	colors.fg_nc_diff_delete_50 = CU.blend_colors(0.5, colors.bg_nc, colors.fg_diff_delete)
 end
 
 -- setting color groups names
@@ -47,8 +59,9 @@ local function set_color_group_names()
 end
 
 -- setting hightlight group
-local function set_hl_group(color_group, fg, cterm)
-	vim.cmd("hi " .. color_group .. U.cterm(cterm) .. "guifg=#" .. fg .. " guibg=#" .. colors.bg.hex)
+local function set_hl_group(group_name, fg, cterm)
+	local bg = group_name:find("Nc") == nil and colors.bg.hex or colors.bg_nc.hex
+	vim.cmd("hi " .. group_name .. U.cterm(cterm) .. "guifg=#" .. fg .. " guibg=#" .. bg)
 end
 
 -- setting hightlight groups
@@ -64,7 +77,7 @@ local function set_hl_groups()
 end
 
 -- auto commands
-function M.setup_autocmd(group_name, callback)
+function M.setup_autocmd(group_name, cb)
 	set_colors()
 	set_color_group_names()
 	set_hl_groups()
@@ -77,7 +90,7 @@ function M.setup_autocmd(group_name, callback)
 			set_colors()
 			set_color_group_names()
 			set_hl_groups()
-			callback()
+			cb()
 		end,
 		group = group_name,
 	})
