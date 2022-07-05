@@ -40,37 +40,54 @@ end
 ---Get separator
 ---@return string
 function M.separator()
-	return CU.format_group_name(C.color_group_names.fg_20) .. M.space .. S.separator .. M.space .. M.eocg
+	if U.laststatus() == 3 and M.cache.separator ~= "" then
+		return M.cache.separator
+	else
+		return CU.format_group_name(C.color_group_names.fg_20) .. M.space .. S.separator .. M.space .. M.eocg
+	end
 end
 
 ---Get comma
 ---@return string
 function M.comma()
-	return M.highlight_text(",", C.color_group_names.fg_50)
+	if U.laststatus() == 3 and M.cache.comma ~= "" then
+		return M.cache.comma
+	else
+		return M.highlight_text(",", C.color_group_names.fg_50)
+	end
 end
 
 -- buffer modified flag
 function M.buff_mod_flag()
-	return M.space .. "b" .. M.buffer_modified_flag .. M.space
+	if U.laststatus() == 3 and M.cache.buff_mod_flag ~= "" then
+		return M.cache.buff_mod_flag
+	else
+		return M.space .. "b" .. M.buffer_modified_flag .. M.space
+	end
 end
 
 -- buffer number
 function M.buff_nr()
-	local bufnr
-	if U.laststatus() == 3 then
-		bufnr = tostring(vim.api.nvim_get_current_buf())
+	local laststatus = U.laststatus()
+	if laststatus == 3 and M.cache.buff_nr ~= "" then
+		return M.cache.buff_nr
 	else
-		bufnr = U.is_focused() and vim.g.actual_curbuf or tostring(vim.api.nvim_get_current_buf())
+		local bufnr
+		if laststatus == 3 then
+			bufnr = tostring(vim.api.nvim_get_current_buf())
+		else
+			bufnr = U.is_focused() and vim.g.actual_curbuf or tostring(vim.api.nvim_get_current_buf())
+		end
+		local buffer_zeroes, buffer_number = "", ""
+		if S.buffer.max_symbols > #bufnr then
+			buffer_zeroes, buffer_number = U.fill_string(bufnr, S.buffer.symbol, S.buffer.max_symbols - #bufnr)
+		end
+		local zeroes = ""
+		if #buffer_zeroes > 0 then
+			zeroes = M.highlight_text(buffer_zeroes, C.color_group_names.fg_30)
+		end
+		return zeroes .. M.highlight_text(buffer_number, C.color_group_names.fg_bold)
 	end
-	local buffer_zeroes, buffer_number = "", ""
-	if S.buffer.max_symbols > #bufnr then
-		buffer_zeroes, buffer_number = U.fill_string(bufnr, S.buffer.symbol, S.buffer.max_symbols - #bufnr)
-	end
-	local zeroes = ""
-	if #buffer_zeroes > 0 then
-		zeroes = M.highlight_text(buffer_zeroes, C.color_group_names.fg_30)
-	end
-	return zeroes .. M.highlight_text(buffer_number, C.color_group_names.fg_bold)
 end
 
 -- branch and status
@@ -108,17 +125,29 @@ end
 
 -- percentage through file in lines
 function M.ln()
-	return M.highlight_text("↓", C.color_group_names.fg_50) .. M.percentage_in_lines .. M.percent
+	if U.laststatus == 3 and M.cache.ln ~= "" then
+		return M.cache.ln
+	else
+		return M.highlight_text("↓", C.color_group_names.fg_50) .. M.percentage_in_lines .. M.percent
+	end
 end
 
 -- column number
 function M.col()
-	return M.highlight_text("→", C.color_group_names.fg_50) .. M.column_idx
+	if U.laststatus == 3 and M.cache.col ~= "" then
+		return M.cache.col
+	else
+		return M.highlight_text("→", C.color_group_names.fg_50) .. M.column_idx
+	end
 end
 
 -- lines of code
 function M.loc()
-	return M.lines_of_code .. M.highlight_text("LOC", C.color_group_names.fg_50) .. M.space
+	if U.laststatus == 3 and M.cache.loc ~= "" then
+		return M.cache.loc
+	else
+		return M.lines_of_code .. M.highlight_text("LOC", C.color_group_names.fg_50) .. M.space
+	end
 end
 
 -- auto commands

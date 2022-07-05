@@ -12,7 +12,6 @@ local M = {}
 
 -- setting that line
 function M.set_statusline()
-	local laststatus = U.laststatus()
 	local buff_name = vim.api.nvim_buf_get_name(0)
 	local is_nvimtree = buff_name:find("NvimTree") ~= nil
 	local is_packer = buff_name:match("%[%w-%]$")
@@ -28,15 +27,15 @@ function M.set_statusline()
 	elseif is_help then
 		local help = B.highlight_text("Help", C.color_group_names.fg_60_bold)
 		content = {
-			laststatus == 3 and B.cache.buff_mod_flag or B.buff_mod_flag(),
-			laststatus == 3 and B.cache.buff_nr or B.buff_nr(),
-			laststatus == 3 and B.cache.separator or B.separator(),
+			B.buff_mod_flag(),
+			B.buff_nr(),
+			B.separator(),
 			B.spaced_text(help .. B.space .. buff_name:match("[%s%w_]-%.%w-$")),
-			laststatus == 3 and B.cache.separator or B.separator(),
-			laststatus == 3 and B.cache.ln or B.ln(),
-			laststatus == 3 and B.cache.comma or B.comma(),
+			B.separator(),
+			B.ln(),
+			B.comma(),
 			B.space,
-			laststatus == 3 and B.cache.loc or B.loc(),
+			B.loc(),
 		}
 	-- Packer
 	elseif is_packer then
@@ -47,20 +46,20 @@ function M.set_statusline()
 	-- Other
 	else
 		content = {
-			laststatus == 3 and B.cache.buff_mod_flag or B.buff_mod_flag(),
-			laststatus == 3 and B.cache.buff_nr or B.buff_nr(),
-			laststatus == 3 and B.cache.separator or B.separator(),
-			laststatus == 3 and D.cache.diagnostics or D.get_diagnostics(),
-			laststatus == 3 and B.cache.separator or B.separator(),
+			B.buff_mod_flag(),
+			B.buff_nr(),
+			B.separator(),
+			D.get_diagnostics(),
+			B.separator(),
 			B.spaced_text(B.center()),
-			laststatus == 3 and B.cache.separator or B.separator(),
-			laststatus == 3 and B.cache.ln or B.ln(),
-			laststatus == 3 and B.cache.comma or B.comma(),
+			B.separator(),
+			B.ln(),
+			B.comma(),
 			B.space,
-			laststatus == 3 and B.cache.col or B.col(),
-			laststatus == 3 and B.cache.comma or B.comma(),
+			B.col(),
+			B.comma(),
 			B.space,
-			laststatus == 3 and B.cache.loc or B.loc(),
+			B.loc(),
 		}
 	end
 
