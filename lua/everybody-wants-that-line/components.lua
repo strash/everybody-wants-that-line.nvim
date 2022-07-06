@@ -18,9 +18,7 @@ local M = {
 }
 
 M.cache = {
-	separator = "",
 	comma = "",
-	buff_mod_flag = "",
 	ln = "",
 	col = "",
 	loc = "",
@@ -39,11 +37,7 @@ end
 ---Get separator
 ---@return string
 function M.separator()
-	if U.laststatus() == 3 and M.cache.separator ~= "" then
-		return M.cache.separator
-	else
-		return CU.format_group_name(C.color_group_names.fg_20) .. M.space .. S.separator .. M.space .. M.eocg
-	end
+	return CU.format_group_name(C.color_group_names.fg_20) .. M.space .. S.separator .. M.space .. M.eocg
 end
 
 ---Get comma
@@ -52,17 +46,14 @@ function M.comma()
 	if U.laststatus() == 3 and M.cache.comma ~= "" then
 		return M.cache.comma
 	else
-		return M.highlight_text(",", C.color_group_names.fg_50)
+		M.cache.comma = M.highlight_text(",", C.color_group_names.fg_50)
+		return M.cache.comma
 	end
 end
 
 -- buffer modified flag
 function M.buff_mod_flag()
-	if U.laststatus() == 3 and M.cache.buff_mod_flag ~= "" then
-		return M.cache.buff_mod_flag
-	else
-		return M.space .. "b" .. M.buffer_modified_flag .. M.space
-	end
+	return M.space .. S.buffer.prefix .. M.buffer_modified_flag .. M.space
 end
 
 -- buffer number
@@ -123,7 +114,8 @@ function M.ln()
 	if U.laststatus == 3 and M.cache.ln ~= "" then
 		return M.cache.ln
 	else
-		return M.highlight_text("↓", C.color_group_names.fg_50) .. M.percentage_in_lines .. M.percent
+		M.cache.ln = M.highlight_text("↓", C.color_group_names.fg_50) .. M.percentage_in_lines .. M.percent
+		return M.cache.ln
 	end
 end
 
@@ -132,7 +124,8 @@ function M.col()
 	if U.laststatus == 3 and M.cache.col ~= "" then
 		return M.cache.col
 	else
-		return M.highlight_text("→", C.color_group_names.fg_50) .. M.column_idx
+		M.cache.col = M.highlight_text("→", C.color_group_names.fg_50) .. M.column_idx
+		return M.cache.col
 	end
 end
 
@@ -141,28 +134,19 @@ function M.loc()
 	if U.laststatus == 3 and M.cache.loc ~= "" then
 		return M.cache.loc
 	else
-		return M.lines_of_code .. M.highlight_text("LOC", C.color_group_names.fg_50) .. M.space
+		M.cache.loc = M.lines_of_code .. M.highlight_text("LOC", C.color_group_names.fg_50) .. M.space
+		return M.cache.loc
 	end
 end
 
 -- auto commands
 function M.setup_autocmd(group_name, cb)
-	M.cache.buff_mod_flag = M.buff_mod_flag()
-	M.cache.separator = M.separator()
-	M.cache.comma = M.comma()
-	M.cache.ln = M.ln()
-	M.cache.col = M.col()
-	M.cache.loc = M.loc()
-
 	-- buffer modified flag
 	vim.api.nvim_create_autocmd({
 		"BufModifiedSet",
 	}, {
 		pattern = "*",
 		callback = function ()
-			if U.laststatus() == 3 then
-				M.cache.buff_mod_flag = M.buff_mod_flag()
-			end
 			cb()
 		end,
 		group = group_name,

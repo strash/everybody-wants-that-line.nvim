@@ -99,7 +99,7 @@ end
 
 -- setup method
 function M.setup(opts)
-	S:setup(opts)
+	S.setup(opts)
 	callback()
 end
 

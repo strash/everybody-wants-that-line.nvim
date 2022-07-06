@@ -32,10 +32,13 @@ Plug "strash/everybody-wants-that-line.nvim"
 ## Configuration
 These are the defaults.
 ```lua
-local that_line = require("everybody-wants-that-line")
+-- if you ok with defaults
+require("everybody-wants-that-line").setup()
 
-that_line.setup({
+-- if you hate defaults
+require("everybody-wants-that-line").setup({
 	buffer = {
+		prefix = "b",
 		-- symbol before buffer number, e.g. 00011.
 		-- if you don't want additional symbols to be displayed, set "max_symbols" to 0
 		symbol = "0",
