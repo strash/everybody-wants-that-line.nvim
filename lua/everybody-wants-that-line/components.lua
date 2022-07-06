@@ -74,15 +74,15 @@ function M.buff_nr()
 	else
 		bufnr = U.is_focused() and vim.g.actual_curbuf or tostring(vim.api.nvim_get_current_buf())
 	end
-	local buffer_zeroes, buffer_number = "", ""
+	local buffer_zeroes = ""
 	if S.buffer.max_symbols > #bufnr then
-		buffer_zeroes, buffer_number = U.fill_string(bufnr, S.buffer.symbol, S.buffer.max_symbols - #bufnr)
+		buffer_zeroes, bufnr = U.fill_string(bufnr, S.buffer.symbol, S.buffer.max_symbols - #bufnr)
 	end
 	local zeroes = ""
 	if #buffer_zeroes > 0 then
 		zeroes = M.highlight_text(buffer_zeroes, C.color_group_names.fg_30)
 	end
-	return zeroes .. M.highlight_text(buffer_number, C.color_group_names.fg_bold)
+	return zeroes .. M.highlight_text(bufnr, C.color_group_names.fg_bold)
 end
 
 -- branch and status
