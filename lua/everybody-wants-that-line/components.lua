@@ -21,7 +21,6 @@ M.cache = {
 	separator = "",
 	comma = "",
 	buff_mod_flag = "",
-	buff_nr = "",
 	ln = "",
 	col = "",
 	loc = "",
@@ -69,25 +68,21 @@ end
 -- buffer number
 function M.buff_nr()
 	local laststatus = U.laststatus()
-	if laststatus == 3 and M.cache.buff_nr ~= "" then
-		return M.cache.buff_nr
+	local bufnr
+	if laststatus == 3 then
+		bufnr = tostring(vim.api.nvim_get_current_buf())
 	else
-		local bufnr
-		if laststatus == 3 then
-			bufnr = tostring(vim.api.nvim_get_current_buf())
-		else
-			bufnr = U.is_focused() and vim.g.actual_curbuf or tostring(vim.api.nvim_get_current_buf())
-		end
-		local buffer_zeroes, buffer_number = "", ""
-		if S.buffer.max_symbols > #bufnr then
-			buffer_zeroes, buffer_number = U.fill_string(bufnr, S.buffer.symbol, S.buffer.max_symbols - #bufnr)
-		end
-		local zeroes = ""
-		if #buffer_zeroes > 0 then
-			zeroes = M.highlight_text(buffer_zeroes, C.color_group_names.fg_30)
-		end
-		return zeroes .. M.highlight_text(buffer_number, C.color_group_names.fg_bold)
+		bufnr = U.is_focused() and vim.g.actual_curbuf or tostring(vim.api.nvim_get_current_buf())
 	end
+	local buffer_zeroes, buffer_number = "", ""
+	if S.buffer.max_symbols > #bufnr then
+		buffer_zeroes, buffer_number = U.fill_string(bufnr, S.buffer.symbol, S.buffer.max_symbols - #bufnr)
+	end
+	local zeroes = ""
+	if #buffer_zeroes > 0 then
+		zeroes = M.highlight_text(buffer_zeroes, C.color_group_names.fg_30)
+	end
+	return zeroes .. M.highlight_text(buffer_number, C.color_group_names.fg_bold)
 end
 
 -- branch and status
@@ -180,9 +175,6 @@ function M.setup_autocmd(group_name, cb)
 	}, {
 		pattern = "*",
 		callback = function ()
-			if U.laststatus() == 3 then
-				M.cache.buff_nr = M.buff_nr()
-			end
 			cb()
 		end,
 		group = group_name,

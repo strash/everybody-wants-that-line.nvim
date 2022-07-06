@@ -100,6 +100,7 @@ end
 -- setup method
 function M.setup(opts)
 	S:setup(opts)
+	callback()
 end
 
 -- auto commands
