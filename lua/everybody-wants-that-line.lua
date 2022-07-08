@@ -23,7 +23,7 @@ function M.set_statusline()
 			B.separator(),
 			D.get_diagnostics(),
 			B.separator(),
-			B.spaced_text(B.center()),
+			B.center_with_git_status(B.path_to_the_file),
 			B.separator(),
 			B.ln(),
 			B.comma(),
@@ -73,10 +73,15 @@ function M.set_statusline()
 		content = {
 			B.spaced_text("Packer")
 		}
+	-- NEOGIT
+	elseif wintype == U.wintype.NEOGIT then
+		content = {
+			B.center_with_git_status("Neogit")
+		}
 	-- FUGITIVE
 	elseif wintype == U.wintype.FUGITIVE then
 		content = {
-			B.spaced_text(B.fugitive())
+			B.center_with_git_status("Fugitive")
 		}
 	-- TELESCOPE
 	elseif wintype == U.wintype.TELESCOPE then

@@ -100,13 +100,13 @@ function M.branch_and_status()
 end
 
 -- center
-function M.center()
-	return M.branch_and_status() .. M.path_to_the_file
+function M.center_with_git_status(text)
+	return M.spaced_text(M.branch_and_status() .. text)
 end
 
 -- Fugitive
-function M.fugitive()
-	return M.branch_and_status() .. "Fugitive"
+function M.git_status(plugin_name)
+	return M.branch_and_status() .. plugin_name
 end
 
 -- percentage through file in lines

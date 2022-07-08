@@ -61,6 +61,24 @@ function M.setup_autocmd(group_name, cb)
 		group = group_name,
 	})
 
+	vim.api.nvim_create_autocmd('User', {
+		pattern = 'NeogitCommitComplete',
+		group = group_name,
+		callback = function()
+			M.cache.diff_info = get_diff_info()
+			cb()
+		end,
+	})
+
+	vim.api.nvim_create_autocmd('User', {
+		pattern = 'NeogitPushComplete',
+		group = group_name,
+		callback = function()
+			M.cache.diff_info = get_diff_info()
+			cb()
+		end,
+	})
+
 	-- both
 	vim.api.nvim_create_autocmd({
 		"VimEnter",

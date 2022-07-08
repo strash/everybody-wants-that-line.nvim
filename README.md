@@ -15,9 +15,14 @@ Minimalistic, informative and elegant statusline for neovim.
 - Current git branch and git status (additions and deletions throughout current project)
 - Current filename
 - Clean ruler
+- Global statusline or in each window
 - Support for Quickfix List, Location List, Help
-- Support for Telescope, Packer, Fugitive, NvimTree
-- Support for global and multiple StatusLines
+- Plugins:
+	- Telescope,
+	- Neogit,
+	- Fugitive,
+	- NvimTree
+	- Packer,
 
 ## Installation
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)

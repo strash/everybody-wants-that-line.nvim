@@ -10,8 +10,9 @@ M.wintype = {
 	HELP = 5,
 	NVIMTREE = 6,
 	PACKER = 7,
-	FUGITIVE = 8,
-	TELESCOPE = 9,
+	NEOGIT = 8,
+	FUGITIVE = 9,
+	TELESCOPE = 10,
 }
 
 ---Returns filled string with value n times and original value
@@ -126,6 +127,7 @@ end
 --- - `HELP`,
 --- - `NVIMTREE`,
 --- - `PACKER`,
+--- - `NEOGIT`,
 --- - `FUGITIVE`,
 --- - `TELESCOPE`,
 ---@return integer enum 
@@ -139,6 +141,8 @@ function M.get_wintype()
 				return M.wintype.NVIMTREE
 			elseif buff_name:find("%[packer%]") ~= nil then
 				return M.wintype.PACKER
+			elseif buff_name:find("Neogit") then
+				return M.wintype.NEOGIT
 			else
 				return M.wintype.UNKNOWN
 			end
