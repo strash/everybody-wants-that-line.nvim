@@ -24,6 +24,8 @@ function M.set_statusline()
 			D.get_diagnostics(),
 			B.separator(),
 			B.center_with_git_status(B.path_to_the_file),
+			B.space,
+			B.file_size(),
 			B.separator(),
 			B.ln(),
 			B.comma(),

@@ -63,10 +63,25 @@ end
 ---@param v integer
 ---@param min integer
 ---@param max integer
----@return any
+---@return number
 function M.wrapi(v, min, max)
 	local range = max - min
 	return range == 0 and min or min + ((((v - min) % range) + range) % range)
+end
+
+---Returns file size
+---@return table `{ size: number, "B"/"KB"/"MB" }`
+function M.fsize()
+	local size = vim.fn.getfsize(vim.api.nvim_buf_get_name(0))
+	-- bytes
+	if size <= 1024 then
+		return { size, "B" }
+	-- kilobytes
+	elseif size > 1024 and size <= 1048576 then
+		return { M.round(size * 2^-10 * 100) / 100, "KB" }
+	end
+	-- megabytes
+	return { M.round(size * 2^-20 * 100) / 100, "MB" }
 end
 
 ---Check if a value exist in an enumerated table
@@ -109,7 +124,7 @@ end
 ---Check if statusline on focused window
 ---@return boolean
 function M.is_focused()
-  return tonumber(vim.g.actual_curwin) == vim.api.nvim_get_current_win()
+	return tonumber(vim.g.actual_curwin) == vim.api.nvim_get_current_win()
 end
 
 ---Get laststatus
@@ -130,7 +145,7 @@ end
 --- - `NEOGIT`,
 --- - `FUGITIVE`,
 --- - `TELESCOPE`,
----@return integer enum 
+---@return integer enum
 function M.get_wintype()
 	local buff_name = vim.api.nvim_buf_get_name(0)
 	local wintype = vim.fn.win_gettype() -- empty (normal or NvimTree), loclist, popup, preview, quickfix, unknown
