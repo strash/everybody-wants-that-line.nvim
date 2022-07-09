@@ -15,6 +15,7 @@ local M = {
 	percentage_in_lines = "%p",
 	column_idx = "%c",
 	lines_of_code = "%L",
+	truncate = "%<",
 }
 
 M.cache = {
@@ -99,15 +100,15 @@ function M.branch_and_status()
 	})
 end
 
+-- center
+function M.center_with_git_status(text)
+	return M.spaced_text(M.branch_and_status() .. M.truncate .. text)
+end
+
 -- file size
 function M.file_size()
 	local size = U.fsize()
 	return size[1] .. M.highlight_text(size[2], C.color_group_names.fg_50)
-end
-
--- center
-function M.center_with_git_status(text)
-	return M.spaced_text(M.branch_and_status() .. text)
 end
 
 -- percentage through file in lines
