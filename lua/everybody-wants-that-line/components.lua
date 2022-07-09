@@ -81,7 +81,7 @@ function M.branch_and_status()
 	local insertions = G.cache.diff_info.insertions
 	local deletions = G.cache.diff_info.deletions
 	if #G.cache.branch == 0 then
-		return M.file_path()
+		return ""
 	end
 	if #insertions > 0 then
 		insertions = M.highlight_text(insertions, C.color_group_names.fg_diff_add_bold)
