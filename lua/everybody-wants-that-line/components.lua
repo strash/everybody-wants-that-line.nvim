@@ -120,7 +120,7 @@ function M.file_path()
 	local relative = vim.fn.bufname()
 	---@type string
 	local fullpath = vim.api.nvim_buf_get_name(0)
-	if #relative == 0 or fullpath == 0 then
+	if #relative == 0 or #fullpath == 0 then
 		return "[No name]"
 	end
 	local tail = fullpath:match("[^/]+$")
