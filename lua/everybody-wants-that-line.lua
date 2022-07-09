@@ -7,8 +7,6 @@ local U = require("everybody-wants-that-line.util")
 
 local M = {}
 
--- TODO: add options to filename format
-
 -- setting that line
 function M.set_statusline()
 	local wintype = U.get_wintype()
@@ -16,14 +14,14 @@ function M.set_statusline()
 	local content
 
 	-- NORMAL
-	if wintype == U.wintype.NORMAL then
+	if wintype == "normal" then
 		content = {
 			B.buff_mod_flag(),
 			B.buff_nr(),
 			B.separator(),
 			D.get_diagnostics(),
 			B.separator(),
-			B.center_with_git_status(B.path_to_the_file),
+			B.center_with_git_status(B.file_path()),
 			B.space,
 			B.file_size(),
 			B.separator(),
@@ -36,22 +34,22 @@ function M.set_statusline()
 			B.loc(),
 		}
 	-- LOCLIST
-	elseif wintype == U.wintype.LOCLIST then
+	elseif wintype == "loclist" then
 		content = {
 			B.spaced_text("Location List"),
 		}
 	-- QUICKFIX
-	elseif wintype == U.wintype.QUICKFIX then
+	elseif wintype == "quickfix" then
 		content = {
 			B.spaced_text("Quickfix List"),
 		}
 	-- PREVIEW
-	elseif wintype == U.wintype.PREVIEW then
+	elseif wintype == "preview" then
 		content = {
 			B.spaced_text("Preview"),
 		}
 	-- HELP
-	elseif wintype == U.wintype.HELP then
+	elseif wintype == "help" then
 		local help = B.highlight_text("Help", C.color_group_names.fg_60_bold)
 		local buff_name = vim.api.nvim_buf_get_name(0)
 		content = {
@@ -66,32 +64,32 @@ function M.set_statusline()
 			B.loc(),
 		}
 	-- NVIMTREE
-	elseif wintype == U.wintype.NVIMTREE then
+	elseif wintype == "nvimtree" then
 		content = {
 			B.spaced_text("NvimTree"),
 		}
 	-- PACKER
-	elseif wintype == U.wintype.PACKER then
+	elseif wintype == "packer" then
 		content = {
 			B.spaced_text("Packer")
 		}
 	-- NEOGIT
-	elseif wintype == U.wintype.NEOGIT then
+	elseif wintype == "neogit" then
 		content = {
 			B.center_with_git_status("Neogit")
 		}
 	-- FUGITIVE
-	elseif wintype == U.wintype.FUGITIVE then
+	elseif wintype == "fugitive" then
 		content = {
 			B.center_with_git_status("Fugitive")
 		}
 	-- TELESCOPE
-	elseif wintype == U.wintype.TELESCOPE then
+	elseif wintype == "telescope" then
 		content = {
 			B.spaced_text("Telescope")
 		}
 	-- UNKNOWN
-	elseif wintype == U.wintype.UNKNOWN then
+	elseif wintype == "unknown" then
 		content = {
 			B.spaced_text([[¯\_(ツ)_/¯]])
 		}

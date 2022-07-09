@@ -11,7 +11,6 @@ local M = {
 	eocg = "%*",
 	percent = "%%",
 	buffer_modified_flag = "%M",
-	path_to_the_file = "%f",
 	percentage_in_lines = "%p",
 	column_idx = "%c",
 	lines_of_code = "%L",
@@ -38,7 +37,7 @@ end
 ---Get separator
 ---@return string
 function M.separator()
-	return CU.format_group_name(C.color_group_names.fg_20) .. M.space .. S.separator .. M.space .. M.eocg
+	return CU.format_group_name(C.color_group_names.fg_20) .. M.space .. S.opt.separator .. M.space .. M.eocg
 end
 
 ---Get comma
@@ -54,7 +53,7 @@ end
 
 -- buffer modified flag
 function M.buff_mod_flag()
-	return M.space .. S.buffer.prefix .. M.buffer_modified_flag .. M.space
+	return M.space .. S.opt.buffer.prefix .. M.buffer_modified_flag .. M.space
 end
 
 -- buffer number
@@ -67,8 +66,8 @@ function M.buff_nr()
 		bufnr = U.is_focused() and vim.g.actual_curbuf or tostring(vim.api.nvim_get_current_buf())
 	end
 	local buffer_zeroes = ""
-	if S.buffer.max_symbols > #bufnr then
-		buffer_zeroes, bufnr = U.fill_string(bufnr, S.buffer.symbol, S.buffer.max_symbols - #bufnr)
+	if S.opt.buffer.max_symbols > #bufnr then
+		buffer_zeroes, bufnr = U.fill_string(bufnr, S.opt.buffer.symbol, S.opt.buffer.max_symbols - #bufnr)
 	end
 	local zeroes = ""
 	if #buffer_zeroes > 0 then
@@ -82,7 +81,7 @@ function M.branch_and_status()
 	local insertions = G.cache.diff_info.insertions
 	local deletions = G.cache.diff_info.deletions
 	if #G.cache.branch == 0 then
-		return M.path_to_the_file
+		return M.file_path()
 	end
 	if #insertions > 0 then
 		insertions = M.highlight_text(insertions, C.color_group_names.fg_diff_add_bold)
@@ -98,6 +97,41 @@ function M.branch_and_status()
 		insertions,
 		deletions,
 	})
+end
+
+---Returns highlighted path
+---@param path string
+---@param tail string
+---@return string
+local function highlight_path(path, tail)
+	local before_tail = path:sub(0, #path - #tail)
+	before_tail = S.opt.filepath.shorten and vim.fn.pathshorten(before_tail) or before_tail
+	local final = table.concat({
+		M.highlight_text(before_tail, C.color_group_names.fg_60),
+		M.highlight_text(tail, C.color_group_names.fg_bold),
+	})
+	return final
+end
+
+-- path to the file
+function M.file_path()
+	local path = ""
+	---@type string
+	local relative = vim.fn.bufname()
+	---@type string
+	local fullpath = vim.api.nvim_buf_get_name(0)
+	if #relative == 0 or fullpath == 0 then
+		return "[No name]"
+	end
+	local tail = fullpath:match("[^/]+$")
+	if S.opt.filepath.path == "tail" then
+		path = M.highlight_text(tail, C.color_group_names.fg_bold)
+	elseif S.opt.filepath.path == "relative" then
+		path = highlight_path(relative, tail)
+	else
+		path = highlight_path(fullpath, tail)
+	end
+	return path
 end
 
 -- center

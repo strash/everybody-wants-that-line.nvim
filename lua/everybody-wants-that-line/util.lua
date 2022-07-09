@@ -1,19 +1,6 @@
 local M = {}
 
 M.prefix = "EverybodyWantsThatLine"
-M.wintype = {
-	UNKNOWN = 0,
-	NORMAL = 1,
-	LOCLIST = 2,
-	QUICKFIX = 3,
-	PREVIEW = 4,
-	HELP = 5,
-	NVIMTREE = 6,
-	PACKER = 7,
-	NEOGIT = 8,
-	FUGITIVE = 9,
-	TELESCOPE = 10,
-}
 
 ---Returns filled string with value n times and original value
 ---Example:
@@ -133,19 +120,21 @@ function M.laststatus()
 	return vim.o.laststatus
 end
 
----Returns window type:
---- - `UNKNOWN`
---- - `NORMAL`,
---- - `LOCLIST`,
---- - `QUICKFIX`,
---- - `PREVIEW`,
---- - `HELP`,
---- - `NVIMTREE`,
---- - `PACKER`,
---- - `NEOGIT`,
---- - `FUGITIVE`,
---- - `TELESCOPE`,
----@return integer enum
+---@alias wintype
+---| "unknown"
+---| "normal",
+---| "loclist",
+---| "quickfix",
+---| "preview",
+---| "help",
+---| "nvimtree",
+---| "packer",
+---| "neogit",
+---| "fugitive",
+---| "telescope",
+
+---Returns window type
+---@return wintype enum
 function M.get_wintype()
 	local buff_name = vim.api.nvim_buf_get_name(0)
 	local wintype = vim.fn.win_gettype() -- empty (normal or NvimTree), loclist, popup, preview, quickfix, unknown
@@ -153,31 +142,31 @@ function M.get_wintype()
 	if wintype == "" then
 		if wintype == "" and buftype == "nofile" then
 			if buff_name:find("NvimTree_1$") ~= nil then
-				return M.wintype.NVIMTREE
+				return "nvimtree"
 			elseif buff_name:find("%[packer%]") ~= nil then
-				return M.wintype.PACKER
+				return "packer"
 			elseif buff_name:find("Neogit") then
-				return M.wintype.NEOGIT
+				return "neogit"
 			else
-				return M.wintype.UNKNOWN
+				return "unknown"
 			end
 		elseif buftype == "nowrite" and buff_name:find(".git/index$") ~= nil then
-			return M.wintype.FUGITIVE
+			return "fugitive"
 		elseif buftype == "help" then
-			return M.wintype.HELP
+			return "help"
 		elseif buftype ~= "nofile" and buff_name:find("NvimTree_1$") == nil then
-			return M.wintype.NORMAL
+			return "normal"
 		end
 	elseif wintype == "popup" and buftype == "prompt" then
-		return M.wintype.TELESCOPE
+		return "telescope"
 	elseif wintype == "loclist" then
-		return M.wintype.LOCLIST
+		return "loclist"
 	elseif wintype == "quickfix" then
-		return M.wintype.QUICKFIX
+		return "quickfix"
 	elseif wintype == "preview" then
-		return M.wintype.PREVIEW
+		return "preview"
 	end
-	return M.wintype.UNKNOWN
+	return "unknown"
 end
 
 return M

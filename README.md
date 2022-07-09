@@ -44,16 +44,24 @@ require("everybody-wants-that-line").setup()
 require("everybody-wants-that-line").setup({
 	buffer = {
 		prefix = "b",
-		-- symbol before buffer number, e.g. 00011.
-		-- if you don't want additional symbols to be displayed, set "max_symbols" to 0
+		-- Symbol before buffer number, e.g. "0000.".
+		-- If you don't want additional symbols to be displayed, set `max_symbols` to `0`.
 		symbol = "0",
-		-- maximum number of symbols including buffer number
+		-- Maximum number of symbols including buffer number.
 		max_symbols = 5,
 	},
-	-- a separator between blocks,
-	-- e.g. ` b+ 00001 │ 0, 0, 0 │ main README.md │ ↓87%, →58, 47LOC `
+	filepath = {
+		-- `path` can be one of these:
+		-- "tail" - file name only
+		-- "relative" - relative to working directory
+		-- "full" - full path to the file
+		path = "relative",
+		-- If `true` the path will be shortened, e.g. "/a/b/c/filename.lua".
+		-- It only works if `path` is "relative" or "full".
+		shorten = false,
+	},
+	-- Separator between blocks, e.g. " ... │ ... │ ... "
 	separator = "│",
-
 })
 ```
 
