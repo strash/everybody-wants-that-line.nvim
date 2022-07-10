@@ -2,13 +2,14 @@ local M = {}
 
 M.cache = {
 	branch = "",
-	diff_info = {
-		insertions = "",
-		deletions = "",
-	},
+	---`{ "0", "0" }` where the first string is __insertions__
+	---and the second one is __deletions__.
+	---@type string[]
+	diff_info = {},
 }
 
--- getting branch name
+---Returns branch name
+---@return string
 local function get_git_branch()
 	local branch = ""
 	if vim.fn.isdirectory(".git") ~= 0 then
@@ -17,7 +18,10 @@ local function get_git_branch()
 	return branch
 end
 
--- getting diff info numbers
+---Returns diff info.
+---`{ "0", "0" }` where the first string is __insertions__
+---and the second one is __deletions__.
+---@return string[]
 local function get_diff_info()
 	local insertions = ""
 	local deletions = ""
@@ -31,10 +35,12 @@ local function get_diff_info()
 			end
 		end
 	end
-	return { insertions = insertions, deletions = deletions }
+	return { insertions, deletions }
 end
 
--- auto commands
+---Set auto commands
+---@param group_name string
+---@param cb function
 function M.setup_autocmd(group_name, cb)
 	-- branch name
 	vim.api.nvim_create_autocmd({
@@ -61,6 +67,7 @@ function M.setup_autocmd(group_name, cb)
 		group = group_name,
 	})
 
+	-- neogit commit complete
 	vim.api.nvim_create_autocmd('User', {
 		pattern = 'NeogitCommitComplete',
 		group = group_name,
@@ -70,6 +77,7 @@ function M.setup_autocmd(group_name, cb)
 		end,
 	})
 
+	-- neogit push complete
 	vim.api.nvim_create_autocmd('User', {
 		pattern = 'NeogitPushComplete',
 		group = group_name,

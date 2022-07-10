@@ -7,6 +7,9 @@ local U = require("everybody-wants-that-line.util")
 
 local M = {}
 
+-- TODO: add SI metrics to file_size and fix binary metrics (KB -> KiB)
+-- TODO: details in quickfix and loclist
+
 -- setting that line
 function M.set_statusline()
 	local wintype = U.get_wintype()
@@ -16,21 +19,21 @@ function M.set_statusline()
 	-- NORMAL
 	if wintype == "normal" then
 		content = {
-			B.buff_mod_flag(),
+			B.bufmod_flag(),
 			B.buff_nr(),
 			B.separator(),
-			D.get_diagnostics(),
+			B.get_diagnostics(),
 			B.separator(),
 			B.center_with_git_status(B.file_path()),
-			B.space,
+			B.space(),
 			B.file_size(),
 			B.separator(),
 			B.ln(),
 			B.comma(),
-			B.space,
+			B.space(),
 			B.col(),
 			B.comma(),
-			B.space,
+			B.space(),
 			B.loc(),
 		}
 	-- LOCLIST
@@ -50,17 +53,17 @@ function M.set_statusline()
 		}
 	-- HELP
 	elseif wintype == "help" then
-		local help = B.highlight_text("Help", C.color_group_names.fg_60_bold)
+		local help = B.highlight_text("Help", C.group_names.fg_60_bold)
 		local buff_name = vim.api.nvim_buf_get_name(0)
 		content = {
-			B.buff_mod_flag(),
+			B.bufmod_flag(),
 			B.buff_nr(),
 			B.separator(),
-			B.spaced_text(help .. B.space .. buff_name:match("[%s%w_]-%.%w-$")),
+			B.spaced_text(help .. B.space() .. buff_name:match("[%s%w_]-%.%w-$")),
 			B.separator(),
 			B.ln(),
 			B.comma(),
-			B.space,
+			B.space(),
 			B.loc(),
 		}
 	-- NVIMTREE
@@ -102,13 +105,15 @@ local function callback()
 	vim.cmd([[set stl=%{%v:lua.require('everybody-wants-that-line').set_statusline()%}]])
 end
 
--- setup method
+---Setup that line
+---@param opts opts
 function M.setup(opts)
 	S.setup(opts)
 	callback()
 end
 
--- auto commands
+---Auto commands
+---@type string
 local autocmd_group = vim.api.nvim_create_augroup(U.prefix .. "Group", {
 	clear = true,
 })

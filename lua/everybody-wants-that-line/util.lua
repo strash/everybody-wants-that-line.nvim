@@ -2,21 +2,6 @@ local M = {}
 
 M.prefix = "EverybodyWantsThatLine"
 
----Returns filled string with value n times and original value
----Example:
----<pre>
----fill_string("1", "0", 4)
----returns "00001", "1"
----</pre>
----@param s string what to fill
----@param v string value fill with
----@param n integer n times
----@return string \ filled value
----@return string \ original value
-function M.fill_string(s, v, n)
-	return string.rep(v, n), s
-end
-
 ---Returns linearly interpolated number
 ---@param v number from 0.0 to 1.0
 ---@param a number
@@ -57,7 +42,7 @@ function M.wrapi(v, min, max)
 end
 
 ---Returns file size
----@return table `{ size: number, "B"/"KB"/"MB" }`
+---@return table `{ 12.34, "B"/"KB"/"MB" }`
 function M.fsize()
 	local size = vim.fn.getfsize(vim.api.nvim_buf_get_name(0))
 	-- bytes
@@ -86,18 +71,20 @@ function M.is_value_exist(t, v)
 	return is_value_exist
 end
 
----Get cterm for a highlight group
----@param v string e.g. 'bold'
+---@alias cterm ""|"bold"
+
+---Returns cterm for a highlight group
+---@param v cterm e.g. 'bold'
 ---@return string
 function M.cterm(v)
 	local c = " "
-	if v ~= nil and type(v) == "string" and #v > 0 then
+	if #v > 0 then
 		c = " cterm=" .. v .. " gui=" .. v .. " "
 	end
 	return c
 end
 
----Format string to PascalCase
+---Returns string in PascalCase
 ---@param s string
 ---@return string
 function M.pascalcase(s)
@@ -114,7 +101,7 @@ function M.is_focused()
 	return tonumber(vim.g.actual_curwin) == vim.api.nvim_get_current_win()
 end
 
----Get laststatus
+---Returns `laststatus`
 ---@return number
 function M.laststatus()
 	return vim.o.laststatus
