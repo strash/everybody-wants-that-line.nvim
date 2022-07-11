@@ -7,14 +7,17 @@ local M = {}
 ---| "relative" # Relative to working directory
 ---| "full" # Full path to the file
 ---@alias filepath_shorten boolean If `true` the path will be shortened, e.g. "/a/b/c/filename.lua". It only works if `path` is "relative" or "full".
+---@alias filesize_metric "decimal"|"binary"
 
 ---@alias opts_buffer { prefix: string, symbol: buffer_symbol, max_symbols: buffer_max_symbols }
 ---@alias opts_filepath { path: filepath_path, shorten: filepath_shorten }
+---@alias opts_filesize { metric: filesize_metric }
 
 ---@class opts
 ---@field buffer opts_buffer
 ---@field filepath opts_filepath
 ---@field separator string
+---@field filesize opts_filesize
 
 ---@type opts
 M.opt = {
@@ -26,6 +29,9 @@ M.opt = {
 	filepath = {
 		path = "relative",
 		shorten = false,
+	},
+	filesize = {
+		metric = "decimal"
 	},
 	separator = "│",
 }

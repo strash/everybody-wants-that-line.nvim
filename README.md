@@ -60,6 +60,12 @@ require("everybody-wants-that-line").setup({
 		-- It only works if `path` is "relative" or "full".
 		shorten = false,
 	},
+	filesize = {
+		-- `metric` can be:
+		-- "decimal" - 1000 bytes == 1 kibibyte
+		-- "binary" - 1024 bytes == 1 kilobyte
+		metric = "decimal"
+	},
 	-- Separator between blocks, e.g. " ... │ ... │ ... "
 	separator = "│",
 })

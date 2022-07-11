@@ -7,8 +7,8 @@ local U = require("everybody-wants-that-line.util")
 
 local M = {}
 
--- TODO: add SI metrics to file_size and fix binary metrics (KB -> KiB)
 -- TODO: details in quickfix and loclist
+-- TODO: update screenshots
 
 -- setting that line
 function M.set_statusline()
