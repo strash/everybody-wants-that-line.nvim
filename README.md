@@ -62,8 +62,8 @@ require("everybody-wants-that-line").setup({
 	},
 	filesize = {
 		-- `metric` can be:
-		-- "decimal" - 1000 bytes == 1 kibibyte
-		-- "binary" - 1024 bytes == 1 kilobyte
+		-- "decimal" - 1000 bytes == 1 kilobyte
+		-- "binary" - 1024 bytes == 1 kibibyte
 		metric = "decimal"
 	},
 	-- Separator between blocks, e.g. " ... │ ... │ ... "
