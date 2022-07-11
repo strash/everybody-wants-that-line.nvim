@@ -41,8 +41,8 @@ function M.wrapi(v, min, max)
 	return range == 0 and min or min + ((((v - min) % range) + range) % range)
 end
 
----Returns file size
----@return table `{ 12.34, "B"/"KB"/"MB" }`
+---Returns decimal file size
+---@return number|string[] `{ 1000, "B"|"KB"|"MB" }`
 function M.si_fsize()
 	local size = vim.fn.getfsize(vim.api.nvim_buf_get_name(0))
 	-- bytes
@@ -56,9 +56,9 @@ function M.si_fsize()
 	return { M.round(size * 10^-6 * 100) / 100, "MB" }
 end
 
----Returns file size
----@return table `{ 12.34, "B"/"KiB"/"MiB" }`
-function M.binary_fsize()
+---Returns binary file size
+---@return number|string[] `{ 1024, "B"|"KiB"|"MiB" }`
+function M.bi_fsize()
 	local size = vim.fn.getfsize(vim.api.nvim_buf_get_name(0))
 	-- bytes
 	if size <= 1024 then

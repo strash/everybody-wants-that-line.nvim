@@ -210,7 +210,7 @@ end
 ---Returns file size
 ---@return string
 function M.file_size()
-	local size = S.opt.filesize.metric == "decimal" and U.si_fsize() or U.binary_fsize()
+	local size = S.opt.filesize.metric == "decimal" and U.si_fsize() or U.bi_fsize()
 	return size[1] .. M.highlight_text(size[2], C.group_names.fg_50)
 end
 
