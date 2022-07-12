@@ -1,5 +1,4 @@
-lint:
-	@printf "\nRunning luacheck\n"
-	luacheck lua/**/*.lua
+.PHONY: lint
+lint: $(wildcard lua/*.lua lua/**/*.lua)
+	luacheck $?
 
-.PHONY: test lint
