@@ -45,6 +45,7 @@ end
 ---@return number|string[] `{ 1000, "B"|"KB"|"MB" }`
 function M.si_fsize()
 	local size = vim.fn.getfsize(vim.api.nvim_buf_get_name(0))
+	size = size > 0 and size or 0
 	-- bytes
 	if size <= 1000 then
 		return { size, "B" }
@@ -60,6 +61,7 @@ end
 ---@return number|string[] `{ 1024, "B"|"KiB"|"MiB" }`
 function M.bi_fsize()
 	local size = vim.fn.getfsize(vim.api.nvim_buf_get_name(0))
+	size = size > 0 and size or 0
 	-- bytes
 	if size <= 1024 then
 		return { size, "B" }
