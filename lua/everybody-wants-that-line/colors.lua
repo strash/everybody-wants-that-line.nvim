@@ -1,5 +1,5 @@
-local CU = require("everybody-wants-that-line.color-util")
-local U = require("everybody-wants-that-line.util")
+local CU = require("everybody-wants-that-line.utils.color-util")
+local U = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 

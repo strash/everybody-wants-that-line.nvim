@@ -1,4 +1,4 @@
-local U = require("everybody-wants-that-line.util")
+local U = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 

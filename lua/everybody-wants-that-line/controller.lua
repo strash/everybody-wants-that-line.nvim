@@ -1,9 +1,10 @@
 local C = require("everybody-wants-that-line.colors")
-local CU = require("everybody-wants-that-line.color-util")
-local D = require("everybody-wants-that-line.diagnostics")
 local S = require("everybody-wants-that-line.settings")
-local G = require("everybody-wants-that-line.git")
-local U = require("everybody-wants-that-line.util")
+local CG = require("everybody-wants-that-line.components.git")
+local CD = require("everybody-wants-that-line.components.diagnostics")
+local CQ = require("everybody-wants-that-line.components.qflist")
+local UC = require("everybody-wants-that-line.utils.color-util")
+local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
@@ -12,7 +13,6 @@ local M = {}
 local el = {
 	spacer = "%=",
 	space = " ",
-	eocg = "%*",
 	percent = "%%",
 	bufmod_flag = "%M",
 	percentage_in_lines = "%p",
@@ -32,14 +32,6 @@ local cache = {
 	loc = "",
 }
 
----Returns highlighted text
----@param text string
----@param group_name string
----@return string
-function M.highlight_text(text, group_name)
-	return CU.format_group_name(group_name) .. text .. el.eocg
-end
-
 ---Returns `text` with spacers on each side
 ---@param text string
 ---@return string
@@ -56,10 +48,10 @@ end
 ---Returns separator
 ---@return string
 function M.separator()
-	if U.laststatus() == 3 and cache.separator ~= "" then
+	if UU.laststatus() == 3 and cache.separator ~= "" then
 		return cache.separator
 	else
-		cache.separator = CU.format_group_name(C.group_names.fg_20) .. el.space .. S.opt.separator .. el.space .. el.eocg
+		cache.separator = UC.highlight_text(el.space .. S.opt.separator .. el.space, C.group_names.fg_20)
 		return cache.separator
 	end
 end
@@ -67,10 +59,10 @@ end
 ---Returns comma
 ---@return string
 function M.comma()
-	if U.laststatus() == 3 and cache.comma ~= "" then
+	if UU.laststatus() == 3 and cache.comma ~= "" then
 		return cache.comma
 	else
-		cache.comma = M.highlight_text(",", C.group_names.fg_50)
+		cache.comma = UC.highlight_text(",", C.group_names.fg_50)
 		return cache.comma
 	end
 end
@@ -78,7 +70,7 @@ end
 ---Returns buffer modified flag
 ---@return string
 function M.bufmod_flag()
-	if U.laststatus() == 3 and cache.bufmod_flag ~= "" then
+	if UU.laststatus() == 3 and cache.bufmod_flag ~= "" then
 		return cache.bufmod_flag
 	else
 		cache.bufmod_flag = el.space .. S.opt.buffer.prefix .. el.bufmod_flag .. el.space
@@ -89,19 +81,19 @@ end
 ---Returns buffer number
 ---@return string
 function M.buff_nr()
-	local laststatus = U.laststatus()
+	local laststatus = UU.laststatus()
 	local bufnr
 	if laststatus == 3 then
 		bufnr = tostring(vim.api.nvim_get_current_buf())
 	else
-		bufnr = U.is_focused() and vim.g.actual_curbuf or tostring(vim.api.nvim_get_current_buf())
+		bufnr = UU.is_focused() and vim.g.actual_curbuf or tostring(vim.api.nvim_get_current_buf())
 	end
 	local buffer_zeroes = ""
 	if S.opt.buffer.max_symbols > #bufnr then
 		buffer_zeroes = string.rep(S.opt.buffer.symbol, S.opt.buffer.max_symbols - #bufnr)
 	end
-	buffer_zeroes = #buffer_zeroes > 0 and M.highlight_text(buffer_zeroes, C.group_names.fg_30) or ""
-	return buffer_zeroes .. M.highlight_text(bufnr, C.group_names.fg_bold)
+	buffer_zeroes = #buffer_zeroes > 0 and UC.highlight_text(buffer_zeroes, C.group_names.fg_30) or ""
+	return buffer_zeroes .. UC.highlight_text(bufnr, C.group_names.fg_bold)
 end
 
 ---comment
@@ -112,17 +104,16 @@ end
 ---@return string
 local function highlight_diagnostic(diagnostic_object, count_group_name, arrow_group_name, lnum_group_name)
 	return table.concat({
-		M.highlight_text(tostring(diagnostic_object.count), count_group_name),
-		--el.space,
-		M.highlight_text("↓", arrow_group_name),
-		M.highlight_text(tostring(diagnostic_object.first_lnum), lnum_group_name)
+		UC.highlight_text(tostring(diagnostic_object.count), count_group_name),
+		UC.highlight_text("↓", arrow_group_name),
+		UC.highlight_text(tostring(diagnostic_object.first_lnum), lnum_group_name)
 	})
 end
 
 ---Returns diagnostics
 ---@return string
 function M.get_diagnostics()
-	local diagnostics = D.get_diagnostics()
+	local diagnostics = CD.get_diagnostics()
 	local err, warn, hint, info = "0", "0", "0", "0"
 	if diagnostics.error.count > 0 then
 		err = highlight_diagnostic(diagnostics.error, C.group_names.fg_error_bold, C.group_names.fg_error_50, C.group_names.fg_error)
@@ -143,39 +134,33 @@ end
 ---Returns branch and status
 ---@return string
 function M.branch_and_status()
-	local insertions = G.cache.diff_info[1]
-	local deletions = G.cache.diff_info[2]
-	if #G.cache.branch == 0 then
+	local insertions = CG.cache.diff_info[1]
+	local deletions = CG.cache.diff_info[2]
+	if #CG.cache.branch == 0 then
 		return ""
 	end
 	if #insertions > 0 then
-		insertions = M.highlight_text(insertions, C.group_names.fg_diff_add_bold)
-		insertions = insertions .. M.highlight_text("+", C.group_names.fg_diff_add_50) .. el.space
+		insertions = UC.highlight_text(insertions, C.group_names.fg_diff_add_bold)
+		insertions = insertions .. UC.highlight_text("+", C.group_names.fg_diff_add_50) .. el.space
 	end
 	if #deletions > 0 then
-		deletions = M.highlight_text(deletions, C.group_names.fg_diff_delete_bold)
-		deletions = deletions .. M.highlight_text("-", C.group_names.fg_diff_delete_50) .. el.space
+		deletions = UC.highlight_text(deletions, C.group_names.fg_diff_delete_bold)
+		deletions = deletions .. UC.highlight_text("-", C.group_names.fg_diff_delete_50) .. el.space
 	end
 	return table.concat({
-		M.highlight_text(G.cache.branch, C.group_names.fg_60_bold),
+		UC.highlight_text(CG.cache.branch, C.group_names.fg_60_bold),
 		el.space,
 		insertions,
 		deletions,
 	})
 end
 
----Returns highlighted path
----@param path string
----@param tail string
+---Returns quickfix list
 ---@return string
-local function highlight_path(path, tail)
-	local before_tail = path:sub(0, #path - #tail)
-	before_tail = S.opt.filepath.shorten and vim.fn.pathshorten(before_tail) or before_tail
-	local final = table.concat({
-		M.highlight_text(before_tail, C.group_names.fg_60),
-		M.highlight_text(tail, C.group_names.fg_bold),
-	})
-	return final
+function M.quickfix()
+	local error_count = CQ.error_count()
+	local title = UC.highlight_text("Quickfix List", C.group_names.fg_60_bold)
+	return M.spaced_text(title .. el.space .. error_count)
 end
 
 ---Returns path to the file
@@ -191,13 +176,21 @@ function M.file_path()
 	local tail = fullpath:match("[^/]+$")
 	local path
 	if S.opt.filepath.path == "tail" then
-		path = M.highlight_text(tail, C.group_names.fg_bold)
+		path = UC.highlight_text(tail, C.group_names.fg_bold)
 	elseif S.opt.filepath.path == "relative" then
-		path = highlight_path(relative, tail)
-	else
-		path = highlight_path(fullpath, tail)
+		path = UC.highlight_path(relative, tail, S.opt.filepath.shorten, C.group_names.fg_bold, C.group_names.fg_60)
+	elseif S.opt.filepath.path == "full" then
+		path = UC.highlight_path(fullpath, tail, S.opt.filepath.shorten, C.group_names.fg_bold, C.group_names.fg_60)
 	end
 	return path
+end
+
+---Returns help filename
+---@return string
+function M.help()
+	local help = UC.highlight_text("Help", C.group_names.fg_60_bold)
+	local buff_name = vim.api.nvim_buf_get_name(0)
+	return M.spaced_text(help .. el.space .. buff_name:match("[%s%w_]-%.%w-$"))
 end
 
 ---Returns center block with branch, status and `text`
@@ -210,17 +203,17 @@ end
 ---Returns file size
 ---@return string
 function M.file_size()
-	local size = S.opt.filesize.metric == "decimal" and U.si_fsize() or U.bi_fsize()
-	return size[1] .. M.highlight_text(size[2], C.group_names.fg_50)
+	local size = S.opt.filesize.metric == "decimal" and UU.si_fsize() or UU.bi_fsize()
+	return size[1] .. UC.highlight_text(size[2], C.group_names.fg_50)
 end
 
 ---Returns percentage through file in lines
 ---@return string
 function M.ln()
-	if U.laststatus == 3 and cache.ln ~= "" then
+	if UU.laststatus == 3 and cache.ln ~= "" then
 		return cache.ln
 	else
-		cache.ln = M.highlight_text("↓", C.group_names.fg_50) .. el.percentage_in_lines .. el.percent
+		cache.ln = UC.highlight_text("↓", C.group_names.fg_50) .. el.percentage_in_lines .. el.percent
 		return cache.ln
 	end
 end
@@ -228,10 +221,10 @@ end
 ---Returns column number
 ---@return string
 function M.col()
-	if U.laststatus == 3 and cache.col ~= "" then
+	if UU.laststatus == 3 and cache.col ~= "" then
 		return cache.col
 	else
-		cache.col = M.highlight_text("→", C.group_names.fg_50) .. el.column_idx
+		cache.col = UC.highlight_text("→", C.group_names.fg_50) .. el.column_idx
 		return cache.col
 	end
 end
@@ -239,18 +232,27 @@ end
 ---Returns lines of code
 ---@return string
 function M.loc()
-	if U.laststatus == 3 and el.loc ~= "" then
+	if UU.laststatus == 3 and el.loc ~= "" then
 		return cache.loc
 	else
-		cache.loc = el.lines_of_code .. M.highlight_text("LOC", C.group_names.fg_50) .. el.space
+		cache.loc = el.lines_of_code .. UC.highlight_text("LOC", C.group_names.fg_50) .. el.space
 		return cache.loc
 	end
+end
+
+---Setup callback
+---@param opts opts
+function M.setup(opts)
+	S.setup(opts)
 end
 
 ---Sets auto commands
 ---@param group_name string
 ---@param cb function
 function M.setup_autocmd(group_name, cb)
+	C.setup_autocmd(group_name, cb)
+	CD.setup_autocmd(group_name, cb)
+	CG.setup_autocmd(group_name, cb)
 	-- buffer modified flag
 	vim.api.nvim_create_autocmd({
 		"BufModifiedSet",
