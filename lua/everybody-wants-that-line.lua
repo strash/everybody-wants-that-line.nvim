@@ -12,30 +12,32 @@ local M = {}
 function M.set_statusline()
 	local wintype = UU.get_wintype()
 
+	local comma, separator = CO.comma(), CO.separator()
+
 	local content
 
 	-- NORMAL
 	if wintype == "normal" then
 		local quickfix = CO.quickfix()
 		if #quickfix > 0 then
-			quickfix = quickfix .. CO.separator()
+			quickfix = quickfix .. separator
 		end
 		content = {
 			CO.bufmod_flag(),
 			CO.buff_nr(),
-			CO.separator(),
+			separator,
 			CO.get_diagnostics(),
-			CO.separator(),
+			separator,
 			quickfix,
 			CO.center_with_git_status(CO.file_path()),
 			CO.space(),
 			CO.file_size(),
-			CO.separator(),
+			separator,
 			CO.ln(),
-			CO.comma(),
+			comma,
 			CO.space(),
 			CO.col(),
-			CO.comma(),
+			comma,
 			CO.space(),
 			CO.loc(),
 		}
@@ -59,11 +61,11 @@ function M.set_statusline()
 		content = {
 			CO.bufmod_flag(),
 			CO.buff_nr(),
-			CO.separator(),
+			separator,
 			CO.help(),
-			CO.separator(),
+			separator,
 			CO.ln(),
-			CO.comma(),
+			comma,
 			CO.space(),
 			CO.loc(),
 		}
