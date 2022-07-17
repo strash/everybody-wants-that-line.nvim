@@ -13,6 +13,7 @@ local M = {}
 local el = {
 	spacer = "%=",
 	space = " ",
+	comma = ",",
 	percent = "%%",
 	bufmod_flag = "%M",
 	percentage_in_lines = "%p",
@@ -62,7 +63,7 @@ function M.comma()
 	if UU.laststatus() == 3 and cache.comma ~= "" then
 		return cache.comma
 	else
-		cache.comma = UC.highlight_text(",", C.group_names.fg_50)
+		cache.comma = UC.highlight_text(el.comma, C.group_names.fg_50)
 		return cache.comma
 	end
 end
@@ -127,7 +128,7 @@ function M.get_diagnostics()
 	if diagnostics.info.count > 0 then
 		info = highlight_diagnostic(diagnostics.info, C.group_names.fg_info_bold, C.group_names.fg_info_50, C.group_names.fg_info)
 	end
-	local comma_space = cache.comma .. el.space
+	local comma_space = M.comma() .. el.space
 	return err .. comma_space .. warn .. comma_space .. hint .. comma_space .. info
 end
 
