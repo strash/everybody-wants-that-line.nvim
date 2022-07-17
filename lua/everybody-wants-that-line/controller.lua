@@ -159,9 +159,34 @@ end
 ---Returns quickfix list
 ---@return string
 function M.quickfix()
-	local error_count = CQ.error_count()
-	local title = UC.highlight_text("Quickfix List", C.group_names.fg_60_bold)
-	return M.spaced_text(title .. el.space .. error_count)
+	local idx = UC.highlight_text(tostring(CQ.get_qflist_idx()), C.group_names.fg_bold)
+	local entries_count = CQ.get_entries_count()
+	local files_count = CQ.get_files_w_entries_count()
+
+	local title
+
+	local quickfix = ""
+	if CQ.get_qflist_winid() == vim.api.nvim_get_current_win() then
+		local text_in = UC.highlight_text("in", C.group_names.fg_60)
+		local text_file = UC.highlight_text(files_count > 1 and "files" or "file", C.group_names.fg_60)
+		title = UC.highlight_text("Quickfix List", C.group_names.fg_60_bold)
+		local text_of = UC.highlight_text("of", C.group_names.fg_60)
+		quickfix = M.spaced_text(table.concat({
+			title .. el.space,
+			idx .. el.space .. text_of .. el.space .. entries_count .. el.space,
+			files_count ~= 0 and text_in .. el.space .. files_count .. el.space .. text_file or "",
+		}))
+	else
+		if CQ.is_qflist_open() and UU.laststatus() == 3 then
+			title = UC.highlight_text("QF:", C.group_names.fg_60)
+			local text_slash = UC.highlight_text("/", C.group_names.fg_60)
+			quickfix = table.concat({
+				title .. el.space,
+				idx .. text_slash .. entries_count,
+			})
+		end
+	end
+	return quickfix
 end
 
 ---Returns path to the file
@@ -254,6 +279,7 @@ function M.setup_autocmd(group_name, cb)
 	C.setup_autocmd(group_name, cb)
 	CD.setup_autocmd(group_name, cb)
 	CG.setup_autocmd(group_name, cb)
+	CQ.setup_autocmd(group_name, cb)
 	-- buffer modified flag
 	vim.api.nvim_create_autocmd({
 		"BufModifiedSet",
