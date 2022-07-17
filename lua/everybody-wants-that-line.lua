@@ -3,7 +3,8 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
--- TODO: details in quickfix and loclist
+-- TODO: details in loclist
+-- TODO: reversed colors
 -- TODO: update screenshots
 -- TODO: packer floating window
 
@@ -15,12 +16,17 @@ function M.set_statusline()
 
 	-- NORMAL
 	if wintype == "normal" then
+		local quickfix = CO.quickfix()
+		if #quickfix > 0 then
+			quickfix = quickfix .. CO.separator()
+		end
 		content = {
 			CO.bufmod_flag(),
 			CO.buff_nr(),
 			CO.separator(),
 			CO.get_diagnostics(),
 			CO.separator(),
+			quickfix,
 			CO.center_with_git_status(CO.file_path()),
 			CO.space(),
 			CO.file_size(),
