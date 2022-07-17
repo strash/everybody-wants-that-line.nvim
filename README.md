@@ -1,5 +1,7 @@
 # Everybody wants that line
 Minimalistic, informative and elegant statusline for neovim.
+Plugin uses colors from your current colorscheme, so it looks natural.
+It adapts if you change colorscheme or switch to a light or a dark theme.
 
 ## Screenshots
 ### Examples
