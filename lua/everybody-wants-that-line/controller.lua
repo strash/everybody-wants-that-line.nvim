@@ -1,100 +1,30 @@
 local C = require("everybody-wants-that-line.colors")
 local S = require("everybody-wants-that-line.settings")
-local CG = require("everybody-wants-that-line.components.git")
+local CB = require("everybody-wants-that-line.components.buffer")
 local CD = require("everybody-wants-that-line.components.diagnostics")
+local CE = require("everybody-wants-that-line.components.elements")
+local CG = require("everybody-wants-that-line.components.git")
+local CP = require("everybody-wants-that-line.components.filepath")
 local CQ = require("everybody-wants-that-line.components.qflist")
 local UC = require("everybody-wants-that-line.utils.color-util")
 local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
----Elements
----@type { [string]: string }
-local el = {
-	spacer = "%=",
-	space = " ",
-	comma = ",",
-	percent = "%%",
-	bufmod_flag = "%M",
-	percentage_in_lines = "%p",
-	column_idx = "%c",
-	lines_of_code = "%L",
-	truncate = "%<",
-}
-
----Cache
----@type { [string]: string }
-local cache = {
-	separator = "",
-	comma = "",
-	bufmod_flag = "",
-	ln = "",
-	col = "",
-	loc = "",
-}
-
 ---Returns `text` with spacers on each side
 ---@param text string
 ---@return string
 function M.spaced_text(text)
-	return el.spacer .. text .. el.spacer
+	return CE.el.spacer .. text .. CE.el.spacer
 end
 
----Returns space
+---Returns buffer
 ---@return string
-function M.space()
-	return el.space
-end
-
----Returns separator
----@return string
-function M.separator()
-	if UU.laststatus() == 3 and cache.separator ~= "" then
-		return cache.separator
-	else
-		cache.separator = UC.highlight_text(el.space .. S.opt.separator .. el.space, C.group_names.fg_20)
-		return cache.separator
+function M.get_buffer()
+	if S.opt.buffer.show == true then
+		return CB.bufmod_flag(S.opt.buffer) .. CB.buff_nr(S.opt.buffer) .. CE.separator(S.opt.separator)
 	end
-end
-
----Returns comma
----@return string
-function M.comma()
-	if UU.laststatus() == 3 and cache.comma ~= "" then
-		return cache.comma
-	else
-		cache.comma = UC.highlight_text(el.comma, C.group_names.fg_50)
-		return cache.comma
-	end
-end
-
----Returns buffer modified flag
----@return string
-function M.bufmod_flag()
-	if UU.laststatus() == 3 and cache.bufmod_flag ~= "" then
-		return cache.bufmod_flag
-	else
-		cache.bufmod_flag = el.space .. S.opt.buffer.prefix .. el.bufmod_flag .. el.space
-		return cache.bufmod_flag
-	end
-end
-
----Returns buffer number
----@return string
-function M.buff_nr()
-	local laststatus = UU.laststatus()
-	local bufnr
-	if laststatus == 3 then
-		bufnr = tostring(vim.api.nvim_get_current_buf())
-	else
-		bufnr = UU.is_focused() and vim.g.actual_curbuf or tostring(vim.api.nvim_get_current_buf())
-	end
-	local buffer_zeroes = ""
-	if S.opt.buffer.max_symbols > #bufnr then
-		buffer_zeroes = string.rep(S.opt.buffer.symbol, S.opt.buffer.max_symbols - #bufnr)
-	end
-	buffer_zeroes = #buffer_zeroes > 0 and UC.highlight_text(buffer_zeroes, C.group_names.fg_30) or ""
-	return buffer_zeroes .. UC.highlight_text(bufnr, C.group_names.fg_bold)
+	return ""
 end
 
 ---comment
@@ -128,37 +58,54 @@ function M.get_diagnostics()
 	if diagnostics.info.count > 0 then
 		info = highlight_diagnostic(diagnostics.info, C.group_names.fg_info_bold, C.group_names.fg_info_50, C.group_names.fg_info)
 	end
-	local comma_space = M.comma() .. el.space
-	return err .. comma_space .. warn .. comma_space .. hint .. comma_space .. info
+	local comma_space = CE.comma() .. CE.el.space
+	return err .. comma_space .. warn .. comma_space .. hint .. comma_space .. info .. CE.separator(S.opt.separator)
 end
 
----Returns branch and status
+---Returns branch and git status
 ---@return string
-function M.branch_and_status()
+function M.get_branch_status()
+	local branch = ""
 	local insertions = CG.cache.diff_info[1]
 	local deletions = CG.cache.diff_info[2]
-	if #CG.cache.branch == 0 then
-		return ""
+	if #CG.cache.branch ~= 0 then
+		branch = UC.highlight_text(CG.cache.branch, C.group_names.fg_60_bold) .. CE.el.space
 	end
-	if #insertions > 0 then
+	if #insertions ~= 0 then
 		insertions = UC.highlight_text(insertions, C.group_names.fg_diff_add_bold)
-		insertions = insertions .. UC.highlight_text("+", C.group_names.fg_diff_add_50) .. el.space
+		insertions = insertions .. UC.highlight_text("+", C.group_names.fg_diff_add_50) .. CE.el.space
 	end
-	if #deletions > 0 then
+	if #deletions ~= 0 then
 		deletions = UC.highlight_text(deletions, C.group_names.fg_diff_delete_bold)
-		deletions = deletions .. UC.highlight_text("-", C.group_names.fg_diff_delete_50) .. el.space
+		deletions = deletions .. UC.highlight_text("-", C.group_names.fg_diff_delete_50) .. CE.el.space
 	end
-	return table.concat({
-		UC.highlight_text(CG.cache.branch, C.group_names.fg_60_bold),
-		el.space,
-		insertions,
-		deletions,
-	})
+	return CE.el.spacer .. branch .. insertions .. deletions
+end
+
+---Returns path to the file
+---@return string
+function M.get_filepath()
+	local path_parts = CP.filepath()
+	local path = "[No name]"
+
+	if #path_parts.relative.path ~= 0 and #path_parts.full.path ~= 0 then
+		local filename = UC.highlight_text(path_parts.relative.filename, C.group_names.fg_bold)
+		if S.opt.filepath.path == "tail" then
+			path = filename
+		elseif S.opt.filepath.path == "relative" then
+			local relative = S.opt.filepath.shorten and path_parts.relative.shorten or path_parts.relative.path
+			path = UC.highlight_text(relative, C.group_names.fg_60) .. filename
+		elseif S.opt.filepath.path == "full" then
+			local full = S.opt.filepath.shorten and path_parts.full.shorten or path_parts.full.path
+			path = UC.highlight_text(full, C.group_names.fg_60) .. filename
+		end
+	end
+	return CE.el.truncate .. path .. CE.el.spacer
 end
 
 ---Returns quickfix list
 ---@return string
-function M.quickfix()
+function M.get_quickfix()
 	local idx = UC.highlight_text(tostring(CQ.get_qflist_idx()), C.group_names.fg_bold)
 	local entries_count = CQ.get_entries_count()
 	local files_count = CQ.get_files_w_entries_count()
@@ -172,43 +119,22 @@ function M.quickfix()
 		title = UC.highlight_text("Quickfix List", C.group_names.fg_60_bold)
 		local text_of = UC.highlight_text("of", C.group_names.fg_60)
 		quickfix = M.spaced_text(table.concat({
-			title .. el.space,
-			idx .. el.space .. text_of .. el.space .. entries_count .. el.space,
-			files_count ~= 0 and text_in .. el.space .. files_count .. el.space .. text_file or "",
+			title .. CE.el.space,
+			idx .. CE.el.space .. text_of .. CE.el.space .. entries_count .. CE.el.space,
+			files_count ~= 0 and text_in .. CE.el.space .. files_count .. CE.el.space .. text_file or "",
 		}))
 	else
 		if CQ.is_qflist_open() and UU.laststatus() == 3 then
 			title = UC.highlight_text("QF:", C.group_names.fg_60)
 			local text_slash = UC.highlight_text("/", C.group_names.fg_60)
 			quickfix = table.concat({
-				title .. el.space,
+				title .. CE.el.space,
 				idx .. text_slash .. entries_count,
+				CE.separator(S.opt.separator),
 			})
 		end
 	end
 	return quickfix
-end
-
----Returns path to the file
----@return string
-function M.file_path()
-	---@type string
-	local relative = vim.fn.bufname()
-	---@type string
-	local fullpath = vim.api.nvim_buf_get_name(0)
-	if #relative == 0 or #fullpath == 0 then
-		return "[No name]"
-	end
-	local tail = fullpath:match("[^/]+$")
-	local path
-	if S.opt.filepath.path == "tail" then
-		path = UC.highlight_text(tail, C.group_names.fg_bold)
-	elseif S.opt.filepath.path == "relative" then
-		path = UC.highlight_path(relative, tail, S.opt.filepath.shorten, C.group_names.fg_bold, C.group_names.fg_60)
-	elseif S.opt.filepath.path == "full" then
-		path = UC.highlight_path(fullpath, tail, S.opt.filepath.shorten, C.group_names.fg_bold, C.group_names.fg_60)
-	end
-	return path
 end
 
 ---Returns help filename
@@ -216,54 +142,38 @@ end
 function M.help()
 	local help = UC.highlight_text("Help", C.group_names.fg_60_bold)
 	local buff_name = vim.api.nvim_buf_get_name(0)
-	return M.spaced_text(help .. el.space .. buff_name:match("[%s%w_]-%.%w-$"))
+	return M.spaced_text(help .. CE.el.space .. buff_name:match("[%s%w_]-%.%w-$"))
 end
 
----Returns center block with branch, status and `text`
----@param text string
+---Returns spaced branch, git status and text
+---@param text any
 ---@return string
-function M.center_with_git_status(text)
-	return M.spaced_text(M.branch_and_status() .. el.truncate .. text)
+function M.get_branch_status_text(text)
+	return M.get_branch_status() .. text .. CE.el.spacer
 end
 
 ---Returns file size
 ---@return string
-function M.file_size()
+function M.get_filesize()
 	local size = S.opt.filesize.metric == "decimal" and UU.si_fsize() or UU.bi_fsize()
-	return size[1] .. UC.highlight_text(size[2], C.group_names.fg_50)
+	return table.concat({
+		CE.separator(S.opt.separator),
+		size[1] .. UC.highlight_text(size[2], C.group_names.fg_50),
+	})
 end
 
----Returns percentage through file in lines
+---Returns ruller
+---@param ln boolean
+---@param col boolean
+---@param loc boolean
 ---@return string
-function M.ln()
-	if UU.laststatus == 3 and cache.ln ~= "" then
-		return cache.ln
-	else
-		cache.ln = UC.highlight_text("↓", C.group_names.fg_50) .. el.percentage_in_lines .. el.percent
-		return cache.ln
-	end
-end
-
----Returns column number
----@return string
-function M.col()
-	if UU.laststatus == 3 and cache.col ~= "" then
-		return cache.col
-	else
-		cache.col = UC.highlight_text("→", C.group_names.fg_50) .. el.column_idx
-		return cache.col
-	end
-end
-
----Returns lines of code
----@return string
-function M.loc()
-	if UU.laststatus == 3 and el.loc ~= "" then
-		return cache.loc
-	else
-		cache.loc = el.lines_of_code .. UC.highlight_text("LOC", C.group_names.fg_50) .. el.space
-		return cache.loc
-	end
+function M.get_ruller(ln, col, loc)
+	return table.concat({
+		CE.separator(S.opt.separator),
+		ln and CE.ln() .. CE.comma() .. CE.el.space or "",
+		col and CE.col() .. CE.comma() .. CE.el.space or "",
+		loc and CE.loc() or "",
+	})
 end
 
 ---Setup callback

@@ -9,7 +9,7 @@ local M = {}
 ---@alias filepath_shorten boolean If `true` the path will be shortened, e.g. "/a/b/c/filename.lua". It only works if `path` is "relative" or "full".
 ---@alias filesize_metric "decimal"|"binary"
 
----@alias opts_buffer { prefix: string, symbol: buffer_symbol, max_symbols: buffer_max_symbols }
+---@alias opts_buffer { show: boolean, prefix: string, symbol: buffer_symbol, max_symbols: buffer_max_symbols }
 ---@alias opts_filepath { path: filepath_path, shorten: filepath_shorten }
 ---@alias opts_filesize { metric: filesize_metric }
 
@@ -22,6 +22,7 @@ local M = {}
 ---@type opts
 M.opt = {
 	buffer = {
+		show = true,
 		prefix = "b",
 		symbol = "0",
 		max_symbols = 5,
@@ -46,6 +47,16 @@ local function check_filepath(path)
 	return "relative"
 end
 
+---Check if metric matches filesize metric
+---@param metric filesize_metric
+---@return filesize_metric
+local function check_filesize_metric(metric)
+	if metric == "decimal" or metric == "binary" then
+		return metric
+	end
+	return "decimal"
+end
+
 ---Setup
 ---@param opt opts
 function M.setup(opt)
@@ -56,6 +67,8 @@ function M.setup(opt)
 					if M.opt[k][vk] ~= nil and type(M.opt[k][vk]) == type(vv) then
 						if k == "filepath" and vk == "path" then
 							M.opt[k][vk] = check_filepath(vv)
+						elseif k == "filesize" and vk == "metric" then
+							M.opt[k][vk] = check_filesize_metric(vv)
 						else
 							M.opt[k][vk] = vv
 						end

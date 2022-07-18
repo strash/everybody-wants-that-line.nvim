@@ -45,6 +45,7 @@ require("everybody-wants-that-line").setup()
 -- if you hate defaults
 require("everybody-wants-that-line").setup({
 	buffer = {
+		show = true,
 		prefix = "b",
 		-- Symbol before buffer number, e.g. "0000.".
 		-- If you don't want additional symbols to be displayed, set `buffer.max_symbols = 0`.

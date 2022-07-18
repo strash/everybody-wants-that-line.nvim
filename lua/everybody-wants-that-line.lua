@@ -3,6 +3,8 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
+-- TODO: move all events to controller
+-- TODO: update cache on colorscheme event for elements
 -- TODO: details in loclist
 -- TODO: reversed colors
 -- TODO: update screenshots
@@ -12,34 +14,18 @@ local M = {}
 function M.set_statusline()
 	local wintype = UU.get_wintype()
 
-	local comma, separator = CO.comma(), CO.separator()
-
 	local content
 
 	-- NORMAL
 	if wintype == "normal" then
-		local quickfix = CO.quickfix()
-		if #quickfix > 0 then
-			quickfix = quickfix .. separator
-		end
 		content = {
-			CO.bufmod_flag(),
-			CO.buff_nr(),
-			separator,
+			CO.get_buffer(),
 			CO.get_diagnostics(),
-			separator,
-			quickfix,
-			CO.center_with_git_status(CO.file_path()),
-			CO.space(),
-			CO.file_size(),
-			separator,
-			CO.ln(),
-			comma,
-			CO.space(),
-			CO.col(),
-			comma,
-			CO.space(),
-			CO.loc(),
+			CO.get_quickfix(),
+			CO.get_branch_status(),
+			CO.get_filepath(),
+			CO.get_filesize(),
+			CO.get_ruller(true, true, true),
 		}
 	-- LOCLIST
 	elseif wintype == "loclist" then
@@ -49,7 +35,7 @@ function M.set_statusline()
 	-- QUICKFIX
 	elseif wintype == "quickfix" then
 		content = {
-			CO.quickfix()
+			CO.get_quickfix()
 		}
 	-- PREVIEW
 	elseif wintype == "preview" then
@@ -59,15 +45,9 @@ function M.set_statusline()
 	-- HELP
 	elseif wintype == "help" then
 		content = {
-			CO.bufmod_flag(),
-			CO.buff_nr(),
-			separator,
+			CO.get_buffer(),
 			CO.help(),
-			separator,
-			CO.ln(),
-			comma,
-			CO.space(),
-			CO.loc(),
+			CO.get_ruller(true, false, true),
 		}
 	-- NVIMTREE
 	elseif wintype == "nvimtree" then
@@ -82,12 +62,12 @@ function M.set_statusline()
 	-- NEOGIT
 	elseif wintype == "neogit" then
 		content = {
-			CO.center_with_git_status("Neogit")
+			CO.get_branch_status_text("Neogit")
 		}
 	-- FUGITIVE
 	elseif wintype == "fugitive" then
 		content = {
-			CO.center_with_git_status("Fugitive")
+			CO.get_branch_status_text("Fugitive")
 		}
 	-- TELESCOPE
 	elseif wintype == "telescope" then

@@ -190,21 +190,4 @@ function M.highlight_text(text, group_name)
 	return "%#" .. M.get_group_name(group_name) .. "#" .. text .. "%*"
 end
 
----Returns highlighted path
----@param path string
----@param tail string
----@param is_shorten boolean
----@param tail_group_name string
----@param before_tail_group_name string
----@return string
-function M.highlight_path(path, tail, is_shorten, tail_group_name, before_tail_group_name)
-	local before_tail = path:sub(0, #path - #tail)
-	before_tail = is_shorten and vim.fn.pathshorten(before_tail) or before_tail
-	local final = table.concat({
-		M.highlight_text(before_tail, before_tail_group_name),
-		M.highlight_text(tail, tail_group_name),
-	})
-	return final
-end
-
 return M
