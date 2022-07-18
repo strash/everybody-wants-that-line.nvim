@@ -10,9 +10,9 @@ local cache = {}
 ---@param path string
 ---@return splitted_path
 local function split_path_and_filename(path)
-	local file = path:match("[^/]+$")
-	local splitted_path = path:sub(0, #path - #file)
-	return { path = splitted_path, shorten = vim.fn.pathshorten(splitted_path), filename = file }
+	local f = path:match("[^/]+$")
+	local p = path:sub(0, #path - #f)
+	return { path = p, shorten = vim.fn.pathshorten(p), filename = f }
 end
 
 ---Returns path to the file

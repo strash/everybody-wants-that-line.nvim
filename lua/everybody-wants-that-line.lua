@@ -46,7 +46,7 @@ function M.set_statusline()
 	elseif wintype == "help" then
 		content = {
 			CO.get_buffer(),
-			CO.help(),
+			CO.get_help(),
 			CO.get_ruller(true, false, true),
 		}
 	-- NVIMTREE

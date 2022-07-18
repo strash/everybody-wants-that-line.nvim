@@ -139,7 +139,7 @@ end
 
 ---Returns help filename
 ---@return string
-function M.help()
+function M.get_help()
 	local help = UC.highlight_text("Help", C.group_names.fg_60_bold)
 	local buff_name = vim.api.nvim_buf_get_name(0)
 	return M.spaced_text(help .. CE.el.space .. buff_name:match("[%s%w_]-%.%w-$"))
