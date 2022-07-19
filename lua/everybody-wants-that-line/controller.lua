@@ -177,15 +177,14 @@ function M.get_ruller(show_ln, show_col, show_loc)
 	})
 end
 
----Auto commands
----@type string
-local autocmd_group = vim.api.nvim_create_augroup(UU.prefix .. "Group", {
-	clear = true,
-})
-
 ---Sets auto commands
 ---@param cb function
 local function setup_autocmd(cb)
+	---@type string
+	local autocmd_group = vim.api.nvim_create_augroup(UU.prefix .. "Group", {
+		clear = true,
+	})
+
 	-- colors
 	vim.api.nvim_create_autocmd({
 		"ColorScheme",
