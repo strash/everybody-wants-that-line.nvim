@@ -4,7 +4,7 @@ local M = {}
 local qflist = {}
 
 ---Sets quickfix list
-local function set_qflist()
+function M.set_qflist()
 	qflist = vim.fn.getqflist() or {}
 	local idx = 1
 	for _, i in ipairs(qflist) do
@@ -70,22 +70,6 @@ function M.get_files_w_entries_count()
 		end
 	end
 	return #buffers
-end
-
----Sets auto commands
----@param group_name string
----@param cb function
-function M.setup_autocmd(group_name, cb)
-	-- update quickfix list
-	vim.api.nvim_create_autocmd({
-		"QuickFixCmdPost",
-	}, {
-		pattern = "*",
-		callback = function()
-			set_qflist()
-		end,
-		group = group_name,
-	})
 end
 
 return M

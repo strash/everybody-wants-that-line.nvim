@@ -3,7 +3,6 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
--- TODO: move all events to controller
 -- TODO: update cache on colorscheme event for elements
 -- TODO: details in loclist
 -- TODO: reversed colors
@@ -14,6 +13,7 @@ local M = {}
 function M.set_statusline()
 	local wintype = UU.get_wintype()
 
+	---@type string[]
 	local content
 
 	-- NORMAL
@@ -91,16 +91,7 @@ end
 ---Setup that line
 ---@param opts opts
 function M.setup(opts)
-	CO.setup(opts)
-	callback()
+	CO._init(opts, callback)
 end
-
----Auto commands
----@type string
-local autocmd_group = vim.api.nvim_create_augroup(UU.prefix .. "Group", {
-	clear = true,
-})
-
-CO.setup_autocmd(autocmd_group, callback)
 
 return M

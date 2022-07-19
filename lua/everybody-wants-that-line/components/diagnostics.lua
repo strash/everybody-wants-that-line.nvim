@@ -52,19 +52,4 @@ function M.get_diagnostics()
 	return diagnostics
 end
 
----Sest auto commands
----@param group_name string
----@param cb function
-function M.setup_autocmd(group_name, cb)
-	vim.api.nvim_create_autocmd({
-		"DiagnosticChanged",
-	}, {
-		pattern = "*",
-		callback = function()
-			cb()
-		end,
-		group = group_name,
-	})
-end
-
 return M

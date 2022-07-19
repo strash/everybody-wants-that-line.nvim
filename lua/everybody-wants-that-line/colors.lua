@@ -90,26 +90,11 @@ local function set_hl_groups()
 	end
 end
 
----Sets auto commands
----@param group_name string
----@param cb function
-function M.setup_autocmd(group_name, cb)
+---Init colors
+function M._init()
 	set_colors()
 	set_color_group_names()
 	set_hl_groups()
-
-	vim.api.nvim_create_autocmd({
-		"ColorScheme",
-	}, {
-		pattern = "*",
-		callback = function()
-			set_colors()
-			set_color_group_names()
-			set_hl_groups()
-			cb()
-		end,
-		group = group_name,
-	})
 end
 
 return M

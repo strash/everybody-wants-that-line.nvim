@@ -5,7 +5,7 @@ M.cache = {
 	---`{ "0", "0" }` where the first string is __insertions__
 	---and the second one is __deletions__.
 	---@type string[]
-	diff_info = {},
+	diff_info = { "0", "0" },
 }
 
 ---Returns branch name
@@ -38,68 +38,12 @@ local function get_diff_info()
 	return { insertions, deletions }
 end
 
----Set auto commands
----@param group_name string
----@param cb function
-function M.setup_autocmd(group_name, cb)
-	-- branch name
-	vim.api.nvim_create_autocmd({
-		"BufEnter",
-	}, {
-		pattern = "*",
-		callback = function()
-			M.cache.branch = get_git_branch()
-			cb()
-		end,
-		group = group_name,
-	})
+function M.set_git_branch()
+	M.cache.branch = get_git_branch()
+end
 
-	-- diff info
-	vim.api.nvim_create_autocmd({
-		"BufWritePost",
-		"BufReadPost",
-	}, {
-		pattern = "*",
-		callback = function()
-			M.cache.diff_info = get_diff_info()
-			cb()
-		end,
-		group = group_name,
-	})
-
-	-- neogit commit complete
-	vim.api.nvim_create_autocmd('User', {
-		pattern = 'NeogitCommitComplete',
-		group = group_name,
-		callback = function()
-			M.cache.diff_info = get_diff_info()
-			cb()
-		end,
-	})
-
-	-- neogit push complete
-	vim.api.nvim_create_autocmd('User', {
-		pattern = 'NeogitPushComplete',
-		group = group_name,
-		callback = function()
-			M.cache.diff_info = get_diff_info()
-			cb()
-		end,
-	})
-
-	-- both
-	vim.api.nvim_create_autocmd({
-		"VimEnter",
-		"FocusGained",
-	}, {
-		pattern = "*",
-		callback = function()
-			M.cache.branch = get_git_branch()
-			M.cache.diff_info = get_diff_info()
-			cb()
-		end,
-		group = group_name,
-	})
+function M.set_diff_info()
+	M.cache.diff_info = get_diff_info()
 end
 
 return M

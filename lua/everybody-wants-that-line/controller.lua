@@ -87,7 +87,6 @@ end
 function M.get_filepath()
 	local path_parts = CP.filepath()
 	local path = "[No name]"
-
 	if #path_parts.relative.path ~= 0 and #path_parts.full.path ~= 0 then
 		local filename = UC.highlight_text(path_parts.relative.filename, C.group_names.fg_bold)
 		if S.opt.filepath.path == "tail" then
@@ -109,9 +108,7 @@ function M.get_quickfix()
 	local idx = UC.highlight_text(tostring(CQ.get_qflist_idx()), C.group_names.fg_bold)
 	local entries_count = CQ.get_entries_count()
 	local files_count = CQ.get_files_w_entries_count()
-
 	local title
-
 	local quickfix = ""
 	if CQ.get_qflist_winid() == vim.api.nvim_get_current_win() then
 		local text_in = UC.highlight_text("in", C.group_names.fg_60)
@@ -176,42 +173,124 @@ function M.get_ruller(ln, col, loc)
 	})
 end
 
----Setup callback
----@param opts opts
-function M.setup(opts)
-	S.setup(opts)
-end
+---Auto commands
+---@type string
+local autocmd_group = vim.api.nvim_create_augroup(UU.prefix .. "Group", {
+	clear = true,
+})
 
 ---Sets auto commands
----@param group_name string
 ---@param cb function
-function M.setup_autocmd(group_name, cb)
-	C.setup_autocmd(group_name, cb)
-	CD.setup_autocmd(group_name, cb)
-	CG.setup_autocmd(group_name, cb)
-	CQ.setup_autocmd(group_name, cb)
-	-- buffer modified flag
+local function setup_autocmd(cb)
+	-- colors
 	vim.api.nvim_create_autocmd({
+		"ColorScheme",
+	}, {
+		pattern = "*",
+		callback = function()
+			C._init()
+			cb()
+		end,
+		group = autocmd_group,
+	})
+
+	-- buffer number
+	-- buffer modified flag
+	-- diagnostics
+	vim.api.nvim_create_autocmd({
+		"BufAdd",
 		"BufModifiedSet",
+		"DiagnosticChanged",
 	}, {
 		pattern = "*",
 		callback = function()
 			cb()
 		end,
-		group = group_name,
+		group = autocmd_group,
 	})
 
 	-- buffer number
+	-- branch name
 	vim.api.nvim_create_autocmd({
-		"BufAdd",
 		"BufEnter",
 	}, {
 		pattern = "*",
 		callback = function()
+			CG.set_git_branch()
 			cb()
 		end,
-		group = group_name,
+		group = autocmd_group,
 	})
+
+	-- diff info
+	vim.api.nvim_create_autocmd({
+		"BufWritePost",
+		"BufReadPost",
+	}, {
+		pattern = "*",
+		callback = function()
+			CG.set_diff_info()
+			cb()
+		end,
+		group = autocmd_group,
+	})
+
+	-- branch name
+	-- diff info
+	vim.api.nvim_create_autocmd({
+		"VimEnter",
+		"FocusGained",
+	}, {
+		pattern = "*",
+		callback = function()
+			CG.set_git_branch()
+			CG.set_diff_info()
+			cb()
+		end,
+		group = autocmd_group,
+	})
+
+	-- neogit commit complete
+	vim.api.nvim_create_autocmd('User', {
+		pattern = 'NeogitCommitComplete',
+		callback = function()
+			CG.set_diff_info()
+			cb()
+		end,
+		group = autocmd_group,
+	})
+
+	-- neogit push complete
+	vim.api.nvim_create_autocmd('User', {
+		pattern = 'NeogitPushComplete',
+		callback = function()
+			CG.set_diff_info()
+			cb()
+		end,
+		group = autocmd_group,
+	})
+
+	-- quickfix list
+	vim.api.nvim_create_autocmd({
+		"QuickFixCmdPost",
+	}, {
+		pattern = "*",
+		callback = function()
+			CQ.set_qflist()
+			cb()
+		end,
+		group = autocmd_group,
+	})
+end
+
+---Setup callback
+---@param opts opts
+---@param cb function
+function M._init(opts, cb)
+	S.setup(opts)
+	C._init()
+	setup_autocmd(cb)
+	cb()
 end
 
 return M
