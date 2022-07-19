@@ -118,24 +118,30 @@ function M.is_focused()
 	return tonumber(vim.g.actual_curwin) == vim.api.nvim_get_current_win()
 end
 
+---@alias laststatus
+---| 0 #never
+---| 1 #only if there are at least two windows
+---| 2 #always
+---| 3 #always and ONLY the last window
+
 ---Returns `laststatus`
----@return number
+---@return laststatus
 function M.laststatus()
 	return vim.o.laststatus
 end
 
 ---@alias wintype
 ---| "unknown"
----| "normal",
----| "loclist",
----| "quickfix",
----| "preview",
----| "help",
----| "nvimtree",
----| "packer",
----| "neogit",
----| "fugitive",
----| "telescope",
+---| "normal"
+---| "loclist"
+---| "quickfix"
+---| "preview"
+---| "help"
+---| "nvimtree"
+---| "packer"
+---| "neogit"
+---| "fugitive"
+---| "telescope"
 
 ---Returns window type
 ---@return wintype enum
