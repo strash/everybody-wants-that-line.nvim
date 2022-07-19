@@ -124,7 +124,7 @@ function M.get_quickfix()
 			files_count ~= 0 and text_in .. CE.el.space .. files_count .. CE.el.space .. text_file or "",
 		}))
 	else
-		if CQ.is_qflist_open() and UU.laststatus() == 3 then
+		if UU.laststatus() == 3 and not CQ.is_qflist_empty() then
 			title = UC.highlight_text("QF:", C.group_names.fg_60)
 			local text_slash = UC.highlight_text("/", C.group_names.fg_60)
 			quickfix = table.concat({

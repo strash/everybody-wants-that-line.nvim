@@ -15,6 +15,12 @@ local function set_qflist()
 	end
 end
 
+---Check if quickfix list is empty
+---@return boolean
+function M.is_qflist_empty()
+	return #qflist == 0
+end
+
 ---Check if quickfix list is open
 ---@return boolean
 function M.is_qflist_open()
