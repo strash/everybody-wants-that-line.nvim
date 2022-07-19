@@ -66,17 +66,17 @@ end
 ---@return string
 function M.get_branch_status()
 	local branch = ""
-	local insertions = CG.cache.diff_info[1]
-	local deletions = CG.cache.diff_info[2]
+	local insertions = ""
+	local deletions = ""
 	if #CG.cache.branch ~= 0 then
 		branch = UC.highlight_text(CG.cache.branch, C.group_names.fg_60_bold) .. CE.el.space
 	end
-	if #insertions ~= 0 then
-		insertions = UC.highlight_text(insertions, C.group_names.fg_diff_add_bold)
+	if CG.cache.diff_info.insertions ~= 0 then
+		insertions = UC.highlight_text(tostring(CG.cache.diff_info.insertions), C.group_names.fg_diff_add_bold)
 		insertions = insertions .. UC.highlight_text("+", C.group_names.fg_diff_add_50) .. CE.el.space
 	end
-	if #deletions ~= 0 then
-		deletions = UC.highlight_text(deletions, C.group_names.fg_diff_delete_bold)
+	if CG.cache.diff_info.deletions ~= 0 then
+		deletions = UC.highlight_text(tostring(CG.cache.diff_info.deletions), C.group_names.fg_diff_delete_bold)
 		deletions = deletions .. UC.highlight_text("-", C.group_names.fg_diff_delete_50) .. CE.el.space
 	end
 	return CE.el.spacer .. branch .. insertions .. deletions
