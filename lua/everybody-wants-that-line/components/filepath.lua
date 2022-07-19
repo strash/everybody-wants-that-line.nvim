@@ -37,10 +37,13 @@ function M.filepath()
 		if cache[fullpath] ~= nil then
 			path_parts = cache[fullpath]
 		else
-			---@type string
 			path_parts.full = split_path_and_filename(fullpath)
+			---@type string
 			local relative = vim.fn.bufname()
 			if #relative ~= 0 then
+				if relative:find("/") == nil then
+					relative = "/" .. relative
+				end
 				path_parts.relative = split_path_and_filename(relative)
 			end
 			cache[fullpath] = path_parts
