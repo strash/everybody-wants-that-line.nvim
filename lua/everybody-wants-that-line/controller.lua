@@ -23,11 +23,10 @@ end
 function M.get_buffer()
 	local buffer = ""
 	if S.opt.buffer.show == true then
-		---@type buffer_cache_bufnr
 		local bufnr_item = CB.get_buff_nr(S.opt.buffer)
 		local prefix = #bufnr_item.prefix > 0 and UC.highlight_text(bufnr_item.prefix, C.group_names.fg_30) or ""
 		local nr = UC.highlight_text(bufnr_item.nr, C.group_names.fg_bold)
-		buffer = CE.el.space .. CB.cache.bufmod_flag .. CE.el.space .. prefix .. nr .. CE.separator(S.opt.separator)
+		buffer = CE.el.space .. CB.cache.bufmod_flag .. CE.el.space .. prefix .. nr .. CE.cache.separator
 	end
 	return buffer
 end
@@ -41,7 +40,7 @@ end
 local function highlight_diagnostic(diagnostic_object, count_group_name, arrow_group_name, lnum_group_name)
 	return table.concat({
 		UC.highlight_text(tostring(diagnostic_object.count), count_group_name),
-		UC.highlight_text("↓", arrow_group_name),
+		UC.highlight_text(CE.el.arrow_down, arrow_group_name),
 		UC.highlight_text(tostring(diagnostic_object.first_lnum), lnum_group_name)
 	})
 end
@@ -63,8 +62,8 @@ function M.get_diagnostics()
 	if diagnostics.info.count > 0 then
 		info = highlight_diagnostic(diagnostics.info, C.group_names.fg_info_bold, C.group_names.fg_info_50, C.group_names.fg_info)
 	end
-	local comma_space = CE.comma() .. CE.el.space
-	return err .. comma_space .. warn .. comma_space .. hint .. comma_space .. info .. CE.separator(S.opt.separator)
+	local comma_space = CE.cache.comma .. CE.el.space
+	return err .. comma_space .. warn .. comma_space .. hint .. comma_space .. info .. CE.cache.separator
 end
 
 ---Returns branch and git status
@@ -90,7 +89,7 @@ end
 ---Returns path to the file
 ---@return string
 function M.get_filepath()
-	local path_parts = CP.filepath()
+	local path_parts = CP.get_filepath()
 	local path = "[No name]"
 	if #path_parts.relative.path ~= 0 and #path_parts.full.path ~= 0 then
 		local filename = UC.highlight_text(path_parts.relative.filename, C.group_names.fg_bold)
@@ -132,7 +131,7 @@ function M.get_quickfix()
 			quickfix = table.concat({
 				title .. CE.el.space,
 				idx .. text_slash .. entries_count,
-				CE.separator(S.opt.separator),
+				CE.cache.separator,
 			})
 		end
 	end
@@ -159,22 +158,22 @@ end
 function M.get_filesize()
 	local size = S.opt.filesize.metric == "decimal" and UU.si_fsize() or UU.bi_fsize()
 	return table.concat({
-		CE.separator(S.opt.separator),
+		CE.cache.separator,
 		size[1] .. UC.highlight_text(size[2], C.group_names.fg_50),
 	})
 end
 
 ---Returns ruller
----@param ln boolean
----@param col boolean
----@param loc boolean
+---@param show_ln boolean
+---@param show_col boolean
+---@param show_loc boolean
 ---@return string
-function M.get_ruller(ln, col, loc)
+function M.get_ruller(show_ln, show_col, show_loc)
 	return table.concat({
-		CE.separator(S.opt.separator),
-		ln and CE.ln() .. CE.comma() .. CE.el.space or "",
-		col and CE.col() .. CE.comma() .. CE.el.space or "",
-		loc and CE.loc() or "",
+		CE.cache.separator,
+		show_ln and CE.cache.ln .. CE.cache.comma .. CE.el.space or "",
+		show_col and CE.cache.col .. CE.cache.comma .. CE.el.space or "",
+		show_loc and CE.cache.loc or "",
 	})
 end
 
@@ -193,7 +192,8 @@ local function setup_autocmd(cb)
 	}, {
 		pattern = "*",
 		callback = function()
-			C._init()
+			C.init()
+			CE.init(S.opt)
 			cb()
 		end,
 		group = autocmd_group,
@@ -204,12 +204,12 @@ local function setup_autocmd(cb)
 	-- diagnostics
 	vim.api.nvim_create_autocmd({
 		"BufAdd",
-		"BufModifiedSet",
+		--"BufModifiedSet",
 		"DiagnosticChanged",
 	}, {
 		pattern = "*",
 		callback = function()
-			CB.set_bufmod_flag(S.opt.buffer)
+			--CB.set_bufmod_flag(S.opt.buffer)
 			cb()
 		end,
 		group = autocmd_group,
@@ -289,14 +289,14 @@ local function setup_autocmd(cb)
 	})
 end
 
----Setup callback
+---Init controller
 ---@param opts opts
 ---@param cb function
-function M._init(opts, cb)
+function M.init(opts, cb)
 	S.setup(opts)
-	C._init()
-	CB.clear_cache()
-	CB.set_bufmod_flag(S.opt.buffer)
+	C.init()
+	CE.init(S.opt)
+	CB.init(S.opt)
 	setup_autocmd(cb)
 	cb()
 end

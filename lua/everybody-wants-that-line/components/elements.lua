@@ -1,6 +1,5 @@
 local C = require("everybody-wants-that-line.colors")
 local UC = require("everybody-wants-that-line.utils.color-util")
-local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
@@ -14,6 +13,10 @@ local M = {}
 ---@field column_idx string `"%c"`
 ---@field lines_of_code string `"%L"`
 ---@field truncate string `"%<"`
+---@field arrow_up string `"↑"`
+---@field arrow_down string `"↓"`
+---@field arrow_left string `"←"`
+---@field arrow_right string `"→"`
 
 ---@type elements
 M.el = {
@@ -26,17 +29,21 @@ M.el = {
 	column_idx = "%c",
 	lines_of_code = "%L",
 	truncate = "%<",
+	arrow_up = "↑",
+	arrow_down = "↓",
+	arrow_left = "←",
+	arrow_right = "→",
 }
 
----@class el_cache
+---@class element_cache
 ---@field separator string
 ---@field comma string
 ---@field ln string
 ---@field col string
 ---@field loc string
 
----@type el_cache
-local cache = {
+---@type element_cache
+M.cache = {
 	separator = "",
 	comma = "",
 	ln = "",
@@ -44,60 +51,39 @@ local cache = {
 	loc = "",
 }
 
----Returns separator
+---Sets separator
 ---@param separator string
----@return string
-function M.separator(separator)
-	if UU.laststatus() == 3 and cache.separator ~= "" then
-		return cache.separator
-	else
-		cache.separator = UC.highlight_text(M.el.space .. separator .. M.el.space, C.group_names.fg_20)
-		return cache.separator
-	end
+local function set_separator(separator)
+	M.cache.separator = UC.highlight_text(M.el.space .. separator .. M.el.space, C.group_names.fg_20)
 end
 
----Returns comma
----@return string
-function M.comma()
-	if UU.laststatus() == 3 and cache.comma ~= "" then
-		return cache.comma
-	else
-		cache.comma = UC.highlight_text(M.el.comma, C.group_names.fg_50)
-		return cache.comma
-	end
+---Sets comma
+local function set_comma()
+	M.cache.comma = UC.highlight_text(M.el.comma, C.group_names.fg_50)
 end
 
----Returns percentage through file in lines
----@return string
-function M.ln()
-	if UU.laststatus == 3 and cache.ln ~= "" then
-		return cache.ln
-	else
-		cache.ln = UC.highlight_text("↓", C.group_names.fg_50) .. M.el.percentage_in_lines .. M.el.percent
-		return cache.ln
-	end
+---Sets percentage through file in lines
+local function set_ln()
+	M.cache.ln = UC.highlight_text(M.el.arrow_down, C.group_names.fg_50) .. M.el.percentage_in_lines .. M.el.percent
 end
 
----Returns column number
----@return string
-function M.col()
-	if UU.laststatus == 3 and cache.col ~= "" then
-		return cache.col
-	else
-		cache.col = UC.highlight_text("→", C.group_names.fg_50) .. M.el.column_idx
-		return cache.col
-	end
+local function set_col()
+	M.cache.col = UC.highlight_text(M.el.arrow_right, C.group_names.fg_50) .. M.el.column_idx
 end
 
 ---Returns lines of code
----@return string
-function M.loc()
-	if UU.laststatus == 3 and cache.loc ~= "" then
-		return cache.loc
-	else
-		cache.loc = M.el.lines_of_code .. UC.highlight_text("LOC", C.group_names.fg_50) .. M.el.space
-		return cache.loc
-	end
+local function set_loc()
+	M.cache.loc = M.el.lines_of_code .. UC.highlight_text("LOC", C.group_names.fg_50) .. M.el.space
+end
+
+---Init elements
+---@param opts opts
+function M.init(opts)
+	set_separator(opts.separator)
+	set_comma()
+	set_ln()
+	set_col()
+	set_loc()
 end
 
 return M

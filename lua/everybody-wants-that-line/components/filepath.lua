@@ -1,14 +1,15 @@
 local M = {}
 
----@alias splitted_path { path: string, shorten: string, filename: string }
----@alias path_parts { relative: splitted_path, full: splitted_path }
+---@alias filepath_cache_path_part_split { path: string, shorten: string, filename: string }
+---@alias filepath_cache_path_parts { relative: filepath_cache_path_part_split, full: filepath_cache_path_part_split }
 
----@type { [string]: path_parts }
+---`filepath_cache`
+---@type { [string]: filepath_cache_path_parts }
 local cache = {}
 
 ---Returns splitted path and filename
 ---@param path string
----@return splitted_path
+---@return filepath_cache_path_part_split
 local function split_path_and_filename(path)
 	local f = path:match("[^/]+$")
 	local p = path:sub(0, #path - #f)
@@ -16,9 +17,9 @@ local function split_path_and_filename(path)
 end
 
 ---Returns path to the file
----@return path_parts
-function M.filepath()
-	---@type path_parts
+---@return filepath_cache_path_parts
+function M.get_filepath()
+	---@type filepath_cache_path_parts
 	local path_parts = {
 		relative = {
 			path = "",

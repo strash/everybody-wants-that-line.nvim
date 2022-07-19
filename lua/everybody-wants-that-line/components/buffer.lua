@@ -48,10 +48,12 @@ function M.get_buff_nr(opts_buffer)
 	end
 end
 
----Clear cache
-function M.clear_cache()
+---Clear cache and init buffer
+---@param opts opts
+function M.init(opts)
 	M.cache.bufmod_flag = ""
 	M.cache.bufnrs = {}
+	M.set_bufmod_flag(opts.buffer)
 end
 
 return M

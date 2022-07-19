@@ -3,13 +3,16 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
--- TODO: update cache on colorscheme event for elements
--- TODO: details in loclist
+-- TODO: check current line and show ↓ or ↑ for each diagnostic severity
+-- TODO: change color of the buffer prefix to `fg_60` and cache it
+-- TODO: colorized bufmod_flag + (green) or - (red) and cache them
 -- TODO: reversed colors
+-- TODO: details in loclist
 -- TODO: update screenshots
 -- TODO: packer floating window
 
--- setting that line
+---Sets that line
+---@return string
 function M.set_statusline()
 	local wintype = UU.get_wintype()
 
@@ -84,6 +87,7 @@ function M.set_statusline()
 	return table.concat(content)
 end
 
+---Callback for setting statusline
 local function callback()
 	vim.cmd([[set stl=%{%v:lua.require('everybody-wants-that-line').set_statusline()%}]])
 end
@@ -91,7 +95,7 @@ end
 ---Setup that line
 ---@param opts opts
 function M.setup(opts)
-	CO._init(opts, callback)
+	CO.init(opts, callback)
 end
 
 return M
