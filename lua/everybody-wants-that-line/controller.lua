@@ -21,10 +21,15 @@ end
 ---Returns buffer
 ---@return string
 function M.get_buffer()
+	local buffer = ""
 	if S.opt.buffer.show == true then
-		return CB.bufmod_flag(S.opt.buffer) .. CB.buff_nr(S.opt.buffer) .. CE.separator(S.opt.separator)
+		---@type buffer_cache_bufnr
+		local bufnr_item = CB.get_buff_nr(S.opt.buffer)
+		local prefix = #bufnr_item.prefix > 0 and UC.highlight_text(bufnr_item.prefix, C.group_names.fg_30) or ""
+		local nr = UC.highlight_text(bufnr_item.nr, C.group_names.fg_bold)
+		buffer = CE.el.space .. CB.cache.bufmod_flag .. CE.el.space .. prefix .. nr .. CE.separator(S.opt.separator)
 	end
-	return ""
+	return buffer
 end
 
 ---comment
@@ -204,6 +209,7 @@ local function setup_autocmd(cb)
 	}, {
 		pattern = "*",
 		callback = function()
+			CB.set_bufmod_flag(S.opt.buffer)
 			cb()
 		end,
 		group = autocmd_group,
@@ -289,6 +295,8 @@ end
 function M._init(opts, cb)
 	S.setup(opts)
 	C._init()
+	CB.clear_cache()
+	CB.set_bufmod_flag(S.opt.buffer)
 	setup_autocmd(cb)
 	cb()
 end

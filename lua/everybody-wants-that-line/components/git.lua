@@ -1,10 +1,10 @@
 local M = {}
 
----@alias git_diff_info { insertions: integer, deletions: integer }
+---@alias git_cache_diffinfo { insertions: integer, deletions: integer }
 
 ---@class git_cache
 ---@field branch string
----@field diff_info git_diff_info
+---@field diff_info git_cache_diffinfo
 
 ---@type git_cache
 M.cache = {
