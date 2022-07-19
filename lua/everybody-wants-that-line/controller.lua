@@ -26,7 +26,7 @@ function M.get_buffer()
 		local bufnr_item = CB.get_buff_nr(S.opt.buffer)
 		local prefix = #bufnr_item.prefix > 0 and UC.highlight_text(bufnr_item.prefix, C.group_names.fg_30) or ""
 		local nr = UC.highlight_text(bufnr_item.nr, C.group_names.fg_bold)
-		buffer = CE.el.space .. CB.cache.bufmod_flag .. CE.el.space .. prefix .. nr .. CE.cache.separator
+		buffer = CE.el.space .. CB.cache.bufmod_flag .. CE.el.space .. prefix .. nr .. CE.get_separator()
 	end
 	return buffer
 end
@@ -62,8 +62,8 @@ function M.get_diagnostics()
 	if diagnostics.info.count > 0 then
 		info = highlight_diagnostic(diagnostics.info, C.group_names.fg_info_bold, C.group_names.fg_info_50, C.group_names.fg_info)
 	end
-	local comma_space = CE.cache.comma .. CE.el.space
-	return err .. comma_space .. warn .. comma_space .. hint .. comma_space .. info .. CE.cache.separator
+	local comma_space = CE.get_comma() .. CE.el.space
+	return err .. comma_space .. warn .. comma_space .. hint .. comma_space .. info .. CE.get_separator()
 end
 
 ---Returns branch and git status
@@ -131,7 +131,7 @@ function M.get_quickfix()
 			quickfix = table.concat({
 				title .. CE.el.space,
 				idx .. text_slash .. entries_count,
-				CE.cache.separator,
+				CE.get_separator(),
 			})
 		end
 	end
@@ -158,7 +158,7 @@ end
 function M.get_filesize()
 	local size = S.opt.filesize.metric == "decimal" and UU.si_fsize() or UU.bi_fsize()
 	return table.concat({
-		CE.cache.separator,
+		CE.get_separator(),
 		size[1] .. UC.highlight_text(size[2], C.group_names.fg_50),
 	})
 end
@@ -170,10 +170,10 @@ end
 ---@return string
 function M.get_ruller(show_ln, show_col, show_loc)
 	return table.concat({
-		CE.cache.separator,
-		show_ln and CE.cache.ln .. CE.cache.comma .. CE.el.space or "",
-		show_col and CE.cache.col .. CE.cache.comma .. CE.el.space or "",
-		show_loc and CE.cache.loc or "",
+		CE.get_separator(),
+		show_ln and CE.get_ln() .. CE.get_comma() .. CE.el.space or "",
+		show_col and CE.get_col() .. CE.get_comma() .. CE.el.space or "",
+		show_loc and CE.get_loc() or "",
 	})
 end
 
@@ -192,7 +192,6 @@ local function setup_autocmd(cb)
 		pattern = "*",
 		callback = function()
 			C.init()
-			CE.init(S.opt)
 			cb()
 		end,
 		group = autocmd_group,

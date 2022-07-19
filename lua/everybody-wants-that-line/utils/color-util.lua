@@ -185,9 +185,13 @@ end
 ---Returns highlighted text
 ---@param text string
 ---@param group_name string
+---@param is_nc nil|boolean If `true` then `group_name` must be a `[nc]`. Default is `false`
 ---@return string
-function M.highlight_text(text, group_name)
-	return "%#" .. M.get_group_name(group_name) .. "#" .. text .. "%*"
+function M.highlight_text(text, group_name, is_nc)
+	if is_nc == nil then
+		is_nc = false
+	end
+	return "%#" .. (is_nc and group_name or M.get_group_name(group_name)) .. "#" .. text .. "%*"
 end
 
 return M
