@@ -38,18 +38,18 @@ M.el = {
 	truncate = "%<",
 }
 
----@alias element_cache_item { n: string, nc: string }
+---@alias cache_item_variant { n: string, nc: string }
 
 ---@class element_cache
----@field col element_cache_item
----@field comma element_cache_item
----@field ln element_cache_item
----@field loc element_cache_item
----@field minus element_cache_item
----@field minus_50 element_cache_item
----@field plus element_cache_item
----@field plus_50 element_cache_item
----@field separator element_cache_item
+---@field col cache_item_variant
+---@field comma cache_item_variant
+---@field ln cache_item_variant
+---@field loc cache_item_variant
+---@field minus cache_item_variant
+---@field minus_50 cache_item_variant
+---@field plus cache_item_variant
+---@field plus_50 cache_item_variant
+---@field separator cache_item_variant
 
 ---@type element_cache
 M.cache = {

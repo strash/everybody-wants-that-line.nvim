@@ -8,23 +8,31 @@ local M = {}
 ---@alias buffer_cache_bufnr { prefix: string, nr: string, bufnr: number }
 
 ---@class buffer_cache
----@field bufprefix string
+---@field bufprefix cache_item_variant
 ---@field bufnrs { [number]: buffer_cache_bufnr }
 
 ---@type buffer_cache
 M.cache = {
-	bufprefix = "",
-	bufprefix_nc = "",
+	bufprefix = { n = "", nc = "" },
 	bufnrs = {},
 }
+
+---Sets buffer prefix
+---@param opts opts
+local function set_buffer_prefix(opts)
+	if #opts.buffer.prefix ~= 0 then
+		M.cache.bufprefix.n = UC.highlight_text(opts.buffer.prefix .. CE.el.space, C.group_names.fg_60)
+		M.cache.bufprefix.nc = UC.highlight_text(opts.buffer.prefix .. CE.el.space, C.group_names.fg_nc_60, true)
+	end
+end
 
 ---Returns buffer prefix
 ---@return string
 function M.get_buffer_prefix()
 	if UU.laststatus() == 3 or UU.is_focused() then
-		return M.cache.bufprefix
+		return M.cache.bufprefix.n
 	else
-		return M.cache.bufprefix_nc
+		return M.cache.bufprefix.nc
 	end
 end
 
@@ -46,15 +54,6 @@ function M.get_buf_modflag()
 		end
 	end
 	return flag
-end
-
----Sets buffer prefix
----@param opts opts
-local function set_buffer_prefix(opts)
-	if #opts.buffer.prefix ~= 0 then
-		M.cache.bufprefix = UC.highlight_text(opts.buffer.prefix .. CE.el.space, C.group_names.fg_60)
-		M.cache.bufprefix_nc = UC.highlight_text(opts.buffer.prefix .. CE.el.space, C.group_names.fg_nc_60, true)
-	end
 end
 
 ---Returns buffer number `{ prefix = "000", nr = "23", bufnr = 23 }`
