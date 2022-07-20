@@ -23,10 +23,10 @@ end
 function M.get_buffer()
 	local buffer = ""
 	if S.opt.buffer.show == true then
-		local bufnr_item = CB.get_buff_nr(S.opt.buffer)
-		local prefix = #bufnr_item.prefix > 0 and UC.highlight_text(bufnr_item.prefix, C.group_names.fg_30) or ""
+		local bufnr_item = CB.get_buf_nr(S.opt.buffer)
+		local bufnr_prefix = #bufnr_item.prefix > 0 and UC.highlight_text(bufnr_item.prefix, C.group_names.fg_30) or ""
 		local nr = UC.highlight_text(bufnr_item.nr, C.group_names.fg_bold)
-		buffer = CE.el.space .. CB.cache.bufmod_flag .. CE.el.space .. prefix .. nr .. CE.get_separator()
+		buffer = CE.el.space .. CB.get_buffer_prefix() .. bufnr_prefix .. nr .. CB.get_buf_modflag() .. CE.get_separator()
 	end
 	return buffer
 end
@@ -84,11 +84,11 @@ function M.get_branch_status()
 	end
 	if CG.cache.diff_info.insertions ~= 0 then
 		insertions = UC.highlight_text(tostring(CG.cache.diff_info.insertions), C.group_names.fg_diff_add_bold)
-		insertions = insertions .. UC.highlight_text("+", C.group_names.fg_diff_add_50) .. CE.el.space
+		insertions = insertions .. CE.get_plus("50") .. CE.el.space
 	end
 	if CG.cache.diff_info.deletions ~= 0 then
 		deletions = UC.highlight_text(tostring(CG.cache.diff_info.deletions), C.group_names.fg_diff_delete_bold)
-		deletions = deletions .. UC.highlight_text("-", C.group_names.fg_diff_delete_50) .. CE.el.space
+		deletions = deletions .. CE.get_minus("50") .. CE.el.space
 	end
 	return CE.el.spacer .. branch .. insertions .. deletions
 end
@@ -206,12 +206,11 @@ local function setup_autocmd(cb)
 	-- diagnostics
 	vim.api.nvim_create_autocmd({
 		"BufAdd",
-		--"BufModifiedSet",
+		"BufModifiedSet",
 		"DiagnosticChanged",
 	}, {
 		pattern = "*",
 		callback = function()
-			--CB.set_bufmod_flag(S.opt.buffer)
 			cb()
 		end,
 		group = autocmd_group,
