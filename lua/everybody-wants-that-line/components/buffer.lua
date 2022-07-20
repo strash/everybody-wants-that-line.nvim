@@ -9,7 +9,6 @@ local M = {}
 
 ---@class buffer_cache
 ---@field bufprefix string
----@field bufmod_flag string
 ---@field bufnrs { [number]: buffer_cache_bufnr }
 
 ---@type buffer_cache
