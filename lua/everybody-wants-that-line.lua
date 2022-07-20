@@ -4,7 +4,6 @@ local UU = require("everybody-wants-that-line.utils.util")
 local M = {}
 
 -- TODO: fix: quickfix list in `laststatus=2` shows 0 of 0
--- TODO: check current line and show ↓ or ↑ for each diagnostic severity
 -- TODO: change color of the buffer prefix to `fg_60` and cache it
 -- TODO: colorized bufmod_flag + (green) or - (red) and cache them
 -- TODO: reversed colors
@@ -90,7 +89,7 @@ end
 
 ---Callback for setting statusline
 local function callback()
-	vim.cmd([[set stl=%{%v:lua.require('everybody-wants-that-line').set_statusline()%}]])
+	vim.opt.statusline = [[%{%luaeval("require('everybody-wants-that-line').set_statusline()")%}]]
 end
 
 ---Setup that line

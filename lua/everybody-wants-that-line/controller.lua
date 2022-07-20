@@ -38,10 +38,17 @@ end
 ---@param lnum_group_name string
 ---@return string
 local function highlight_diagnostic(diagnostic_object, count_group_name, arrow_group_name, lnum_group_name)
+	local row = vim.api.nvim_win_get_cursor(vim.fn.win_getid())[1]
+	local arrow = CE.el.arrow_down
+	if row > diagnostic_object.first_lnum then
+		arrow = CE.el.arrow_up
+	elseif row == diagnostic_object.first_lnum then
+		arrow = CE.el.arrow_right
+	end
 	return table.concat({
 		UC.highlight_text(tostring(diagnostic_object.count), count_group_name),
-		UC.highlight_text(CE.el.arrow_down, arrow_group_name),
-		UC.highlight_text(tostring(diagnostic_object.first_lnum), lnum_group_name)
+		UC.highlight_text(arrow, arrow_group_name),
+		UC.highlight_text(tostring(diagnostic_object.first_lnum), lnum_group_name),
 	})
 end
 
