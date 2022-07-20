@@ -25,7 +25,7 @@ end
 ---@param opts_buffer opts_buffer
 ---@return buffer_cache_bufnr
 function M.get_buff_nr(opts_buffer)
-	local bufnr = 0
+	local bufnr
 	if UU.laststatus() == 3 then
 		bufnr = vim.api.nvim_get_current_buf()
 	else

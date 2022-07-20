@@ -144,6 +144,26 @@ function M.laststatus()
 	return vim.o.laststatus
 end
 
+---@alias vim_wintype
+---| ""         # normal window (or NvimTree)
+---| "autocmd"  # autocommand window. Temporary window used to execute autocommands
+---| "command"  # command-line window `cmdwin`
+---| "loclist"  # `location-list-window`
+---| "popup"    # popup window `popup`
+---| "preview"  # preview window `preview-window`
+---| "quickfix" # `quickfix-window`
+---| "unknown"  # window `{nr}` not found
+
+---@alias vim_buftype
+---| ""         # normal buffer
+---| "acwrite"  # buffer will always be written with `BufWriteCmd`s
+---| "help"     # help buffer (do not set this manually)
+---| "nofile"   # buffer is not related to a file, will not be written (NvimTree)
+---| "nowrite"  # buffer will not be written
+---| "prompt"   # buffer where only the last line can be edited, meant to be used by a plugin, see `prompt-buffer`
+---| "quickfix" # list of errors `:cwindow` or locations `:lwindow`
+---| "terminal" # `terminal-emulator` buffer
+
 ---@alias wintype
 ---| "unknown"
 ---| "normal"
@@ -161,8 +181,10 @@ end
 ---@return wintype enum
 function M.get_wintype()
 	local buff_name = vim.api.nvim_buf_get_name(0)
-	local wintype = vim.fn.win_gettype() -- empty (normal or NvimTree), loclist, popup, preview, quickfix, unknown
-	local buftype = vim.o.buftype -- help, quickfix, terminal, prompt, nofile (NvimTree)
+	---@type vim_wintype
+	local wintype = vim.fn.win_gettype()
+	---@type vim_buftype
+	local buftype = vim.o.buftype
 	if wintype == "" then
 		if wintype == "" and buftype == "nofile" then
 			if buff_name:find("NvimTree_1$") ~= nil then
