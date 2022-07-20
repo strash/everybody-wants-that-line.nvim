@@ -114,6 +114,17 @@ function M.blend_colors(intensity, from, to)
 	return M.get_default_color_palette()
 end
 
+---Returns reversed color ground `"foreground" -> "background"`
+---@param color color_ground
+---@return color_ground
+function M.reverse_color_ground(color)
+	if color == "background" then
+		return "foreground"
+	else
+		return "background"
+	end
+end
+
 --- Get hightlight group color
 ---@param group_name string name of the hightlight group, e.g. `"StatusLine"`
 ---@param color color_ground `"foreground"|"background"`
@@ -123,8 +134,12 @@ function M.get_hl_group_color(group_name, color)
 	if hlid ~= 0 then
 		---@type table<color_ground>
 		local group_table = vim.api.nvim_get_hl_by_id(hlid, true)
-		if group_table[color] ~= nil then
-			local hex = M.vim_to_hex(group_table[color])
+		local c = color
+		if group_table["reverse"] ~= nil and group_table["reverse"] == true then
+			c = M.reverse_color_ground(c)
+		end
+		if group_table[c] ~= nil then
+			local hex = M.vim_to_hex(group_table[c])
 			local rgb = M.hex_to_rgb(hex)
 			local hsb = M.rgb_to_hsb(rgb)
 			return { hex = hex, rgb = rgb, hsb = hsb }
