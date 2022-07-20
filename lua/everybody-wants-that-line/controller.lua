@@ -164,10 +164,7 @@ end
 ---@return string
 function M.get_filesize()
 	local size = S.opt.filesize.metric == "decimal" and UU.si_fsize() or UU.bi_fsize()
-	return table.concat({
-		CE.get_separator(),
-		size[1] .. UC.highlight_text(size[2], C.group_names.fg_50),
-	})
+	return CE.get_separator() .. size.size .. UC.highlight_text(size.postfix, C.group_names.fg_50)
 end
 
 ---Returns ruller

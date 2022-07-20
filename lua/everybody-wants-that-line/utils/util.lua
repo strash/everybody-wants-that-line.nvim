@@ -41,8 +41,15 @@ function M.wrapi(v, min, max)
 	return range == 0 and min or min + ((((v - min) % range) + range) % range)
 end
 
----Returns decimal file size
----@return string[] `{ "1000", "B"|"KB"|"MB" }`
+---@alias si_fsize_postfix
+---| "B"  # byte
+---| "KB" # kilobyte
+---| "MB" # megabyte
+
+---@alias si_fsize { size: integer, postfix: si_fsize_postfix }
+
+---Returns decimal file size `{ size = 1000, postfix = "KB" }`
+---@return si_fsize
 function M.si_fsize()
 	local size = vim.fn.getfsize(vim.api.nvim_buf_get_name(0))
 	size = size > 0 and size or 0
@@ -57,20 +64,27 @@ function M.si_fsize()
 	return { tostring(M.round(size * 10^-6 * 100) / 100), "MB" }
 end
 
----Returns binary file size
----@return string[] `{ "1024", "B"|"KiB"|"MiB" }`
+---@alias bi_fsize_postfix
+---| "B"   # byte
+---| "KiB" # kibibyte
+---| "MiB" # mebibyte
+
+---@alias bi_fsize { size: integer, postfix: bi_fsize_postfix }
+
+---Returns binary file size `{ size = 1024, postfix = "KiB" }`
+---@return bi_fsize
 function M.bi_fsize()
 	local size = vim.fn.getfsize(vim.api.nvim_buf_get_name(0))
 	size = size > 0 and size or 0
 	-- bytes
 	if size <= 1024 then
-		return { tostring(size), "B" }
-	-- kilobytes
+		return { size = size, postfix = "B" }
+	-- kibibytes
 	elseif size > 1024 and size <= 1048576 then
-		return { tostring(M.round(size * 2^-10 * 100) / 100), "KiB" }
+		return { size = M.round(size * 2^-10 * 100) / 100, postfix = "KiB" }
 	end
-	-- megabytes
-	return { tostring(M.round(size * 2^-20 * 100) / 100), "MiB" }
+	-- mebibytes
+	return { size = M.round(size * 2^-20 * 100) / 100, postfix = "MiB" }
 end
 
 ---Check if a value exist in an enumerated table
