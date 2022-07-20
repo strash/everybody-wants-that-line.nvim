@@ -225,6 +225,7 @@ local function setup_autocmd(cb)
 		pattern = "*",
 		callback = function()
 			CG.set_git_branch()
+			CQ.set_qflist()
 			cb()
 		end,
 		group = autocmd_group,

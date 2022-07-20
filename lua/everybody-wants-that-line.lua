@@ -3,7 +3,6 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
--- TODO: fix: quickfix list in `laststatus=2` shows 0 of 0
 -- TODO: change color of the buffer prefix to `fg_60` and cache it
 -- TODO: colorized bufmod_flag + (green) or - (red) and cache them
 -- TODO: details in loclist
