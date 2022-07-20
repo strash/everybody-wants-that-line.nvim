@@ -132,6 +132,18 @@ function M.is_focused()
 	return tonumber(vim.g.actual_curwin) == vim.api.nvim_get_current_win()
 end
 
+---Returns current buffer number
+---@return number
+function M.get_bufnr()
+	local bufnr
+	if M.laststatus() == 3 then
+		bufnr = vim.api.nvim_get_current_buf()
+	else
+		bufnr = M.is_focused() and tonumber(vim.g.actual_curbuf) or vim.api.nvim_get_current_buf()
+	end
+	return bufnr
+end
+
 ---@alias laststatus
 ---| 0 #never
 ---| 1 #only if there are at least two windows

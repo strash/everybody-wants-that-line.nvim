@@ -1,4 +1,4 @@
-local U = require("everybody-wants-that-line.utils.util")
+local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
@@ -30,13 +30,7 @@ end
 function M.get_diagnostics()
 	---@type diagnostics
 	local diagnostics = {}
-	local laststatus = U.laststatus()
-	local bufnr
-	if laststatus == 3 then
-		bufnr = vim.api.nvim_get_current_buf()
-	else
-		bufnr = U.is_focused() and tonumber(vim.g.actual_curbuf) or vim.api.nvim_get_current_buf()
-	end
+	local bufnr = UU.get_bufnr()
 	local is_lsp_attached = #vim.lsp.get_active_clients() > 0
 	if is_lsp_attached then
 		diagnostics.error = get_diagnostic_object(bufnr, vim.diagnostic.severity.ERROR)
