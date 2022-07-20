@@ -23,7 +23,7 @@ local M = {}
 M.opt = {
 	buffer = {
 		show = true,
-		prefix = "b",
+		prefix = "B:",
 		symbol = "0",
 		max_symbols = 5,
 	},
