@@ -11,7 +11,7 @@ local M = {}
 
 ---Sets that line
 ---@return string
-function M.set_statusline()
+function M._set_statusline()
 	local wintype = UU.get_wintype()
 
 	---@type string[]
@@ -87,7 +87,9 @@ end
 
 ---Callback for setting statusline
 local function callback()
-	vim.opt.statusline = [[%{%luaeval("require('everybody-wants-that-line').set_statusline()")%}]]
+	vim.schedule(function()
+		vim.api.nvim_set_option("statusline", [[%{%v:lua.require('everybody-wants-that-line')._set_statusline()%}]])
+	end)
 end
 
 ---Setup that line
