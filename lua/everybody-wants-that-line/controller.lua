@@ -163,7 +163,12 @@ end
 ---Returns file size
 ---@return string
 function M.get_filesize()
-	local size = S.opt.filesize.metric == "decimal" and UU.si_fsize() or UU.bi_fsize()
+	local size
+	if S.opt.filesize.metric == "decimal" then
+		size = UU.si_fsize()
+	elseif S.opt.filesize.metric == "binary" then
+		size = UU.bi_fsize()
+	end
 	return CE.get_separator() .. size.size .. UC.highlight_text(size.postfix, C.group_names.fg_50)
 end
 

@@ -55,13 +55,13 @@ function M.si_fsize()
 	size = size > 0 and size or 0
 	-- bytes
 	if size <= 1000 then
-		return { tostring(size), "B" }
+		return { size = size, postfix = "B" }
 	-- kilobytes
 	elseif size > 1000 and size <= 1000000 then
-		return { tostring(M.round(size * 10^-3 * 100) / 100), "KB" }
+		return { size = M.round(size * 10^-3 * 100) / 100, postfix = "KB" }
 	end
 	-- megabytes
-	return { tostring(M.round(size * 10^-6 * 100) / 100), "MB" }
+	return { size = M.round(size * 10^-6 * 100) / 100, postfix = "MB" }
 end
 
 ---@alias bi_fsize_postfix
