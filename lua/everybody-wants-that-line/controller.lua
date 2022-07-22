@@ -6,7 +6,7 @@ local CE = require("everybody-wants-that-line.components.elements")
 local CG = require("everybody-wants-that-line.components.git")
 local CP = require("everybody-wants-that-line.components.filepath")
 local CQ = require("everybody-wants-that-line.components.qflist")
-local UC = require("everybody-wants-that-line.utils.color-util")
+local UC = require("everybody-wants-that-line.utils.color")
 local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}

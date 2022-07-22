@@ -1,6 +1,6 @@
 local C = require("everybody-wants-that-line.colors")
 local CE = require("everybody-wants-that-line.components.elements")
-local UC = require("everybody-wants-that-line.utils.color-util")
+local UC = require("everybody-wants-that-line.utils.color")
 local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
