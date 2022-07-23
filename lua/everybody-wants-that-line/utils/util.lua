@@ -54,10 +54,10 @@ function M.si_fsize()
 	local size = vim.fn.getfsize(vim.api.nvim_buf_get_name(0))
 	size = size > 0 and size or 0
 	-- bytes
-	if size <= 1000 then
+	if size < 1000 then
 		return { size = size, postfix = "B" }
 	-- kilobytes
-	elseif size > 1000 and size <= 1000000 then
+	elseif size >= 1000 and size <= 1000000 then
 		return { size = M.round(size * 10^-3 * 100) / 100, postfix = "KB" }
 	end
 	-- megabytes
@@ -77,29 +77,14 @@ function M.bi_fsize()
 	local size = vim.fn.getfsize(vim.api.nvim_buf_get_name(0))
 	size = size > 0 and size or 0
 	-- bytes
-	if size <= 1024 then
+	if size < 1024 then
 		return { size = size, postfix = "B" }
 	-- kibibytes
-	elseif size > 1024 and size <= 1048576 then
+	elseif size >= 1024 and size <= 1048576 then
 		return { size = M.round(size * 2^-10 * 100) / 100, postfix = "KiB" }
 	end
 	-- mebibytes
 	return { size = M.round(size * 2^-20 * 100) / 100, postfix = "MiB" }
-end
-
----Check if a value exist in an enumerated table
----@param t table
----@param v any
----@return boolean
-function M.is_value_exist(t, v)
-	local is_value_exist = false
-	for _, _v in ipairs(t) do
-		if _v == v then
-			is_value_exist = true
-			break
-		end
-	end
-	return is_value_exist
 end
 
 ---@alias cterm ""|"bold"
