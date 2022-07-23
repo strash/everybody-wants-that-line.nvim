@@ -2,9 +2,13 @@ name: Run tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
   pull_request:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
 
 jobs:
   build:
@@ -17,9 +21,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: date +%F > todays-date
+      - name: Set date
+        run: date +%F > todays-date
       - name: Download dependencies
-      - run: make dependencies
+        run: make dependencies
       - name: Restore cache for today's nightly.
         uses: actions/cache@v2
         with:
@@ -33,4 +38,4 @@ jobs:
       - name: Run tests
         run: make test
       - name: Clean
-      - run: make clean
+        run: make clean
