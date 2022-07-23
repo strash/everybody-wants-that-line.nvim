@@ -4,8 +4,8 @@ vim.cmd([[let &rtp.=",".getcwd()]])
 -- Set up 'mini.test' only when calling headless Neovim (like with `make test`)
 if #vim.api.nvim_list_uis() == 0 then
   -- Add 'mini.nvim' to 'runtimepath' to be able to use 'mini.test'
-  -- Assumed that 'mini.nvim' is stored in 'depepndencies/mini.nvim'
-  vim.cmd("set rtp+=depepndencies/mini.nvim")
+  -- Assumed that 'mini.nvim' is stored in 'dependencies/mini.nvim'
+  vim.cmd("set rtp+=dependencies/mini.nvim")
 
   -- Set up 'mini.test'
   require("mini.test").setup()
