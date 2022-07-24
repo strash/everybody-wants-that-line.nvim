@@ -27,6 +27,8 @@ It adapts if you change colorscheme or switch to a light or a dark theme.
 	- Packer,
 
 ## Installation
+Neovim v0.7.0 and newer.
+
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 ```lua
 use "strash/everybody-wants-that-line.nvim"
