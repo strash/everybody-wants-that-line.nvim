@@ -60,6 +60,7 @@ T["color"] = MiniTest.new_set({
 			child.restart({ "-u", "tests/minimal_init.lua" })
 			child.lua([[M = require("everybody-wants-that-line.utils.color")]])
 			child.cmd([[colo blue | lua vim.o.background = "dark"]])
+			child.cmd("hi " .. UU.prefix .. "StatusLine guifg=#622323 guibg=#000000")
 		end,
 		post_once = function()
 			child.stop()
@@ -67,12 +68,12 @@ T["color"] = MiniTest.new_set({
 	},
 }, {
 	get_hl_group_color = function()
-		local palette = {hex="00FFFF", rgb={0,255,255}, hsb={180,100,100}}
-		eq(child.lua([[return M.get_hl_group_color("StatusLine", "foreground")]]), palette)
+		local palette = {hex="622323", rgb={98,35,35}, hsb={0,64,38}}
+		eq(child.lua([[return M.get_hl_group_color("]] .. UU.prefix .. [[StatusLine", "foreground")]]), palette)
 	end,
 	choose_right_color = function()
-		local palette = {hex="000000", rgb={0,0,0}, hsb={0,0,0}}
-		eq(child.lua([[return M.choose_right_color("DiffAdd", 2)]]), palette)
+		local palette = {hex="622323", rgb={98,35,35}, hsb={0,64,38}}
+		eq(child.lua([[return M.choose_right_color("]] .. UU.prefix .. [[StatusLine", 2)]]), palette)
 	end,
 	adjust_color = function()
 		child.lua([[_G.palette_in = {hex="622323", rgb={98,35,35}, hsb={0,64,38}}]])
