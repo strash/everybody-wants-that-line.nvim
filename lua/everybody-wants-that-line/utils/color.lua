@@ -56,7 +56,7 @@ function M.rgb_to_hex(rgb)
 		string.format("%02x", rgb[1]),
 		string.format("%02x", rgb[2]),
 		string.format("%02x", rgb[3]),
-	})
+	}):upper()
 end
 
 ---Convert 8bit rgb to hsb color, e.g. `{ 255, 255, 255 }` -> `{ 0, 0, 100 }`

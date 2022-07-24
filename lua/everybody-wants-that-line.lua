@@ -6,6 +6,7 @@ local M = {}
 -- TODO: details in loclist
 -- TODO: update screenshots
 -- TODO: packer floating window
+-- TODO: add modes
 
 ---Sets that line
 ---@return string
