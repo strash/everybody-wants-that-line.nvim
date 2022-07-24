@@ -1,13 +1,14 @@
 local U = require("everybody-wants-that-line.utils.util")
 
 local M = {}
----@alias rgb integer[]
----@alias hsb integer[]
+---@alias rgb integer[] each number from 0 to 255
+---@alias hsb integer[] h 0-360, s 0-100, b 0-100
 ---@alias color_palette { hex: string, rgb: rgb, hsb: hsb }
 ---@alias color_ground '"background"'|'"foreground"'
 
----Returns default color palette
----@return color_palette `{ hex, rgb, hsb }`
+---Returns default color palette. Black color for "light" background
+---or white color for "dark" background, e.g. `{ hex, rgb, hsb }`
+---@return color_palette
 function M.get_default_color_palette()
 	if vim.o.background == "dark" then
 		return { hex = "FFFFFF", rgb = { 255, 255, 255 }, hsb = { 0, 0, 100 } }
@@ -16,16 +17,16 @@ function M.get_default_color_palette()
 	end
 end
 
----Convert vim 24bit color to hex
----@param vim_color integer 13291732
----@return string \'FFFFFF\'
+---Convert 24bit rgb color to hex, e.g. `16777215` -> `FFFFFF`
+---@param vim_color integer
+---@return string
 function M.vim_to_hex(vim_color)
 	return string.format("%06x", vim_color):upper()
 end
 
----Convert hex to rgb
----@param hex string \'FFFFFF\'
----@return rgb `{ r, g, b }` each number from 0 to 255
+---Convert hex to 8bit rgb color, e.g. `FFFFFF` -> `{ 255, 255, 255 }`
+---@param hex string
+---@return rgb
 function M.hex_to_rgb(hex)
 	return {
 		tonumber(hex:sub(1, 2), 16),
@@ -34,9 +35,22 @@ function M.hex_to_rgb(hex)
 	}
 end
 
----Convert rgb to hex
----@param rgb rgb each number from 0 to 255
----@return string \'FFFFFF\'
+---Convert 24bit rgb color to 8bit rgb, e.g. `16777215` -> `{ 255, 255, 255 }`
+---@param vim_color integer
+---@return rgb
+function M.vim_to_rgb(vim_color)
+	---@type rgb
+	local rgb = {
+		bit.band(bit.rshift(vim_color, 16), 255),
+		bit.band(bit.rshift(vim_color, 8), 255),
+		bit.band(vim_color, 255),
+	}
+	return rgb
+end
+
+---Convert 8bit rgb to hex color, e.g. `{ 255, 255, 255 }` -> `FFFFFF`
+---@param rgb rgb
+---@return string
 function M.rgb_to_hex(rgb)
 	return table.concat({
 		string.format("%02x", rgb[1]),
@@ -45,9 +59,9 @@ function M.rgb_to_hex(rgb)
 	})
 end
 
----Convert rgb to hsb
----@param rgb rgb `{ r, g, b }` each number from 0 to 255
----@return hsb `{ h, s, b }` h 0-360, s 0-100, b 0-100
+---Convert 8bit rgb to hsb color, e.g. `{ 255, 255, 255 }` -> `{ 0, 0, 100 }`
+---@param rgb rgb
+---@return hsb
 function M.rgb_to_hsb(rgb)
 	local _r, _g, _b = rgb[1] / 255, rgb[2] / 255, rgb[3] / 255
 	local max, min = math.max(_r, _g, _b), math.min(_r, _g, _b)
@@ -69,9 +83,9 @@ function M.rgb_to_hsb(rgb)
 	}
 end
 
----Convert hsb to rgb
----@param hsb hsb `{ h, s, b }` h 0-360, s 0-100, b 0-100
----@return rgb `{ r, g, b }` each number from 0 to 255
+---Convert hsb to 8bit rgb color, e.g. `{ 0, 0, 100 }` -> `{ 255, 255, 255 }`
+---@param hsb hsb
+---@return rgb
 function M.hsb_to_rgb(hsb)
 	local _h, _s, _b = hsb[1] / 360, hsb[2] / 100, hsb[3] / 100
 	local r, g, b, i, f, p, q, t, a
@@ -95,11 +109,11 @@ function M.hsb_to_rgb(hsb)
 	}
 end
 
----Blend colors
----@param intensity number from 0 to 1
----@param from color_palette palette with rgb table at least - { hex: string, rgb: integer[], hsb: integer[] }
----@param to color_palette palette with rgb table at least - { hex: string, rgb: integer[], hsb: integer[] }
----@return color_palette `{ hex, rgb, hsb }`
+---Blend colors between two color palettes
+---@param intensity number from 0.0 to 1.0
+---@param from color_palette
+---@param to color_palette
+---@return color_palette
 function M.blend_colors(intensity, from, to)
 	if from.rgb ~= nil and to.rgb ~= nil then
 		local rgb = {}
@@ -125,14 +139,14 @@ function M.reverse_color_ground(color)
 	end
 end
 
---- Get hightlight group color
+--- Get hightlight group color palette
 ---@param group_name string name of the hightlight group, e.g. `"StatusLine"`
----@param color color_ground `"foreground"|"background"`
----@return color_palette `{ hex, rgb, hsb }`
+---@param color color_ground
+---@return color_palette
 function M.get_hl_group_color(group_name, color)
 	local hlid = vim.fn.hlID(group_name)
 	if hlid ~= 0 then
-		---@type table<color_ground>
+		---@type { background: string|nil, foreground: string|nil, reverse: boolean|nil, bold: boolean|nil }
 		local group_table = vim.api.nvim_get_hl_by_id(hlid, true)
 		local c = color
 		if group_table["reverse"] ~= nil and group_table["reverse"] == true then
@@ -140,7 +154,7 @@ function M.get_hl_group_color(group_name, color)
 		end
 		if group_table[c] ~= nil then
 			local hex = M.vim_to_hex(group_table[c])
-			local rgb = M.hex_to_rgb(hex)
+			local rgb = bit ~= nil and M.vim_to_rgb(group_table[c]) or M.hex_to_rgb(hex)
 			local hsb = M.rgb_to_hsb(rgb)
 			return { hex = hex, rgb = rgb, hsb = hsb }
 		end
@@ -150,8 +164,8 @@ end
 
 ---Guessing color by its rgb component between `"foreground"` and `"background"` colors
 ---@param group_name string name of the hightlight group, e.g. `"StatusLine"`
----@param rgb_component integer it is index from rgb table, e.g `1|2|3`
----@return color_palette `{ hex, rgb, hsb }`
+---@param rgb_component 1|2|3
+---@return color_palette
 function M.choose_right_color(group_name, rgb_component)
 	local c = rgb_component
 	local color = {
@@ -169,10 +183,10 @@ function M.choose_right_color(group_name, rgb_component)
 	end
 end
 
----Returns adjusted copy of `color_palette`
----@param color_palette color_palette `{ hex, rgb, hsb }`
----@param by_color_palette color_palette `{ hex, rgb, hsb }`
----@return color_palette `{ hex, rgb, hsb }`
+---Returns adjusted copy of color palette
+---@param color_palette color_palette
+---@param by_color_palette color_palette
+---@return color_palette
 function M.adjust_color(color_palette, by_color_palette)
 	local hex, rgb
 	local hsb = color_palette.hsb
