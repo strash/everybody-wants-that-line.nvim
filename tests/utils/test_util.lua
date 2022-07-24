@@ -5,8 +5,10 @@ local child = MiniTest.new_child_neovim()
 
 local T = MiniTest.new_set()
 
-T["lerp"] = MiniTest.new_set(nil, {
-	equal = function() eq(UU.lerp(0.5, 0, 50), 25) end,
+T["lerp"] = MiniTest.new_set({
+	parametrize = { {0.5, 0, 50, 25}, {2.0, 0, 50, 50}, {-5.2, 0, 50, 0} },
+}, {
+	equal = function(v, a, b, c) eq(UU.lerp(v, a, b), c) end,
 	not_equal = function() noteq(UU.lerp(1, -1, 0), 1) end,
 })
 
