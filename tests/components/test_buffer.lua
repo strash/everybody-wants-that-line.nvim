@@ -1,4 +1,3 @@
-local CB = require("everybody-wants-that-line.components.buffer")
 local UU = require("everybody-wants-that-line.utils.util")
 
 local eq = MiniTest.expect.equality
