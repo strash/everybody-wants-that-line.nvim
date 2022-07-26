@@ -3,6 +3,7 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
+-- TODO: cut pwd from the path if it's relative
 -- TODO: details in loclist
 -- TODO: update screenshots
 -- TODO: packer floating window

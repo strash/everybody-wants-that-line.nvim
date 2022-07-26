@@ -12,7 +12,7 @@ local M = {}
 ---@field bufnrs { [number]: buffer_cache_bufnr }
 
 ---@type buffer_cache
-M.cache = {
+local cache = {
 	bufprefix = { n = "", nc = "" },
 	bufnrs = {},
 }
@@ -21,8 +21,8 @@ M.cache = {
 ---@param opts opts
 local function set_buffer_prefix(opts)
 	if #opts.buffer.prefix ~= 0 then
-		M.cache.bufprefix.n = UC.highlight_text(opts.buffer.prefix .. CE.el.space, C.group_names.fg_60)
-		M.cache.bufprefix.nc = UC.highlight_text(opts.buffer.prefix .. CE.el.space, C.group_names.fg_nc_60, true)
+		cache.bufprefix.n = UC.highlight_text(opts.buffer.prefix .. CE.el.space, C.group_names.fg_60)
+		cache.bufprefix.nc = UC.highlight_text(opts.buffer.prefix .. CE.el.space, C.group_names.fg_nc_60, true)
 	end
 end
 
@@ -30,9 +30,9 @@ end
 ---@return string
 function M.get_buffer_prefix()
 	if UU.laststatus() == 3 or UU.is_focused() then
-		return M.cache.bufprefix.n
+		return cache.bufprefix.n
 	else
-		return M.cache.bufprefix.nc
+		return cache.bufprefix.nc
 	end
 end
 
@@ -61,8 +61,8 @@ end
 ---@return buffer_cache_bufnr
 function M.get_buf_nr(opts_buffer)
 	local bufnr = UU.get_bufnr()
-	if M.cache.bufnrs[bufnr] ~= nil then
-		return M.cache.bufnrs[bufnr]
+	if cache.bufnrs[bufnr] ~= nil then
+		return cache.bufnrs[bufnr]
 	else
 		---@type buffer_cache_bufnr
 		local bufnr_item = {
@@ -73,7 +73,7 @@ function M.get_buf_nr(opts_buffer)
 		if opts_buffer.max_symbols > #bufnr_item.nr then
 			bufnr_item.prefix = string.rep(opts_buffer.symbol, opts_buffer.max_symbols - #bufnr_item.nr)
 		end
-		M.cache.bufnrs[bufnr] = bufnr_item
+		cache.bufnrs[bufnr] = bufnr_item
 		return bufnr_item
 	end
 end
