@@ -23,7 +23,7 @@ T["cache.branch"] = function()
 end
 
 T["cache.diff_info"] = function()
-	child.type_keys("i", "test line", "<Esc>")
+	child.api.nvim_buf_set_text(0, 0, 0, 0, 0, { "text" })
 	child.cmd("w")
 	---@type git_cache_diffinfo
 	local diff_info = {
