@@ -51,7 +51,10 @@ T["cache.diff_info"] = function()
 	child.type_keys("i", "test line", "<Esc>")
 	child.type_keys("o", "next line", "<Esc>")
 	--child.api.nvim_buf_set_text(0, 0, 0, 0, 0, { "text" })
-	child.cmd("w | sleep")
+	child.cmd("w")
+	eq(child.fn.system("type grep"), "grep is /usr/bin/grep\n")
+	eq(child.fn.system("type sed"), "sed is /usr/bin/sed\n")
+	eq(child.fn.system("git diff HEAD --stat"), "")
 	---@type git_cache_diffinfo
 	local diff_info = {
 		insertions = 2,
