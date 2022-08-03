@@ -1,6 +1,20 @@
 local eq = MiniTest.expect.equality
 local child = MiniTest.new_child_neovim()
 
+local poke_eventloop = function()
+	child.api.nvim_eval('1')
+end
+local sleep = function(ms)
+	vim.loop.sleep(ms)
+	poke_eventloop()
+end
+
+local match_basedir = function(v)
+	---@type string
+	local cwd = child.fn.getcwd()
+	return cwd:match(v)
+end
+
 local T = MiniTest.new_set({
 	hooks = {
 		pre_once = function()
@@ -8,10 +22,10 @@ local T = MiniTest.new_set({
 			child.fn.system([[cd dependencies && git init -b "test_branch" && echo "" >> test_file && git add test_file && git commit -m "init"]])
 		end,
 		pre_case = function()
+			sleep(1000)
 			child.restart({ "-u", "tests/minimal_init.lua" })
 			child.lua([[require("everybody-wants-that-line").setup()]])
 			child.lua([[M = require("everybody-wants-that-line.components.git")]])
-			child.cmd("cd dependencies | e test_file")
 		end,
 		post_once = function()
 			child.cmd("cd ..")
@@ -22,12 +36,18 @@ local T = MiniTest.new_set({
 })
 
 T["cache.branch"] = function()
-	eq(child.fn.isdirectory(".git"), 1)
+	child.cmd("cd dependencies")
+	child.cmd("e test_file")
+	eq(match_basedir("dependencies"), "dependencies")
+	MiniTest.expect.no_equality(string.find(child.api.nvim_buf_get_name(0), "dependencies/test_file"), nil)
 	eq(child.lua_get("M.cache.branch"), "test_branch")
 end
 
 T["cache.diff_info"] = function()
-	eq(child.fn.isdirectory(".git"), 1)
+	child.cmd("cd dependencies")
+	child.cmd("e test_file")
+	eq(match_basedir("dependencies"), "dependencies")
+	MiniTest.expect.no_equality(string.find(child.api.nvim_buf_get_name(0), "dependencies/test_file"), nil)
 	child.type_keys("i", "test line", "<Esc>")
 	child.type_keys("o", "next line", "<Esc>")
 	--child.api.nvim_buf_set_text(0, 0, 0, 0, 0, { "text" })
