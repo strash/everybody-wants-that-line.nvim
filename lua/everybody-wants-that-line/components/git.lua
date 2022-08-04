@@ -29,7 +29,7 @@ function M.set_diff_info()
 	local insertions = 0
 	local deletions = 0
 	if vim.fn.isdirectory(".git") ~= 0 then
-		local stat = vim.fn.system("git diff --stat | grep -F changed | sed 's/.*ed, //'")
+		local stat = vim.fn.system("git diff --shortstat | sed 's/.*ed, //'")
 		for n in stat:gmatch("%d+ %w+") do
 			if n:find("insert") ~= nil then
 				insertions = tonumber(n:match("%d+")) --[[@as integer]]
