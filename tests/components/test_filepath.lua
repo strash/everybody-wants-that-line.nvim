@@ -11,6 +11,7 @@ local T = MiniTest.new_set({
 			child.lua([[M = require("everybody-wants-that-line.components.filepath")]])
 		end,
 		post_once = function()
+			child.fn.system("rm dependencies/test_file")
 			child.stop()
 		end,
 	},
