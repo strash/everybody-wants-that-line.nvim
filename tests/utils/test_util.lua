@@ -49,7 +49,7 @@ T["fsize"] = MiniTest.new_set({
 	hooks = {
 		pre_once = function()
 			child.start({ "-u", "tests/minimal_init.lua" })
-			child.fn.system([[touch tests/utils/test_file]])
+			child.fn.system("touch tests/utils/test_file")
 		end,
 		pre_case = function()
 			child.restart({ "-u", "tests/minimal_init.lua" })
