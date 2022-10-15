@@ -92,7 +92,7 @@ T["fsize"] = MiniTest.new_set({
 		eq(child.lua("return M.si_fsize()"), child.lua_get("_G.fsize"))
 	end,
 
-	bi_bytes = function(case)
+	bi_bytes = function()
 		eq(child.lua("return M.bi_fsize()"), child.lua_get("_G.fsize"))
 	end,
 
@@ -138,9 +138,9 @@ T["is_focused"] = MiniTest.new_set({
 		for i, v in ipairs(winids) do
 			local stl = child.api.nvim_eval_statusline([[%{%v:lua.M.is_focused()%}]], { winid = v })
 			if i == 1 then
-				eq(stl.str, "v:true")
+				eq(stl.str, stl.str:find("v:") == nil and "true" or "v:true")
 			elseif i == 2 then
-				eq(stl.str, "v:false")
+				eq(stl.str, stl.str:find("v:") == nil and "false" or "v:false")
 			end
 		end
 	end,
