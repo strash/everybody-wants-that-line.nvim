@@ -58,16 +58,36 @@ function M.get_diagnostics()
 	local diagnostics = CD.get_diagnostics()
 	local err, warn, hint, info = "0", "0", "0", "0"
 	if diagnostics.error.count > 0 then
-		err = highlight_diagnostic(diagnostics.error, C.group_names.fg_error_bold, C.group_names.fg_error_50, C.group_names.fg_error)
+		err = highlight_diagnostic(
+			diagnostics.error,
+			C.group_names.fg_error_bold,
+			C.group_names.fg_error_50,
+			C.group_names.fg_error
+		)
 	end
 	if diagnostics.warn.count > 0 then
-		warn = highlight_diagnostic(diagnostics.warn, C.group_names.fg_warn_bold, C.group_names.fg_warn_50, C.group_names.fg_warn)
+		warn = highlight_diagnostic(
+			diagnostics.warn,
+			C.group_names.fg_warn_bold,
+			C.group_names.fg_warn_50,
+			C.group_names.fg_warn
+		)
 	end
 	if diagnostics.hint.count > 0 then
-		hint = highlight_diagnostic(diagnostics.hint, C.group_names.fg_hint_bold, C.group_names.fg_hint_50, C.group_names.fg_hint)
+		hint = highlight_diagnostic(
+			diagnostics.hint,
+			C.group_names.fg_hint_bold,
+			C.group_names.fg_hint_50,
+			C.group_names.fg_hint
+		)
 	end
 	if diagnostics.info.count > 0 then
-		info = highlight_diagnostic(diagnostics.info, C.group_names.fg_info_bold, C.group_names.fg_info_50, C.group_names.fg_info)
+		info = highlight_diagnostic(
+			diagnostics.info,
+			C.group_names.fg_info_bold,
+			C.group_names.fg_info_50,
+			C.group_names.fg_info
+		)
 	end
 	local comma_space = CE.get_comma() .. CE.el.space
 	return err .. comma_space .. warn .. comma_space .. hint .. comma_space .. info .. CE.get_separator()
@@ -121,7 +141,7 @@ function M.get_quickfix()
 	local files_count = CQ.get_files_w_entries_count()
 	local title
 	local quickfix = ""
-	if CQ.get_qflist_winid() == vim.api.nvim_get_current_win() then
+	if tonumber(CQ.get_qflist_winid()) == tonumber(vim.api.nvim_get_current_win()) then
 		local text_in = UC.highlight_text("in", C.group_names.fg_60)
 		local text_file = UC.highlight_text(files_count > 1 and "files" or "file", C.group_names.fg_60)
 		title = UC.highlight_text("Quickfix List", C.group_names.fg_60_bold)
@@ -218,68 +238,76 @@ local function setup_autocmd(cb)
 
 	-- colors
 	create_autocmd({ "ColorScheme" }, autocmd_group, function()
+		cb(function()
 			C.init()
-			cb()
 		end)
+	end)
 
 	-- buffer number
 	-- buffer modified flag
 	-- diagnostics
 	create_autocmd({ "BufAdd", "BufModifiedSet", "DiagnosticChanged" }, autocmd_group, function()
-			cb()
-		end)
+		cb()
+	end)
 
 	-- buffer number
 	-- branch name
-	create_autocmd({ "BufEnter" }, autocmd_group, function()
+	create_autocmd({ "BufEnter", "BufWinEnter" }, autocmd_group, function()
+		cb(function()
 			CG.set_git_branch()
 			CQ.set_qflist()
-			cb()
 		end)
+	end)
 
 	-- diff info
 	create_autocmd({ "BufWritePost", "BufReadPost" }, autocmd_group, function()
+		cb(function()
 			CG.set_diff_info()
-			cb()
 		end)
+	end)
 
 	-- branch name
 	-- diff info
 	create_autocmd({ "VimEnter", "FocusGained" }, autocmd_group, function()
+		cb(function()
 			CG.set_git_branch()
 			CG.set_diff_info()
-			cb()
 		end)
+	end)
 
 	-- quickfix list
 	create_autocmd({ "QuickFixCmdPost" }, autocmd_group, function()
+		cb(function()
 			CQ.set_qflist()
-			cb()
 		end)
+	end)
 
 	-- neogit commit complete
 	create_user_autocmd("NeogitCommitComplete", autocmd_group, function()
+		cb(function()
 			CG.set_diff_info()
-			cb()
 		end)
+	end)
 
 	-- neogit push complete
 	create_user_autocmd("NeogitPushComplete", autocmd_group, function()
+		cb(function()
 			CG.set_diff_info()
-			cb()
 		end)
+	end)
 end
 
 ---Init controller
 ---@param opts opts
 ---@param cb function
 function M.init(opts, cb)
-	S.setup(opts)
-	C.init()
-	CE.init(S.opt)
-	CB.init(S.opt)
-	setup_autocmd(cb)
-	cb()
+	cb(function()
+		S.setup(opts)
+		C.init()
+		CE.init(S.opt)
+		CB.init(S.opt)
+		setup_autocmd(cb)
+	end)
 end
 
 return M

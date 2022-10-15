@@ -3,7 +3,7 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
--- TODO: cut pwd from the path if it's relative
+-- TODO: cut cwd from the path if it's relative
 -- TODO: details in loclist
 -- TODO: update screenshots
 -- TODO: packer floating window
@@ -31,7 +31,7 @@ function M._set_statusline()
 	-- LOCLIST
 	elseif wintype == "loclist" then
 		content = {
-			CO.spaced_text("Location List"),
+			CO.spaced_text("Location List in development"),
 		}
 	-- QUICKFIX
 	elseif wintype == "quickfix" then
@@ -86,9 +86,14 @@ function M._set_statusline()
 end
 
 ---Callback for setting statusline
-local function callback()
+---@param cb function
+local function callback(cb)
 	vim.schedule(function()
-		vim.api.nvim_set_option("statusline", [[%{%v:lua.require('everybody-wants-that-line')._set_statusline()%}]])
+		if cb ~= nil then
+			cb()
+		end
+		local statusline = require('everybody-wants-that-line')._set_statusline()
+		vim.api.nvim_win_set_option(0, "statusline", statusline)
 	end)
 end
 

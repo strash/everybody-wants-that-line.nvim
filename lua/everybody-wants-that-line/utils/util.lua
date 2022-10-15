@@ -180,37 +180,39 @@ end
 function M.get_wintype()
 	local buff_name = vim.api.nvim_buf_get_name(0)
 	---@type vim_wintype
-	local wintype = vim.fn.win_gettype()
+	local vim_wintype = vim.fn.win_gettype(vim.fn.win_getid())
 	---@type vim_buftype
 	local buftype = vim.o.buftype
-	if wintype == "" then
-		if wintype == "" and buftype == "nofile" then
+	---@type wintype
+	local wintype = "unknown"
+	if vim_wintype == "" then
+		if vim_wintype == "" and buftype == "nofile" then
 			if buff_name:find("NvimTree_1$") ~= nil then
-				return "nvimtree"
+				wintype = "nvimtree"
 			elseif buff_name:find("%[packer%]") ~= nil then
-				return "packer"
+				wintype = "packer"
 			elseif buff_name:find("Neogit") then
-				return "neogit"
+				wintype = "neogit"
 			else
-				return "unknown"
+				wintype = "unknown"
 			end
 		elseif buftype == "nowrite" and buff_name:find(".git/index$") ~= nil then
-			return "fugitive"
+			wintype = "fugitive"
 		elseif buftype == "help" then
-			return "help"
+			wintype = "help"
 		elseif buftype ~= "nofile" and buff_name:find("NvimTree_1$") == nil then
-			return "normal"
+			wintype = "normal"
 		end
-	elseif wintype == "popup" and buftype == "prompt" then
-		return "telescope"
-	elseif wintype == "loclist" then
-		return "loclist"
-	elseif wintype == "quickfix" then
-		return "quickfix"
-	elseif wintype == "preview" then
-		return "preview"
+	elseif vim_wintype == "popup" and buftype == "prompt" then
+		wintype = "telescope"
+	elseif vim_wintype == "loclist" then
+		wintype = "loclist"
+	elseif vim_wintype == "quickfix" then
+		wintype = "quickfix"
+	elseif vim_wintype == "preview" then
+		wintype = "preview"
 	end
-	return "unknown"
+	return wintype
 end
 
 return M

@@ -21,16 +21,16 @@ function M.is_qflist_empty()
 	return #qflist == 0
 end
 
----Check if quickfix list is open
----@return boolean
-function M.is_qflist_open()
-	return vim.fn.getqflist({ winid = true }).winid ~= 0
-end
-
 ---Returns quickfix list winid
 ---@return integer
 function M.get_qflist_winid()
 	return vim.fn.getqflist({ winid = true }).winid
+end
+
+---Check if quickfix list is open
+---@return boolean
+function M.is_qflist_open()
+	return M.get_qflist_winid() ~= 0
 end
 
 ---Get the current entry index. Starts from `1`

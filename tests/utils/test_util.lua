@@ -138,9 +138,9 @@ T["is_focused"] = MiniTest.new_set({
 		for i, v in ipairs(winids) do
 			local stl = child.api.nvim_eval_statusline([[%{%v:lua.M.is_focused()%}]], { winid = v })
 			if i == 1 then
-				eq(stl.str, "true")
+				eq(stl.str, "v:true")
 			elseif i == 2 then
-				eq(stl.str, "false")
+				eq(stl.str, "v:false")
 			end
 		end
 	end,
