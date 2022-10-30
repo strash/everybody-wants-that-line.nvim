@@ -246,13 +246,21 @@ local function setup_autocmd(cb)
 	-- buffer number
 	-- buffer modified flag
 	-- diagnostics
-	create_autocmd({ "BufAdd", "BufModifiedSet", "DiagnosticChanged" }, autocmd_group, function()
+	create_autocmd({
+		"BufAdd",
+		"BufModifiedSet",
+		"DiagnosticChanged",
+		"CursorMoved",
+	}, autocmd_group, function()
 		cb()
 	end)
 
 	-- buffer number
 	-- branch name
-	create_autocmd({ "BufEnter", "BufWinEnter" }, autocmd_group, function()
+	create_autocmd({
+		"BufEnter",
+		"BufWinEnter"
+	}, autocmd_group, function()
 		cb(function()
 			CG.set_git_branch()
 			CQ.set_qflist()
@@ -260,7 +268,10 @@ local function setup_autocmd(cb)
 	end)
 
 	-- diff info
-	create_autocmd({ "BufWritePost", "BufReadPost" }, autocmd_group, function()
+	create_autocmd({
+		"BufWritePost",
+		"BufReadPost"
+	}, autocmd_group, function()
 		cb(function()
 			CG.set_diff_info()
 		end)
@@ -268,7 +279,10 @@ local function setup_autocmd(cb)
 
 	-- branch name
 	-- diff info
-	create_autocmd({ "VimEnter", "FocusGained" }, autocmd_group, function()
+	create_autocmd({
+		"VimEnter",
+		"FocusGained"
+	}, autocmd_group, function()
 		cb(function()
 			CG.set_git_branch()
 			CG.set_diff_info()
@@ -276,7 +290,9 @@ local function setup_autocmd(cb)
 	end)
 
 	-- quickfix list
-	create_autocmd({ "QuickFixCmdPost" }, autocmd_group, function()
+	create_autocmd({
+		"QuickFixCmdPost"
+	}, autocmd_group, function()
 		cb(function()
 			CQ.set_qflist()
 		end)
