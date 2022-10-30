@@ -205,22 +205,22 @@ end
 ---@param group_name string
 ---@return string
 function M.get_group_name(group_name)
-	if U.laststatus() == 3 then
+	if U.is_focused() then
 		return group_name
 	end
-	return U.is_focused() and group_name or U.prefix .. group_name:sub(#U.prefix + 1, #U.prefix + 2) .. "Nc" .. group_name:sub(#U.prefix + 3)
+	return U.prefix .. group_name:sub(#U.prefix + 1, #U.prefix + 2) .. "Nc" .. group_name:sub(#U.prefix + 3)
 end
 
 ---Returns highlighted text
 ---@param text string
 ---@param group_name string
----@param is_nc nil|boolean If `true` then `group_name` must be a `[nc]`. Default is `false`
+---@param is_exact_group_name nil|boolean If `true` then return formatted `group_name`. Default is `false`
 ---@return string
-function M.highlight_text(text, group_name, is_nc)
-	if is_nc == nil then
-		is_nc = false
+function M.highlight_text(text, group_name, is_exact_group_name)
+	if is_exact_group_name == nil then
+		is_exact_group_name = false
 	end
-	return "%#" .. (is_nc and group_name or M.get_group_name(group_name)) .. "#" .. text .. "%*"
+	return "%#" .. (is_exact_group_name and group_name or M.get_group_name(group_name)) .. "#" .. text .. "%*"
 end
 
 return M

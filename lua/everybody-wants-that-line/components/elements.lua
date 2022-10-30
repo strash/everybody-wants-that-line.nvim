@@ -115,72 +115,44 @@ end
 ---@param opacity sign_opacity
 ---@return string
 function M.get_plus(opacity)
-	if UU.laststatus() == 3 or UU.is_focused() then
-		return opacity == "100" and M.cache.plus.n or M.cache.plus_50.n
-	else
-		return opacity == "100" and M.cache.plus.nc or M.cache.plus_50.nc
-	end
+	return opacity == "100" and UU.get_cache_item_variant(M.cache.plus) or UU.get_cache_item_variant(M.cache.plus_50)
 end
 
 ---Returns minus `"-"`
 ---@param opacity sign_opacity
 ---@return string
 function M.get_minus(opacity)
-	if UU.laststatus() == 3 or UU.is_focused() then
-		return opacity == "100" and M.cache.minus.n or M.cache.minus_50.n
-	else
-		return opacity == "100" and M.cache.minus.nc or M.cache.minus_50.nc
-	end
+	return opacity == "100" and UU.get_cache_item_variant(M.cache.minus) or UU.get_cache_item_variant(M.cache.minus_50)
 end
 
 ---Returns separator `" | "`
 ---@return string
 function M.get_separator()
-	if UU.laststatus() == 3 or UU.is_focused() then
-		return M.cache.separator.n
-	else
-		return M.cache.separator.nc
-	end
+	return UU.get_cache_item_variant(M.cache.separator)
 end
 
 ---Returns comma `","`
 ---@return string
 function M.get_comma()
-	if UU.laststatus() == 3 or UU.is_focused() then
-		return M.cache.comma.n
-	else
-		return M.cache.comma.nc
-	end
+	return UU.get_cache_item_variant(M.cache.comma)
 end
 
 ---Returns percentage through file in lines
 ---@return string
 function M.get_ln()
-	if UU.laststatus() == 3 or UU.is_focused() then
-		return M.cache.ln.n
-	else
-		return M.cache.ln.nc
-	end
+	return UU.get_cache_item_variant(M.cache.ln)
 end
 
 ---Returns column index
 ---@return string
 function M.get_col()
-	if UU.laststatus() == 3 or UU.is_focused() then
-		return M.cache.col.n
-	else
-		return M.cache.col.nc
-	end
+	return UU.get_cache_item_variant(M.cache.col)
 end
 
 ---Returns lines of code
 ---@return string
 function M.get_loc()
-	if UU.laststatus() == 3 or UU.is_focused() then
-		return M.cache.loc.n
-	else
-		return M.cache.loc.nc
-	end
+	return UU.get_cache_item_variant(M.cache.loc)
 end
 
 ---Init elements
