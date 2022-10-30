@@ -24,9 +24,8 @@ function M.get_buffer()
 	local buffer = ""
 	if S.opt.buffer.show == true then
 		local bufnr_item = CB.get_buf_nr(S.opt.buffer)
-		local bufnr_prefix = #bufnr_item.prefix > 0 and UC.highlight_text(bufnr_item.prefix, C.group_names.fg_30) or ""
-		local nr = UC.highlight_text(bufnr_item.nr, C.group_names.fg_bold)
-		buffer = CE.el.space .. CB.get_buffer_prefix() .. bufnr_prefix .. nr .. CB.get_buf_modflag() .. CE.get_separator()
+		local nr = UU.get_cache_item_variant(bufnr_item.result)
+		buffer = CE.el.space .. CB.get_buffer_symbol() .. nr .. CB.get_buf_modflag() .. CE.get_separator()
 	end
 	return buffer
 end

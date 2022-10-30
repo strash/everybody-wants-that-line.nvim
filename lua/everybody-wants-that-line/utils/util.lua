@@ -115,6 +115,9 @@ end
 ---Check if statusline on focused window
 ---@return boolean
 function M.is_focused()
+	if M.laststatus() == 3 then
+		return true
+	end
 	return tonumber(vim.g.actual_curwin) == vim.api.nvim_get_current_win()
 end
 
@@ -140,6 +143,17 @@ end
 ---@return laststatus
 function M.laststatus()
 	return vim.o.laststatus
+end
+
+---Returns either `n` or `nc` cache item variant
+---@param cache_item cache_item_variant
+---@return string
+function M.get_cache_item_variant(cache_item)
+	if M.is_focused() then
+		return cache_item.n
+	else
+		return cache_item.nc
+	end
 end
 
 ---@alias vim_wintype
