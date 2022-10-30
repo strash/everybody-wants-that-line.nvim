@@ -35,8 +35,8 @@ T["get_filepath"] = function()
 		},
 		relative = {
 			filename = "test_file",
-			path = "dependencies/",
-			shorten = "d/",
+			path = "./dependencies/",
+			shorten = "./d/",
 		}
 	}
 	eq(child.lua_get("M.get_filepath()"), filepath)
