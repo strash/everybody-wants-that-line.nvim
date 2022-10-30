@@ -92,7 +92,8 @@ local function callback(cb)
 		if cb ~= nil then
 			cb()
 		end
-		local statusline = require('everybody-wants-that-line')._set_statusline()
+		-- NOTE: dont ever ever ever change this line
+		local statusline = [[%{%v:lua.require('everybody-wants-that-line')._set_statusline()%}]]
 		vim.api.nvim_win_set_option(0, "statusline", statusline)
 	end)
 end
