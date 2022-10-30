@@ -16,13 +16,13 @@ local T = MiniTest.new_set({
 	},
 })
 
-T["get_buffer_preffix"] = function()
+T["get_buffer_symbol"] = function()
 	child.lua([[require("everybody-wants-that-line").setup({
 		buffer = {
 			prefix = "Buffer"
 		}
 	}) ]])
-	eq(child.lua("return M.get_buffer_prefix()"), "%#" .. UU.prefix .. "Fg60#Buffer %*")
+	eq(child.lua("return M.get_buffer_symbol()"), "%#" .. UU.prefix .. "Fg60#Buffer %*")
 end
 
 T["get_buf_modflag"] = MiniTest.new_set({}, {
@@ -52,7 +52,15 @@ T["get_buf_nr"] = MiniTest.new_set({}, {
 			}
 		}) ]])
 		eq(child.lua([[return M.get_buf_nr(require("everybody-wants-that-line.settings").opt.buffer)]]),
-			{ prefix = "aaaa", nr = "1", bufnr = 1 })
+			{
+				prefix = "aaaa",
+				nr = "1",
+				bufnr = 1,
+				result = {
+					n = "%#EverybodyWantsThatLineFg30#aaaa%*%#EverybodyWantsThatLineFgBold#1%*",
+					nc = "%#EverybodyWantsThatLineFg30#aaaa%*%#EverybodyWantsThatLineFgNcBold#1%*"
+				}
+			})
 	end,
 	without_prefix = function()
 		child.lua([[require("everybody-wants-that-line").setup({
@@ -62,7 +70,15 @@ T["get_buf_nr"] = MiniTest.new_set({}, {
 			}
 		}) ]])
 		eq(child.lua([[return M.get_buf_nr(require("everybody-wants-that-line.settings").opt.buffer)]]),
-			{ prefix = "", nr = "1", bufnr = 1 })
+			{
+				prefix = "",
+				nr = "1",
+				bufnr = 1,
+				result = {
+					n = "%#EverybodyWantsThatLineFgBold#1%*",
+					nc = "%#EverybodyWantsThatLineFgNcBold#1%*"
+				}
+		})
 	end,
 })
 
