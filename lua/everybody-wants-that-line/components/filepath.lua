@@ -42,9 +42,12 @@ function M.get_filepath()
 			---@type string
 			local relative = vim.fn.bufname()
 			if #relative ~= 0 then
-				if relative:find("/") == nil then
-					relative = "/" .. relative
+				-- if buffer was opened with lsp go to ...
+				local _, r_e = relative:find(vim.fn.getcwd(0), 0, true)
+				if r_e ~= nil then
+					relative = relative:sub(r_e + 2)
 				end
+				relative = "./" .. relative
 				path_parts.relative = split_path_and_filename(relative)
 			end
 			cache[fullpath] = path_parts

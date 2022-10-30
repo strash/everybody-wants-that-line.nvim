@@ -3,7 +3,6 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
--- TODO: cut cwd from the path if it's relative
 -- TODO: details in loclist
 -- TODO: update screenshots
 -- TODO: add modes
