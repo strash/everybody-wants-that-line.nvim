@@ -197,6 +197,7 @@ function M.get_wintype()
 	local vim_wintype = vim.fn.win_gettype(vim.fn.win_getid())
 	---@type vim_buftype
 	local buftype = vim.o.buftype
+	--vim.pretty_print("buff name " .. buff_name .. ", wintype " .. vim_wintype .. ", buftype " .. buftype)
 	---@type wintype
 	local wintype = "unknown"
 	if vim_wintype == "" then
@@ -217,8 +218,16 @@ function M.get_wintype()
 		elseif buftype ~= "nofile" and buff_name:find("NvimTree_1$") == nil then
 			wintype = "normal"
 		end
-	elseif vim_wintype == "popup" and buftype == "prompt" then
-		wintype = "telescope"
+	elseif vim_wintype == "popup" then
+		if buftype == "prompt" then
+			if buff_name == "" then
+				wintype = "telescope"
+			end
+		elseif buftype == "nofile" then
+			if buff_name:find("%[packer%]") ~= nil then
+				wintype = "packer"
+			end
+		end
 	elseif vim_wintype == "loclist" then
 		wintype = "loclist"
 	elseif vim_wintype == "quickfix" then

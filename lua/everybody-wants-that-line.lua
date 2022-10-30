@@ -6,7 +6,6 @@ local M = {}
 -- TODO: cut cwd from the path if it's relative
 -- TODO: details in loclist
 -- TODO: update screenshots
--- TODO: packer floating window
 -- TODO: add modes
 
 ---Sets that line
