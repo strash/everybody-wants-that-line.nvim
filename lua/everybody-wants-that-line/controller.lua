@@ -132,6 +132,14 @@ function M.get_filepath()
 	return CE.el.truncate .. path .. CE.el.spacer
 end
 
+---Returns netrw directory
+---@return string
+function M.get_netrw()
+	local netrw = UC.highlight_text("Netrw", C.group_names.fg_60_bold)
+	local netrw_dir = vim.api.nvim_buf_get_name(0)
+	return M.spaced_text(netrw .. CE.el.space .. netrw_dir)
+end
+
 ---Returns quickfix list
 ---@return string
 function M.get_quickfix()

@@ -188,6 +188,7 @@ end
 ---| "neogit"
 ---| "fugitive"
 ---| "telescope"
+---| "netrw"
 
 ---Returns window type
 ---@return wintype enum
@@ -197,11 +198,10 @@ function M.get_wintype()
 	local vim_wintype = vim.fn.win_gettype(vim.fn.win_getid())
 	---@type vim_buftype
 	local buftype = vim.o.buftype
-	--vim.pretty_print("buff name " .. buff_name .. ", wintype " .. vim_wintype .. ", buftype " .. buftype)
 	---@type wintype
 	local wintype = "unknown"
 	if vim_wintype == "" then
-		if vim_wintype == "" and buftype == "nofile" then
+		if buftype == "nofile" then
 			if buff_name:find("NvimTree_1$") ~= nil then
 				wintype = "nvimtree"
 			elseif buff_name:find("%[packer%]") ~= nil then
@@ -216,7 +216,11 @@ function M.get_wintype()
 		elseif buftype == "help" then
 			wintype = "help"
 		elseif buftype ~= "nofile" and buff_name:find("NvimTree_1$") == nil then
-			wintype = "normal"
+			if vim.o.filetype == "netrw" then
+				wintype = "netrw"
+			else
+				wintype = "normal"
+			end
 		end
 	elseif vim_wintype == "popup" then
 		if buftype == "prompt" then

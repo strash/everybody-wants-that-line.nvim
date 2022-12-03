@@ -6,6 +6,16 @@ local M = {}
 -- TODO: details in loclist
 -- TODO: update screenshots
 -- TODO: add modes
+--n	Normal mode
+--v	Visual and Select mode
+--x	Visual mode
+--s	Select mode
+--o	Operator-pending mode
+--i	Insert mode
+--l	Language-Argument ("r", "f", "t", etc.)
+--c	Command-line mode
+
+
 
 ---Sets that line
 ---@return string
@@ -25,6 +35,12 @@ function M._set_statusline()
 			CO.get_filepath(),
 			CO.get_filesize(),
 			CO.get_ruller(true, true, true),
+		}
+	-- NETRW
+	elseif wintype == "netrw" then
+		content = {
+			CO.get_buffer(),
+			CO.get_netrw(),
 		}
 	-- LOCLIST
 	elseif wintype == "loclist" then
