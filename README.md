@@ -3,28 +3,19 @@ Minimalistic, informative and elegant statusline for neovim.
 Plugin uses colors from your current colorscheme, so it looks natural.
 It adapts if you change colorscheme or switch to a light or a dark theme.
 
-## Screenshots
-### Examples
-![screenshot](https://i.ibb.co/3ym5jsb/Group-14.png)
-
-### What is what
-![screenshot](https://i.ibb.co/GtLSRQg/Group-14-2.png)
+https://user-images.githubusercontent.com/14233263/206051953-92085da0-a77d-4169-a087-d7d4e9837961.mp4
 
 ## Features
+- Zero dependencies, lightweight and fast
 - Adaptive colors
 - Current buffer number and buffer modified flag
 - LSP diagnostics
-- Current git branch and git status (additions and deletions throughout current project)
-- Current filename
+- Git branch and git status
+- Filename
 - Clean ruler
-- Global statusline or in each window
-- Support for Quickfix List, Location List, Help
-- Plugins:
-	- Telescope,
-	- Neogit,
-	- Fugitive,
-	- NvimTree
-	- Packer,
+- Global statusline or per window
+- Support: Netrw, Quickfix List, Location List and Help
+- Basic support: Telescope, Neogit, Fugitive, NvimTree, Packer
 
 ## Installation
 Neovim v0.7.0 and newer.
@@ -39,12 +30,11 @@ Plug "strash/everybody-wants-that-line.nvim"
 ```
 
 ## Configuration
-These are the defaults.
 ```lua
--- if you ok with defaults
+-- You can omit the config table
 require("everybody-wants-that-line").setup()
 
--- if you hate defaults
+-- or you can add it
 require("everybody-wants-that-line").setup({
 	buffer = {
 		show = true,
@@ -77,5 +67,5 @@ require("everybody-wants-that-line").setup({
 ```
 
 ## Contribution
-If you found a bug please [open an issue](https://github.com/strash/everybody-wants-that-line.nvim/issues/new?assignees=&labels=bug&template=bug_report.md&title=) or [request a feature](https://github.com/strash/everybody-wants-that-line.nvim/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=). All contributions are welcome! Just open a PR.
+If you found a bug please [open an issue](https://github.com/strash/everybody-wants-that-line.nvim/issues/new?assignees=&labels=bug&template=bug_report.md&title=) or [request a feature](https://github.com/strash/everybody-wants-that-line.nvim/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=). All contributions are welcome.
 

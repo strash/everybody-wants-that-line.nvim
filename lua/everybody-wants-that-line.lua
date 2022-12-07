@@ -4,7 +4,6 @@ local UU = require("everybody-wants-that-line.utils.util")
 local M = {}
 
 -- TODO: details in loclist
--- TODO: update screenshots
 -- TODO: add modes
 --n	Normal mode
 --v	Visual and Select mode
