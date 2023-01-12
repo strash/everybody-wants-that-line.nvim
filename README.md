@@ -14,8 +14,8 @@ https://user-images.githubusercontent.com/14233263/206051953-92085da0-a77d-4169-
 - Filename
 - Clean ruler
 - Global statusline or per window
-- Support: Netrw, Quickfix List, Location List and Help
-- Basic support: Telescope, Neogit, Fugitive, NvimTree, Packer
+- Support: Netrw, Quickfix List, Location List (soon) and Help
+- Basic support: Telescope, Neogit, Fugitive, Neo-tree, NvimTree, Buffer Manager, Lazy, Packer
 
 ## Installation
 Neovim v0.7.0 and newer.

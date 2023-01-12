@@ -3,7 +3,6 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
--- TODO: add support for buffer_manager, lazy
 -- TODO: details in loclist
 -- TODO: add modes
 --n	Normal mode
@@ -58,27 +57,47 @@ function M._set_statusline()
 			CO.get_help(),
 			CO.get_ruller(true, false, true),
 		}
+	-- PACKER
+	elseif wintype == "packer" then
+		content = {
+			CO.spaced_text(CO.title("Packer"))
+		}
+	-- LAZY
+	elseif wintype == "lazy" then
+		content = {
+			CO.spaced_text(CO.title("Lazy"))
+		}
 	-- NETRW
 	elseif wintype == "netrw" then
 		content = {
 			CO.get_buffer(),
 			CO.get_treedir("Netrw"),
 		}
+	-- TELESCOPE
+	elseif wintype == "telescope" then
+		content = {
+			CO.spaced_text(CO.title("Telescope"))
+		}
+	-- BUFFER MANAGER
+	elseif wintype == "buffer_manager" then
+		content = {
+			CO.spaced_text(CO.title("Buffer Manager"))
+		}
 	-- NVIMTREE
 	elseif wintype == "nvimtree" then
 		content = {
 			CO.spaced_text(CO.title("NvimTree"))
+		}
+	-- NEO TREE
+	elseif wintype == "neo-tree" then
+		content = {
+			CO.spaced_text(CO.title("Neo-tree"))
 		}
 	-- DIRBUF
 	elseif wintype == "dirbuf" then
 		content = {
 			CO.get_buffer(),
 			CO.get_treedir("Dirbuf"),
-		}
-	-- PACKER
-	elseif wintype == "packer" then
-		content = {
-			CO.spaced_text(CO.title("Packer"))
 		}
 	-- NEOGIT
 	elseif wintype == "neogit" then
@@ -89,11 +108,6 @@ function M._set_statusline()
 	elseif wintype == "fugitive" then
 		content = {
 			CO.get_branch_status_text("Fugitive")
-		}
-	-- TELESCOPE
-	elseif wintype == "telescope" then
-		content = {
-			CO.spaced_text(CO.title("Telescope"))
 		}
 	-- UNKNOWN
 	elseif wintype == "unknown" then
@@ -108,14 +122,14 @@ end
 ---Callback for setting statusline
 ---@param cb function
 local function callback(cb)
-	vim.schedule(function()
+	--vim.schedule(function()
 		if cb ~= nil then
 			cb()
 		end
 		-- NOTE: dont ever ever ever change this line
 		local statusline = [[%{%v:lua.require('everybody-wants-that-line')._set_statusline()%}]]
 		vim.api.nvim_win_set_option(0, "statusline", statusline)
-	end)
+	--end)
 end
 
 ---Setup that line

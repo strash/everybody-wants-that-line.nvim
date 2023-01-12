@@ -183,13 +183,16 @@ end
 ---| "quickfix"
 ---| "preview"
 ---| "help"
----| "nvimtree"
----| "packer"
----| "neogit"
----| "fugitive"
----| "telescope"
 ---| "netrw"
----| "dirbuf"
+---| "lazy"           # folke/lazy.nvim
+---| "packer"         # wbthomason/packer.nvim
+---| "neogit"         # TimUntersberger/neogit
+---| "fugitive"       # tpope/vim-fugitive
+---| "telescope"      # nvim-telescope/telescope.nvim
+---| "buffer_manager" # j-morano/buffer_manager.nvim
+---| "nvimtree"       # nvim-tree/nvim-tree.lua
+---| "neo-tree"       # nvim-neo-tree/neo-tree.nvim
+---| "dirbuf"         # elihunter173/dirbuf.nvim
 
 ---Returns window type
 ---@return wintype enum
@@ -203,47 +206,43 @@ function M.get_wintype()
 	local wintype = "unknown"
 	---@type string
 	local filetype = vim.o.filetype
-	-- for debug
-	--vim.api.nvim_notify(
-	--	"buff name '" .. buff_name ..
-	--	"', vim wintype '" .. vim_wintype ..
-	--	"', buftype '" .. buftype ..
-	--	"', wintype '" .. wintype ..
-	--	"', filetype '" .. filetype .. "'",
-	--	vim.log.levels.INFO,
-	--{})
-	if vim_wintype == "" then
-		if buftype == "nofile" then
-			if filetype == "NvimTree" then
-				wintype = "nvimtree"
-			elseif buff_name:find("%[packer%]") ~= nil then
-				wintype = "packer"
-			elseif buff_name:find("Neogit") then
-				wintype = "neogit"
-			else
-				wintype = "unknown"
-			end
-		elseif buftype == "nowrite" and buff_name:find(".git/index$") ~= nil then
-			wintype = "fugitive"
-		elseif buftype == "help" then
-			wintype = "help"
-		elseif buftype ~= "nofile" and buff_name:find("NvimTree_1$") == nil then
+
+	if vim_wintype == "" or vim_wintype == "popup" then
+		if buftype == "" then
 			if filetype == "netrw" then
 				wintype = "netrw"
-			elseif filetype == "dirbuf" then
-				wintype = "dirbuf"
 			else
 				wintype = "normal"
 			end
-		end
-	elseif vim_wintype == "popup" then
-		if buftype == "prompt" then
-			if buff_name == "" then
+		elseif buftype == "nofile" then
+			if filetype == "NvimTree" then
+				wintype = "nvimtree"
+			elseif filetype == "neo-tree" then
+				wintype = "neo-tree"
+			elseif filetype == "packer" then
+				wintype = "packer"
+			elseif filetype:find("Neogit") ~= nil then
+				wintype = "neogit"
+			elseif filetype == "lazy" then
+				wintype = "lazy"
+			else
+				wintype = "unknown"
+			end
+		elseif buftype == "prompt" then
+			if filetype:find("Telescope") ~= nil then
 				wintype = "telescope"
 			end
-		elseif buftype == "nofile" then
-			if buff_name:find("%[packer%]") ~= nil then
-				wintype = "packer"
+		elseif buftype == "nowrite" then
+			if filetype == "fugitive" then
+				wintype = "fugitive"
+			end
+		elseif buftype == "help" then
+			wintype = "help"
+		elseif buftype == "acwrite" then
+			if filetype == "dirbuf" then
+				wintype = "dirbuf"
+			elseif filetype == "buffer_manager" then
+				wintype = "buffer_manager"
 			end
 		end
 	elseif vim_wintype == "loclist" then
@@ -253,6 +252,16 @@ function M.get_wintype()
 	elseif vim_wintype == "preview" then
 		wintype = "preview"
 	end
+
+	-- for debug
+	vim.api.nvim_notify(
+		"buff name '" .. buff_name ..
+		"', vim wintype '" .. vim_wintype ..
+		"', buftype '" .. buftype ..
+		"', wintype '" .. wintype ..
+		"', filetype '" .. filetype .. "'",
+		vim.log.levels.INFO,
+	{})
 	return wintype
 end
 
