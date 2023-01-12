@@ -12,17 +12,24 @@ local UU = require("everybody-wants-that-line.utils.util")
 local M = {}
 
 ---Returns `text` with spacers on each side
----@param text string
+---@param content string|table
 ---@return string
-function M.spaced_text(text)
-	return CE.el.spacer .. text .. CE.el.spacer
+function M.spaced_text(content)
+	return CE.el.spacer .. (type(content) == "table" and table.concat(content) or content) .. CE.el.spacer
 end
 
----Returns highlighted text
+---Returns styled text
 ---@param text string
 ---@return string
 function M.title(text)
 	return UC.highlight_text(text, C.group_names.fg_60_bold)
+end
+
+---Returns bold text
+---@param text string
+---@return string
+function M.bold(text)
+	return UC.highlight_text(text, C.group_names.fg_bold)
 end
 
 ---Returns buffer
@@ -99,15 +106,21 @@ function M.get_diagnostics()
 	return err .. comma_space .. warn .. comma_space .. hint .. comma_space .. info .. CE.get_separator()
 end
 
+---Returns branch name
+---@return string
+function M.get_branch_name()
+	local branch = ""
+	if #CG.cache.branch ~= 0 then
+		branch = CG.cache.branch .. CE.el.space
+	end
+	return branch
+end
+
 ---Returns branch and git status
 ---@return string
 function M.get_branch_status()
-	local branch = ""
 	local insertions = ""
 	local deletions = ""
-	if #CG.cache.branch ~= 0 then
-		branch = M.title(CG.cache.branch) .. CE.el.space
-	end
 	if CG.cache.diff_info.insertions ~= 0 then
 		insertions = UC.highlight_text(tostring(CG.cache.diff_info.insertions), C.group_names.fg_diff_add_bold)
 		insertions = insertions .. CE.get_plus("50") .. CE.el.space
@@ -116,7 +129,7 @@ function M.get_branch_status()
 		deletions = UC.highlight_text(tostring(CG.cache.diff_info.deletions), C.group_names.fg_diff_delete_bold)
 		deletions = deletions .. CE.get_minus("50") .. CE.el.space
 	end
-	return CE.el.spacer .. branch .. insertions .. deletions
+	return insertions .. deletions
 end
 
 ---Returns path to the file
@@ -125,7 +138,7 @@ function M.get_filepath()
 	local path_parts = CP.get_filepath()
 	local path = "[No name]"
 	if #path_parts.relative.path ~= 0 and #path_parts.full.path ~= 0 then
-		local filename = UC.highlight_text(path_parts.relative.filename, C.group_names.fg_bold)
+		local filename = M.bold(path_parts.relative.filename)
 		if S.opt.filepath.path == "tail" then
 			path = filename
 		elseif S.opt.filepath.path == "relative" then
@@ -136,7 +149,7 @@ function M.get_filepath()
 			path = UC.highlight_text(full, C.group_names.fg_60) .. filename
 		end
 	end
-	return CE.el.truncate .. path .. CE.el.spacer
+	return CE.el.truncate .. path
 end
 
 ---Returns netrw directory
@@ -151,7 +164,7 @@ end
 ---Returns quickfix list
 ---@return string
 function M.get_quickfix()
-	local idx = UC.highlight_text(tostring(CQ.get_qflist_idx()), C.group_names.fg_bold)
+	local idx = M.bold(tostring(CQ.get_qflist_idx()))
 	local entries_count = CQ.get_entries_count()
 	local files_count = CQ.get_files_w_entries_count()
 	local title
@@ -186,13 +199,6 @@ function M.get_help()
 	local help = M.title("Help")
 	local buff_name = vim.api.nvim_buf_get_name(0)
 	return M.spaced_text(help .. CE.el.space .. buff_name:match("[%s%w_]-%.%w-$"))
-end
-
----Returns spaced branch, git status and text
----@param text any
----@return string
-function M.get_branch_status_text(text)
-	return M.get_branch_status() .. text .. CE.el.spacer
 end
 
 ---Returns file size

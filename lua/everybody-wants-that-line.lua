@@ -30,8 +30,11 @@ function M._set_statusline()
 			CO.get_buffer(),
 			CO.get_diagnostics(),
 			CO.get_quickfix(),
-			CO.get_branch_status(),
-			CO.get_filepath(),
+			CO.spaced_text({
+				CO.title(CO.get_branch_name()),
+				CO.get_branch_status(),
+				CO.get_filepath(),
+			}),
 			CO.get_filesize(),
 			CO.get_ruller(true, true, true),
 		}
@@ -102,12 +105,20 @@ function M._set_statusline()
 	-- NEOGIT
 	elseif wintype == "neogit" then
 		content = {
-			CO.get_branch_status_text("Neogit")
+			CO.spaced_text({
+				CO.title("Neogit "),
+				CO.get_branch_status(),
+				CO.bold(CO.get_branch_name()),
+			}),
 		}
 	-- FUGITIVE
 	elseif wintype == "fugitive" then
 		content = {
-			CO.get_branch_status_text("Fugitive")
+			CO.spaced_text({
+				CO.title("Fugitive "),
+				CO.get_branch_status(),
+				CO.bold(CO.get_branch_name()),
+			}),
 		}
 	-- UNKNOWN
 	elseif wintype == "unknown" then
