@@ -3,6 +3,7 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
+-- TODO: add support for buffer_manager, lazy
 -- TODO: details in loclist
 -- TODO: add modes
 --n	Normal mode
@@ -35,16 +36,10 @@ function M._set_statusline()
 			CO.get_filesize(),
 			CO.get_ruller(true, true, true),
 		}
-	-- NETRW
-	elseif wintype == "netrw" then
-		content = {
-			CO.get_buffer(),
-			CO.get_netrw(),
-		}
 	-- LOCLIST
 	elseif wintype == "loclist" then
 		content = {
-			CO.spaced_text("Location List in development"),
+			CO.spaced_text(CO.title("Location List in development")),
 		}
 	-- QUICKFIX
 	elseif wintype == "quickfix" then
@@ -54,7 +49,7 @@ function M._set_statusline()
 	-- PREVIEW
 	elseif wintype == "preview" then
 		content = {
-			CO.spaced_text("Preview"),
+			CO.spaced_text(CO.title("Preview")),
 		}
 	-- HELP
 	elseif wintype == "help" then
@@ -63,15 +58,27 @@ function M._set_statusline()
 			CO.get_help(),
 			CO.get_ruller(true, false, true),
 		}
+	-- NETRW
+	elseif wintype == "netrw" then
+		content = {
+			CO.get_buffer(),
+			CO.get_treedir("Netrw"),
+		}
 	-- NVIMTREE
 	elseif wintype == "nvimtree" then
 		content = {
-			CO.spaced_text("NvimTree"),
+			CO.spaced_text(CO.title("NvimTree"))
+		}
+	-- DIRBUF
+	elseif wintype == "dirbuf" then
+		content = {
+			CO.get_buffer(),
+			CO.get_treedir("Dirbuf"),
 		}
 	-- PACKER
 	elseif wintype == "packer" then
 		content = {
-			CO.spaced_text("Packer")
+			CO.spaced_text(CO.title("Packer"))
 		}
 	-- NEOGIT
 	elseif wintype == "neogit" then
@@ -86,12 +93,12 @@ function M._set_statusline()
 	-- TELESCOPE
 	elseif wintype == "telescope" then
 		content = {
-			CO.spaced_text("Telescope")
+			CO.spaced_text(CO.title("Telescope"))
 		}
 	-- UNKNOWN
 	elseif wintype == "unknown" then
 		content = {
-			CO.spaced_text([[¯\_(ツ)_/¯]])
+			CO.spaced_text(CO.title([[¯\_(ツ)_/¯]]))
 		}
 	end
 

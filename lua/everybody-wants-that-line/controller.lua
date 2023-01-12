@@ -18,6 +18,13 @@ function M.spaced_text(text)
 	return CE.el.spacer .. text .. CE.el.spacer
 end
 
+---Returns highlighted text
+---@param text string
+---@return string
+function M.title(text)
+	return UC.highlight_text(text, C.group_names.fg_60_bold)
+end
+
 ---Returns buffer
 ---@return string
 function M.get_buffer()
@@ -99,7 +106,7 @@ function M.get_branch_status()
 	local insertions = ""
 	local deletions = ""
 	if #CG.cache.branch ~= 0 then
-		branch = UC.highlight_text(CG.cache.branch, C.group_names.fg_60_bold) .. CE.el.space
+		branch = M.title(CG.cache.branch) .. CE.el.space
 	end
 	if CG.cache.diff_info.insertions ~= 0 then
 		insertions = UC.highlight_text(tostring(CG.cache.diff_info.insertions), C.group_names.fg_diff_add_bold)
@@ -133,11 +140,12 @@ function M.get_filepath()
 end
 
 ---Returns netrw directory
+---@param name string
 ---@return string
-function M.get_netrw()
-	local netrw = UC.highlight_text("Netrw", C.group_names.fg_60_bold)
-	local netrw_dir = vim.api.nvim_buf_get_name(0)
-	return M.spaced_text(netrw .. CE.el.space .. netrw_dir)
+function M.get_treedir(name)
+	local prog = M.title(name)
+	local dir = vim.api.nvim_buf_get_name(0)
+	return M.spaced_text(prog .. CE.el.space .. dir)
 end
 
 ---Returns quickfix list
@@ -151,7 +159,7 @@ function M.get_quickfix()
 	if tonumber(CQ.get_qflist_winid()) == tonumber(vim.api.nvim_get_current_win()) then
 		local text_in = UC.highlight_text("in", C.group_names.fg_60)
 		local text_file = UC.highlight_text(files_count > 1 and "files" or "file", C.group_names.fg_60)
-		title = UC.highlight_text("Quickfix List", C.group_names.fg_60_bold)
+		title = M.title("Quickfix List")
 		local text_of = UC.highlight_text("of", C.group_names.fg_60)
 		quickfix = M.spaced_text(table.concat({
 			title .. CE.el.space,
@@ -175,7 +183,7 @@ end
 ---Returns help filename
 ---@return string
 function M.get_help()
-	local help = UC.highlight_text("Help", C.group_names.fg_60_bold)
+	local help = M.title("Help")
 	local buff_name = vim.api.nvim_buf_get_name(0)
 	return M.spaced_text(help .. CE.el.space .. buff_name:match("[%s%w_]-%.%w-$"))
 end

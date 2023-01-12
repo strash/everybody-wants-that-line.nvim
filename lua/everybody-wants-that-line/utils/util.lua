@@ -189,6 +189,7 @@ end
 ---| "fugitive"
 ---| "telescope"
 ---| "netrw"
+---| "dirbuf"
 
 ---Returns window type
 ---@return wintype enum
@@ -200,9 +201,20 @@ function M.get_wintype()
 	local buftype = vim.o.buftype
 	---@type wintype
 	local wintype = "unknown"
+	---@type string
+	local filetype = vim.o.filetype
+	-- for debug
+	--vim.api.nvim_notify(
+	--	"buff name '" .. buff_name ..
+	--	"', vim wintype '" .. vim_wintype ..
+	--	"', buftype '" .. buftype ..
+	--	"', wintype '" .. wintype ..
+	--	"', filetype '" .. filetype .. "'",
+	--	vim.log.levels.INFO,
+	--{})
 	if vim_wintype == "" then
 		if buftype == "nofile" then
-			if buff_name:find("NvimTree_1$") ~= nil then
+			if filetype == "NvimTree" then
 				wintype = "nvimtree"
 			elseif buff_name:find("%[packer%]") ~= nil then
 				wintype = "packer"
@@ -216,8 +228,10 @@ function M.get_wintype()
 		elseif buftype == "help" then
 			wintype = "help"
 		elseif buftype ~= "nofile" and buff_name:find("NvimTree_1$") == nil then
-			if vim.o.filetype == "netrw" then
+			if filetype == "netrw" then
 				wintype = "netrw"
+			elseif filetype == "dirbuf" then
+				wintype = "dirbuf"
 			else
 				wintype = "normal"
 			end
