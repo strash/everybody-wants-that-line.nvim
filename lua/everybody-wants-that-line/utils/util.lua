@@ -197,15 +197,15 @@ end
 ---Returns window type
 ---@return wintype enum
 function M.get_wintype()
-	local buff_name = vim.api.nvim_buf_get_name(0)
 	---@type vim_wintype
 	local vim_wintype = vim.fn.win_gettype(vim.fn.win_getid())
 	---@type vim_buftype
 	local buftype = vim.o.buftype
-	---@type wintype
-	local wintype = "unknown"
 	---@type string
 	local filetype = vim.o.filetype
+
+	---@type wintype
+	local wintype = "unknown"
 
 	if vim_wintype == "" or vim_wintype == "popup" then
 		if buftype == "" then
@@ -254,14 +254,13 @@ function M.get_wintype()
 	end
 
 	-- for debug
-	vim.api.nvim_notify(
-		"buff name '" .. buff_name ..
-		"', vim wintype '" .. vim_wintype ..
-		"', buftype '" .. buftype ..
-		"', wintype '" .. wintype ..
-		"', filetype '" .. filetype .. "'",
-		vim.log.levels.INFO,
-	{})
+	--vim.api.nvim_notify(
+	--	"vim wintype '" .. vim_wintype ..
+	--	"', buftype '" .. buftype ..
+	--	"', filetype '" .. filetype ..
+	--	"', wintype '" .. wintype .. "'",
+	--	vim.log.levels.INFO,
+	--{})
 	return wintype
 end
 
