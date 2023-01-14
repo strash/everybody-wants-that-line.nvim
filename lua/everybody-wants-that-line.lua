@@ -133,14 +133,14 @@ end
 ---Callback for setting statusline
 ---@param cb function
 local function callback(cb)
-	--vim.schedule(function()
+	vim.schedule(function()
 		if cb ~= nil then
 			cb()
 		end
 		-- NOTE: dont ever ever ever change this line
 		local statusline = [[%{%v:lua.require('everybody-wants-that-line')._set_statusline()%}]]
 		vim.api.nvim_win_set_option(0, "statusline", statusline)
-	--end)
+	end)
 end
 
 ---Setup that line
