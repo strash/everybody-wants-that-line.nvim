@@ -12,10 +12,13 @@ local UU = require("everybody-wants-that-line.utils.util")
 local M = {}
 
 ---Returns `text` with spacers on each side
----@param content string|table
+---@param content string[] String or a table of strings
 ---@return string
 function M.spaced_text(content)
-	return CE.el.spacer .. (type(content) == "table" and table.concat(content) or content) .. CE.el.spacer
+	if type(content) ~= "table" then
+		return ""
+	end
+	return CE.el.spacer .. table.concat(content) .. CE.el.spacer
 end
 
 ---Returns styled text
@@ -38,8 +41,7 @@ function M.get_buffer()
 	local buffer = ""
 	if S.opt.buffer.show == true then
 		local bufnr_item = CB.get_buf_nr(S.opt.buffer)
-		local nr = UU.get_cache_item_variant(bufnr_item.result)
-		buffer = CE.el.space .. CB.get_buffer_symbol() .. nr .. CB.get_buf_modflag() .. CE.get_separator()
+		buffer = CE.el.space .. CB.get_buffer_symbol(S.opt.buffer.prefix) .. bufnr_item.result .. CB.get_buf_modflag() .. CE.get_separator(S.opt.separator)
 	end
 	return buffer
 end
@@ -103,7 +105,7 @@ function M.get_diagnostics()
 		)
 	end
 	local comma_space = CE.get_comma() .. CE.el.space
-	return err .. comma_space .. warn .. comma_space .. hint .. comma_space .. info .. CE.get_separator()
+	return err .. comma_space .. warn .. comma_space .. hint .. comma_space .. info .. CE.get_separator(S.opt.separator)
 end
 
 ---Returns branch name
@@ -157,8 +159,9 @@ end
 ---@return string
 function M.get_treedir(name)
 	local prog = M.title(name)
+	---@type string
 	local dir = vim.api.nvim_buf_get_name(0)
-	return M.spaced_text(prog .. CE.el.space .. dir)
+	return M.spaced_text({ prog, CE.el.space, dir })
 end
 
 ---Returns quickfix list
@@ -174,11 +177,11 @@ function M.get_quickfix()
 		local text_file = UC.highlight_text(files_count > 1 and "files" or "file", C.group_names.fg_60)
 		title = M.title("Quickfix List")
 		local text_of = UC.highlight_text("of", C.group_names.fg_60)
-		quickfix = M.spaced_text(table.concat({
+		quickfix = M.spaced_text({
 			title .. CE.el.space,
 			idx .. CE.el.space .. text_of .. CE.el.space .. entries_count .. CE.el.space,
-			files_count ~= 0 and text_in .. CE.el.space .. files_count .. CE.el.space .. text_file or "",
-		}))
+			(files_count ~= 0 and text_in .. CE.el.space .. files_count .. CE.el.space .. text_file or ""),
+		})
 	else
 		if UU.laststatus() == 3 and not CQ.is_qflist_empty() then
 			title = UC.highlight_text("QF:", C.group_names.fg_60)
@@ -186,7 +189,7 @@ function M.get_quickfix()
 			quickfix = table.concat({
 				title .. CE.el.space,
 				idx .. text_slash .. entries_count,
-				CE.get_separator(),
+				CE.get_separator(S.opt.separator),
 			})
 		end
 	end
@@ -197,8 +200,13 @@ end
 ---@return string
 function M.get_help()
 	local help = M.title("Help")
+	---@type string
 	local buff_name = vim.api.nvim_buf_get_name(0)
-	return M.spaced_text(help .. CE.el.space .. buff_name:match("[%s%w_]-%.%w-$"))
+	return M.spaced_text({
+		help,
+		CE.el.space,
+		buff_name:match("[%s%w_]-%.%w-$")
+	})
 end
 
 ---Returns file size
@@ -210,7 +218,7 @@ function M.get_filesize()
 	elseif S.opt.filesize.metric == "binary" then
 		size = UU.bi_fsize()
 	end
-	return CE.get_separator() .. size.size .. UC.highlight_text(size.postfix, C.group_names.fg_50)
+	return CE.get_separator(S.opt.separator) .. size.size .. UC.highlight_text(size.postfix, C.group_names.fg_50)
 end
 
 ---Returns ruller
@@ -220,7 +228,7 @@ end
 ---@return string
 function M.get_ruller(show_ln, show_col, show_loc)
 	return table.concat({
-		CE.get_separator(),
+		CE.get_separator(S.opt.separator),
 		show_ln and CE.get_ln() .. CE.get_comma() .. CE.el.space or "",
 		show_col and CE.get_col() .. CE.get_comma() .. CE.el.space or "",
 		show_loc and CE.get_loc() or "",
@@ -259,9 +267,8 @@ local function setup_autocmd(cb)
 
 	-- colors
 	create_autocmd({ "ColorScheme" }, autocmd_group, function()
-		cb(function()
-			C.init()
-		end)
+		C.init()
+		cb()
 	end)
 
 	-- buffer number
@@ -282,10 +289,9 @@ local function setup_autocmd(cb)
 		"BufEnter",
 		"BufWinEnter"
 	}, autocmd_group, function()
-		cb(function()
-			CG.set_git_branch()
-			CQ.set_qflist()
-		end)
+		CG.set_git_branch()
+		CQ.set_qflist()
+		cb()
 	end)
 
 	-- diff info
@@ -293,9 +299,8 @@ local function setup_autocmd(cb)
 		"BufWritePost",
 		"BufReadPost"
 	}, autocmd_group, function()
-		cb(function()
-			CG.set_diff_info()
-		end)
+		CG.set_diff_info()
+		cb()
 	end)
 
 	-- branch name
@@ -304,33 +309,29 @@ local function setup_autocmd(cb)
 		"VimEnter",
 		"FocusGained"
 	}, autocmd_group, function()
-		cb(function()
-			CG.set_git_branch()
-			CG.set_diff_info()
-		end)
+		CG.set_git_branch()
+		CG.set_diff_info()
+		cb()
 	end)
 
 	-- quickfix list
 	create_autocmd({
 		"QuickFixCmdPost"
 	}, autocmd_group, function()
-		cb(function()
-			CQ.set_qflist()
-		end)
+		CQ.set_qflist()
+		cb()
 	end)
 
 	-- neogit commit complete
 	create_user_autocmd("NeogitCommitComplete", autocmd_group, function()
-		cb(function()
-			CG.set_diff_info()
-		end)
+		CG.set_diff_info()
+		cb()
 	end)
 
 	-- neogit push complete
 	create_user_autocmd("NeogitPushComplete", autocmd_group, function()
-		cb(function()
-			CG.set_diff_info()
-		end)
+		CG.set_diff_info()
+		cb()
 	end)
 end
 
@@ -338,13 +339,10 @@ end
 ---@param opts opts
 ---@param cb function
 function M.init(opts, cb)
-	cb(function()
-		S.setup(opts)
-		C.init()
-		CE.init(S.opt)
-		CB.init(S.opt)
-		setup_autocmd(cb)
-	end)
+	S.setup(opts)
+	C.init()
+	setup_autocmd(cb)
+	cb()
 end
 
 return M

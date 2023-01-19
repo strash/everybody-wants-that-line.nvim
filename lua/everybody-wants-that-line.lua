@@ -41,7 +41,7 @@ function M._set_statusline()
 	-- LOCLIST
 	elseif wintype == "loclist" then
 		content = {
-			CO.spaced_text(CO.title("Location List in development")),
+			CO.spaced_text({ CO.title("Location List in development") }),
 		}
 	-- QUICKFIX
 	elseif wintype == "quickfix" then
@@ -51,7 +51,7 @@ function M._set_statusline()
 	-- PREVIEW
 	elseif wintype == "preview" then
 		content = {
-			CO.spaced_text(CO.title("Preview")),
+			CO.spaced_text({ CO.title("Preview") }),
 		}
 	-- HELP
 	elseif wintype == "help" then
@@ -63,12 +63,12 @@ function M._set_statusline()
 	-- PACKER
 	elseif wintype == "packer" then
 		content = {
-			CO.spaced_text(CO.title("Packer"))
+			CO.spaced_text({ CO.title("Packer") })
 		}
 	-- LAZY
 	elseif wintype == "lazy" then
 		content = {
-			CO.spaced_text(CO.title("Lazy"))
+			CO.spaced_text({ CO.title("Lazy") })
 		}
 	-- NETRW
 	elseif wintype == "netrw" then
@@ -79,22 +79,22 @@ function M._set_statusline()
 	-- TELESCOPE
 	elseif wintype == "telescope" then
 		content = {
-			CO.spaced_text(CO.title("Telescope"))
+			CO.spaced_text({ CO.title("Telescope") })
 		}
 	-- BUFFER MANAGER
 	elseif wintype == "buffer_manager" then
 		content = {
-			CO.spaced_text(CO.title("Buffer Manager"))
+			CO.spaced_text({ CO.title("Buffer Manager") })
 		}
 	-- NVIMTREE
 	elseif wintype == "nvimtree" then
 		content = {
-			CO.spaced_text(CO.title("NvimTree"))
+			CO.spaced_text({ CO.title("NvimTree") })
 		}
 	-- NEO TREE
 	elseif wintype == "neo-tree" then
 		content = {
-			CO.spaced_text(CO.title("Neo-tree"))
+			CO.spaced_text({ CO.title("Neo-tree") })
 		}
 	-- DIRBUF
 	elseif wintype == "dirbuf" then
@@ -123,7 +123,7 @@ function M._set_statusline()
 	-- UNKNOWN
 	elseif wintype == "unknown" then
 		content = {
-			CO.spaced_text(CO.title([[¯\_(ツ)_/¯]]))
+			CO.spaced_text({ CO.title([[¯\_(ツ)_/¯]]) })
 		}
 	end
 
@@ -131,16 +131,10 @@ function M._set_statusline()
 end
 
 ---Callback for setting statusline
----@param cb function
-local function callback(cb)
-	vim.schedule(function()
-		if cb ~= nil then
-			cb()
-		end
-		-- NOTE: dont ever ever ever change this line
-		local statusline = [[%{%v:lua.require('everybody-wants-that-line')._set_statusline()%}]]
-		vim.api.nvim_win_set_option(0, "statusline", statusline)
-	end)
+local function callback()
+	-- NOTE: dont ever ever ever change this line
+	local statusline = [[%{%v:lua.require('everybody-wants-that-line')._set_statusline()%}]]
+	vim.api.nvim_win_set_option(0, "statusline", statusline)
 end
 
 ---Setup that line

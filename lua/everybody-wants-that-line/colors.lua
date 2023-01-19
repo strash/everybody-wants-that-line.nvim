@@ -5,7 +5,7 @@ local M = {}
 
 ---`color_cache`
 ---@type { [string]: color_palette }
-local cache = { }
+local cache = {}
 
 ---Color group names:
 ---`bg`,
@@ -13,10 +13,9 @@ local cache = { }
 ---`fg[_error[_50]|_warn[_50]|_hint[_50]|_info[_50]][_bold]`,
 ---`fg[_diff_add[_50]|_diff_delete[_50]][_bold]`
 ---
----__WARNING__: It also contains `[_nc]` groups but you don't want to use them,
----because they are handled automatically.
+---__WARNING__: Do not use `[_nc]` groups directly, they are handled automatically.
 ---@type { [string]: string }
-M.group_names = { }
+M.group_names = {}
 
 ---Sets colors
 local function set_colors()
@@ -45,20 +44,12 @@ local function set_colors()
 		cache["fg_" .. v] = CU.blend_colors(v / 100, cache.bg, cache.fg)
 		cache["fg_nc_" .. v] = CU.blend_colors(v / 100, cache.bg_nc, cache.fg_nc)
 	end
-	-- diagnostics
-	cache.fg_error_50 = CU.blend_colors(0.5, cache.bg, cache.fg_error)
-	cache.fg_warn_50 = CU.blend_colors(0.5, cache.bg, cache.fg_warn)
-	cache.fg_hint_50 = CU.blend_colors(0.5, cache.bg, cache.fg_hint)
-	cache.fg_info_50 = CU.blend_colors(0.5, cache.bg, cache.fg_info)
-	cache.fg_diff_add_50 = CU.blend_colors(0.5, cache.bg, cache.fg_diff_add)
-	cache.fg_diff_delete_50 = CU.blend_colors(0.5, cache.bg, cache.fg_diff_delete)
-
-	cache.fg_nc_error_50 = CU.blend_colors(0.5, cache.bg_nc, cache.fg_error)
-	cache.fg_nc_warn_50 = CU.blend_colors(0.5, cache.bg_nc, cache.fg_warn)
-	cache.fg_nc_hint_50 = CU.blend_colors(0.5, cache.bg, cache.fg_hint)
-	cache.fg_nc_info_50 = CU.blend_colors(0.5, cache.bg_nc, cache.fg_info)
-	cache.fg_nc_diff_add_50 = CU.blend_colors(0.5, cache.bg_nc, cache.fg_diff_add)
-	cache.fg_nc_diff_delete_50 = CU.blend_colors(0.5, cache.bg_nc, cache.fg_diff_delete)
+	-- blended colors
+	local diagnostics = { "error", "warn", "hint", "info", "diff_add", "diff_delete" }
+	for _, color in ipairs(diagnostics) do
+		cache["fg_" .. color .. "_50"] = CU.blend_colors(0.5, cache.bg, cache["fg_" .. color])
+		cache["fg_nc_" .. color .. "_50"] = CU.blend_colors(0.5, cache.bg_nc, cache["fg_" .. color])
+	end
 end
 
 ---Sets color groups names

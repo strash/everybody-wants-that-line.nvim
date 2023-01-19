@@ -145,6 +145,8 @@ function M.laststatus()
 	return vim.o.laststatus
 end
 
+---@alias cache_item_variant { n: string, nc: string }
+
 ---Returns either `n` or `nc` cache item variant
 ---@param cache_item cache_item_variant
 ---@return string

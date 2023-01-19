@@ -8,7 +8,10 @@ local T = MiniTest.new_set({
 		pre_case = function()
 			child.restart({ "-u", "tests/minimal_init.lua" })
 			child.cmd("set laststatus=3")
-			child.lua([[M = require("everybody-wants-that-line.components.buffer")]])
+			child.lua([[
+			M = require("everybody-wants-that-line.components.buffer")
+			S = require("everybody-wants-that-line.settings")
+			]])
 		end,
 		post_once = function()
 			child.stop()
@@ -22,7 +25,7 @@ T["get_buffer_symbol"] = function()
 			prefix = "Buffer"
 		}
 	}) ]])
-	eq(child.lua("return M.get_buffer_symbol()"), "%#" .. UU.prefix .. "Fg60#Buffer %*")
+	eq(child.lua("return M.get_buffer_symbol(S.opt.buffer.prefix)"), "%#" .. UU.prefix .. "Fg60#Buffer %*")
 end
 
 T["get_buf_modflag"] = MiniTest.new_set({}, {
@@ -51,15 +54,12 @@ T["get_buf_nr"] = MiniTest.new_set({}, {
 				symbol = "a",
 			}
 		}) ]])
-		eq(child.lua([[return M.get_buf_nr(require("everybody-wants-that-line.settings").opt.buffer)]]),
+		eq(child.lua([[return M.get_buf_nr(S.opt.buffer)]]),
 			{
 				prefix = "aaaa",
 				nr = "1",
 				bufnr = 1,
-				result = {
-					n = "%#EverybodyWantsThatLineFg30#aaaa%*%#EverybodyWantsThatLineFgBold#1%*",
-					nc = "%#EverybodyWantsThatLineFg30#aaaa%*%#EverybodyWantsThatLineFgNcBold#1%*"
-				}
+				result = "%#EverybodyWantsThatLineFg30#aaaa%*%#EverybodyWantsThatLineFgBold#1%*",
 			})
 	end,
 	without_prefix = function()
@@ -69,15 +69,12 @@ T["get_buf_nr"] = MiniTest.new_set({}, {
 				symbol = "g",
 			}
 		}) ]])
-		eq(child.lua([[return M.get_buf_nr(require("everybody-wants-that-line.settings").opt.buffer)]]),
+		eq(child.lua([[return M.get_buf_nr(S.opt.buffer)]]),
 			{
 				prefix = "",
 				nr = "1",
 				bufnr = 1,
-				result = {
-					n = "%#EverybodyWantsThatLineFgBold#1%*",
-					nc = "%#EverybodyWantsThatLineFgNcBold#1%*"
-				}
+				result = "%#EverybodyWantsThatLineFgBold#1%*",
 		})
 	end,
 })

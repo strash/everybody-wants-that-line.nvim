@@ -38,132 +38,74 @@ M.el = {
 	truncate = "%<",
 }
 
----@alias cache_item_variant { n: string, nc: string }
-
----@class element_cache
----@field col cache_item_variant
----@field comma cache_item_variant
----@field ln cache_item_variant
----@field loc cache_item_variant
----@field minus cache_item_variant
----@field minus_50 cache_item_variant
----@field plus cache_item_variant
----@field plus_50 cache_item_variant
----@field separator cache_item_variant
-
----@type element_cache
-M.cache = {
-	col = { n = "", nc = "" },
-	comma = { n = "", nc = "" },
-	ln = { n = "", nc = "" },
-	loc = { n = "", nc = "" },
-	minus = { n = "", nc = "" },
-	minus_50 = { n = "", nc = "" },
-	plus = { n = "", nc = "" },
-	plus_50 = { n = "", nc = "" },
-	separator = { n = "", nc = "" },
-}
-
----Sets `"+"` and `"-"`
-local function set_signs()
-	M.cache.minus.n = UC.highlight_text(M.el.minus, C.group_names.fg_diff_delete)
-	M.cache.minus.nc = UC.highlight_text(M.el.minus, C.group_names.fg_nc_diff_delete, true)
-	M.cache.minus_50.n = UC.highlight_text(M.el.minus, C.group_names.fg_diff_delete_50)
-	M.cache.minus_50.nc = UC.highlight_text(M.el.minus, C.group_names.fg_nc_diff_delete_50, true)
-	M.cache.plus.n = UC.highlight_text(M.el.plus, C.group_names.fg_diff_add)
-	M.cache.plus.nc = UC.highlight_text(M.el.plus, C.group_names.fg_nc_diff_add, true)
-	M.cache.plus_50.n = UC.highlight_text(M.el.plus, C.group_names.fg_diff_add_50)
-	M.cache.plus_50.nc = UC.highlight_text(M.el.plus, C.group_names.fg_nc_diff_add_50, true)
-end
-
----Sets separator
----@param separator string
-local function set_separator(separator)
-	local text = M.el.space .. separator .. M.el.space
-	M.cache.separator.n = UC.highlight_text(text, C.group_names.fg_20)
-	M.cache.separator.nc = UC.highlight_text(text, C.group_names.fg_nc_20, true)
-end
-
----Sets comma
-local function set_comma()
-	M.cache.comma.n = UC.highlight_text(M.el.comma, C.group_names.fg_50)
-	M.cache.comma.nc = UC.highlight_text(M.el.comma, C.group_names.fg_nc_50, true)
-end
-
----Sets percentage through file in lines
-local function set_ln()
-	local text = M.el.percentage_in_lines .. M.el.percent
-	M.cache.ln.n = UC.highlight_text(M.el.arrow_down, C.group_names.fg_50) .. text
-	M.cache.ln.nc = UC.highlight_text(M.el.arrow_down, C.group_names.fg_nc_50, true) .. text
-end
-
----Sets column index
-local function set_col()
-	M.cache.col.n = UC.highlight_text(M.el.arrow_right, C.group_names.fg_50) .. M.el.column_idx
-	M.cache.col.nc = UC.highlight_text(M.el.arrow_right, C.group_names.fg_nc_50, true) .. M.el.column_idx
-end
-
----Sets lines of code
-local function set_loc()
-	M.cache.loc.n = M.el.lines_of_code .. UC.highlight_text("LOC", C.group_names.fg_50) .. M.el.space
-	M.cache.loc.nc = M.el.lines_of_code .. UC.highlight_text("LOC", C.group_names.fg_nc_50, true) .. M.el.space
-end
-
 ---@alias sign_opacity "50"|"100"
 
 ---Returns plus `"+"`
 ---@param opacity sign_opacity
 ---@return string
 function M.get_plus(opacity)
-	return opacity == "100" and UU.get_cache_item_variant(M.cache.plus) or UU.get_cache_item_variant(M.cache.plus_50)
+	local is_focused = UU.is_focused()
+	---@type string
+	local group_name
+	if opacity == "100" then
+		group_name = C.group_names[is_focused and "fg_diff_add" or "fg_nc_diff_add"]
+	else
+		group_name = C.group_names[is_focused and "fg_diff_add_50" or "fg_nc_diff_add_50"]
+	end
+	return UC.highlight_text(M.el.plus, group_name, not is_focused)
 end
 
 ---Returns minus `"-"`
 ---@param opacity sign_opacity
 ---@return string
 function M.get_minus(opacity)
-	return opacity == "100" and UU.get_cache_item_variant(M.cache.minus) or UU.get_cache_item_variant(M.cache.minus_50)
+	local is_focused = UU.is_focused()
+	---@type string
+	local group_name
+	if opacity == "100" then
+		group_name = C.group_names[is_focused and "fg_diff_delete" or "fg_nc_diff_delete"]
+	else
+		group_name = C.group_names[is_focused and "fg_diff_delete_50" or "fg_nc_diff_delete_50"]
+	end
+	return UC.highlight_text(M.el.minus, group_name, not is_focused)
 end
 
 ---Returns separator `" | "`
+---@param separator string
 ---@return string
-function M.get_separator()
-	return UU.get_cache_item_variant(M.cache.separator)
+function M.get_separator(separator)
+	local is_focused = UU.is_focused()
+	local text = M.el.space .. separator .. M.el.space
+	return UC.highlight_text(text, C.group_names[is_focused and "fg_20" or "fg_nc_20"], not is_focused)
 end
 
 ---Returns comma `","`
 ---@return string
 function M.get_comma()
-	return UU.get_cache_item_variant(M.cache.comma)
+	local is_focused = UU.is_focused()
+	return UC.highlight_text(M.el.comma, C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused)
 end
 
 ---Returns percentage through file in lines
 ---@return string
 function M.get_ln()
-	return UU.get_cache_item_variant(M.cache.ln)
+	local is_focused = UU.is_focused()
+	local text = M.el.percentage_in_lines .. M.el.percent
+	return UC.highlight_text(M.el.arrow_down, C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused) .. text
 end
 
 ---Returns column index
 ---@return string
 function M.get_col()
-	return UU.get_cache_item_variant(M.cache.col)
+	local is_focused = UU.is_focused()
+	return UC.highlight_text(M.el.arrow_right, C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused) .. M.el.column_idx
 end
 
 ---Returns lines of code
 ---@return string
 function M.get_loc()
-	return UU.get_cache_item_variant(M.cache.loc)
-end
-
----Init elements
----@param opts opts
-function M.init(opts)
-	set_signs()
-	set_separator(opts.separator)
-	set_comma()
-	set_ln()
-	set_col()
-	set_loc()
+	local is_focused = UU.is_focused()
+	return M.el.lines_of_code .. UC.highlight_text("LOC", C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused) .. M.el.space
 end
 
 return M
