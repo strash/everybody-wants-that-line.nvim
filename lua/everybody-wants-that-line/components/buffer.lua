@@ -5,8 +5,6 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
----@alias buffer_bufnr { prefix: string, nr: string, bufnr: number, result: string }
-
 ---Returns buffer prefix
 ---@param buffer_prefix string
 ---@return string
@@ -39,7 +37,9 @@ function M.get_buf_modflag()
 	return flag
 end
 
----Returns buffer number `{ prefix = "000", nr = "23", bufnr = 23, result = { n = "%#group_name#23%*", nc = "%#group_name_nc#23%*" }`
+---@alias buffer_bufnr { prefix: string, nr: string, bufnr: number, result: string }
+
+---Returns buffer number `{ prefix = "000", nr = "23", bufnr = 23, result = "%#group_name#23%*"`
 ---@param opts_buffer opts_buffer
 ---@return buffer_bufnr
 function M.get_buf_nr(opts_buffer)
