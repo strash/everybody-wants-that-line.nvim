@@ -12,7 +12,7 @@ local UU = require("everybody-wants-that-line.utils.util")
 local M = {}
 
 ---Returns `text` with spacers on each side
----@param content string[] String or a table of strings
+---@param content string[] Table of strings
 ---@return string
 function M.spaced_text(content)
 	if type(content) ~= "table" then
@@ -180,7 +180,7 @@ function M.get_quickfix()
 		quickfix = M.spaced_text({
 			title .. CE.el.space,
 			idx .. CE.el.space .. text_of .. CE.el.space .. entries_count .. CE.el.space,
-			(files_count ~= 0 and text_in .. CE.el.space .. files_count .. CE.el.space .. text_file or ""),
+			files_count ~= 0 and text_in .. CE.el.space .. files_count .. CE.el.space .. text_file or "",
 		})
 	else
 		if UU.laststatus() == 3 and not CQ.is_qflist_empty() then
