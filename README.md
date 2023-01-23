@@ -42,7 +42,7 @@ Neovim v0.7.0 and newer.
 {
 	"strash/everybody-wants-that-line.nvim",
 	opts = {
-		[your settings here. [See configuration](#configuration)]
+		[your configuration here]
 	}
 }
 ```
