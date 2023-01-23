@@ -1,3 +1,4 @@
+local CE = require("everybody-wants-that-line.components.elements")
 local CO = require("everybody-wants-that-line.controller")
 local UU = require("everybody-wants-that-line.utils.util")
 
@@ -22,112 +23,112 @@ function M._set_statusline()
 	local wintype = UU.get_wintype()
 
 	---@type string[]
-	local content
+	local components
 
 	-- NORMAL
 	if wintype == "normal" then
-		content = {
+		components = {
 			CO.get_buffer(),
 			CO.get_diagnostics(),
 			CO.get_quickfix(),
-			CO.spaced_text({
+			CE.spaced_text(UU.join({
 				CO.title(CO.get_branch_name()),
 				CO.get_branch_status(),
 				CO.get_filepath(),
-			}),
+			}, CE.el.space)),
 			CO.get_filesize(),
 			CO.get_ruller(true, true, true),
 		}
 	-- LOCLIST
 	elseif wintype == "loclist" then
-		content = {
-			CO.spaced_text({ CO.title("Location List in development") }),
+		components = {
+			CE.spaced_text(CO.title("Location List in development")),
 		}
 	-- QUICKFIX
 	elseif wintype == "quickfix" then
-		content = {
+		components = {
 			CO.get_quickfix()
 		}
 	-- PREVIEW
 	elseif wintype == "preview" then
-		content = {
-			CO.spaced_text({ CO.title("Preview") }),
+		components = {
+			CE.spaced_text(CO.title("Preview")),
 		}
 	-- HELP
 	elseif wintype == "help" then
-		content = {
+		components = {
 			CO.get_buffer(),
 			CO.get_help(),
 			CO.get_ruller(true, false, true),
 		}
 	-- PACKER
 	elseif wintype == "packer" then
-		content = {
-			CO.spaced_text({ CO.title("Packer") })
+		components = {
+			CE.spaced_text(CO.title("Packer"))
 		}
 	-- LAZY
 	elseif wintype == "lazy" then
-		content = {
-			CO.spaced_text({ CO.title("Lazy") })
+		components = {
+			CE.spaced_text(CO.title("Lazy"))
 		}
 	-- NETRW
 	elseif wintype == "netrw" then
-		content = {
+		components = {
 			CO.get_buffer(),
 			CO.get_treedir("Netrw"),
 		}
 	-- TELESCOPE
 	elseif wintype == "telescope" then
-		content = {
-			CO.spaced_text({ CO.title("Telescope") })
+		components = {
+			CE.spaced_text(CO.title("Telescope"))
 		}
 	-- BUFFER MANAGER
 	elseif wintype == "buffer_manager" then
-		content = {
-			CO.spaced_text({ CO.title("Buffer Manager") })
+		components = {
+			CE.spaced_text(CO.title("Buffer Manager"))
 		}
 	-- NVIMTREE
 	elseif wintype == "nvimtree" then
-		content = {
-			CO.spaced_text({ CO.title("NvimTree") })
+		components = {
+			CE.spaced_text(CO.title("NvimTree"))
 		}
 	-- NEO TREE
 	elseif wintype == "neo-tree" then
-		content = {
-			CO.spaced_text({ CO.title("Neo-tree") })
+		components = {
+			CE.spaced_text(CO.title("Neo-tree"))
 		}
 	-- DIRBUF
 	elseif wintype == "dirbuf" then
-		content = {
+		components = {
 			CO.get_buffer(),
 			CO.get_treedir("Dirbuf"),
 		}
 	-- NEOGIT
 	elseif wintype == "neogit" then
-		content = {
-			CO.spaced_text({
+		components = {
+			CE.spaced_text(UU.join({
 				CO.title("Neogit "),
 				CO.get_branch_status(),
 				CO.bold(CO.get_branch_name()),
-			}),
+			}, CE.el.space)),
 		}
 	-- FUGITIVE
 	elseif wintype == "fugitive" then
-		content = {
-			CO.spaced_text({
+		components = {
+			CE.spaced_text(UU.join({
 				CO.title("Fugitive "),
 				CO.get_branch_status(),
 				CO.bold(CO.get_branch_name()),
-			}),
+			}, CE.el.space)),
 		}
 	-- UNKNOWN
 	elseif wintype == "unknown" then
-		content = {
-			CO.spaced_text({ CO.title([[¯\_(ツ)_/¯]]) })
+		components = {
+			CE.spaced_text(CO.title([[¯\_(ツ)_/¯]]))
 		}
 	end
 
-	return table.concat(content)
+	return CE.with_offset(UU.join(components, CO.separator()))
 end
 
 ---Callback for setting statusline

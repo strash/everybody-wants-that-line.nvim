@@ -11,14 +11,10 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
----Returns `text` with spacers on each side
----@param content string[] Table of strings
+---Returns separator
 ---@return string
-function M.spaced_text(content)
-	if type(content) ~= "table" then
-		return ""
-	end
-	return CE.el.spacer .. table.concat(content) .. CE.el.spacer
+function M.separator()
+	return CE.get_separator(CE.with_offset(S.opt.separator))
 end
 
 ---Returns styled text
@@ -39,9 +35,9 @@ end
 ---@return string
 function M.get_buffer()
 	local buffer = ""
-	if S.opt.buffer.show == true then
+	if S.opt.buffer.enabled == true then
 		local bufnr_item = CB.get_buf_nr(S.opt.buffer)
-		buffer = CE.el.space .. CB.get_buffer_symbol(S.opt.buffer.prefix) .. bufnr_item.result .. CB.get_buf_modflag() .. CE.get_separator(S.opt.separator)
+		buffer = CB.get_buffer_symbol(S.opt.buffer.prefix) .. bufnr_item.result .. CB.get_buf_modflag()
 	end
 	return buffer
 end
@@ -70,130 +66,142 @@ end
 ---Returns diagnostics
 ---@return string
 function M.get_diagnostics()
-	local diagnostics = CD.get_diagnostics()
-	local err, warn, hint, info = "0", "0", "0", "0"
-	if diagnostics.error.count > 0 then
-		err = highlight_diagnostic(
-			diagnostics.error,
-			C.group_names.fg_error_bold,
-			C.group_names.fg_error_50,
-			C.group_names.fg_error
-		)
+	local result = ""
+	if S.opt.diagnostics.enabled == true then
+		local diagnostics = CD.get_diagnostics()
+		local err, warn, hint, info = "0", "0", "0", "0"
+		if diagnostics.error.count > 0 then
+			err = highlight_diagnostic(
+				diagnostics.error,
+				C.group_names.fg_error_bold,
+				C.group_names.fg_error_50,
+				C.group_names.fg_error
+			)
+		end
+		if diagnostics.warn.count > 0 then
+			warn = highlight_diagnostic(
+				diagnostics.warn,
+				C.group_names.fg_warn_bold,
+				C.group_names.fg_warn_50,
+				C.group_names.fg_warn
+			)
+		end
+		if diagnostics.hint.count > 0 then
+			hint = highlight_diagnostic(
+				diagnostics.hint,
+				C.group_names.fg_hint_bold,
+				C.group_names.fg_hint_50,
+				C.group_names.fg_hint
+			)
+		end
+		if diagnostics.info.count > 0 then
+			info = highlight_diagnostic(
+				diagnostics.info,
+				C.group_names.fg_info_bold,
+				C.group_names.fg_info_50,
+				C.group_names.fg_info
+			)
+		end
+		result = UU.join({ err, warn, hint, info }, CE.get_comma() .. CE.el.space)
 	end
-	if diagnostics.warn.count > 0 then
-		warn = highlight_diagnostic(
-			diagnostics.warn,
-			C.group_names.fg_warn_bold,
-			C.group_names.fg_warn_50,
-			C.group_names.fg_warn
-		)
-	end
-	if diagnostics.hint.count > 0 then
-		hint = highlight_diagnostic(
-			diagnostics.hint,
-			C.group_names.fg_hint_bold,
-			C.group_names.fg_hint_50,
-			C.group_names.fg_hint
-		)
-	end
-	if diagnostics.info.count > 0 then
-		info = highlight_diagnostic(
-			diagnostics.info,
-			C.group_names.fg_info_bold,
-			C.group_names.fg_info_50,
-			C.group_names.fg_info
-		)
-	end
-	local comma_space = CE.get_comma() .. CE.el.space
-	return err .. comma_space .. warn .. comma_space .. hint .. comma_space .. info .. CE.get_separator(S.opt.separator)
+	return result
 end
 
 ---Returns branch name
 ---@return string
 function M.get_branch_name()
-	local branch = ""
-	if #CG.cache.branch ~= 0 then
-		branch = CG.cache.branch .. CE.el.space
+	local result = ""
+	if S.opt.git_status.enabled == true then
+		if #CG.cache.branch ~= 0 then
+			result = CG.cache.branch
+		end
 	end
-	return branch
+	return result
 end
 
 ---Returns branch and git status
 ---@return string
 function M.get_branch_status()
-	local insertions = ""
-	local deletions = ""
-	if CG.cache.diff_info.insertions ~= 0 then
-		insertions = UC.highlight_text(tostring(CG.cache.diff_info.insertions), C.group_names.fg_diff_add_bold)
-		insertions = insertions .. CE.get_plus("50") .. CE.el.space
+	local result = ""
+	if S.opt.git_status.enabled == true then
+		local insertions = ""
+		local deletions = ""
+		if CG.cache.diff_info.insertions ~= 0 then
+			insertions = UC.highlight_text(tostring(CG.cache.diff_info.insertions), C.group_names.fg_diff_add_bold) ..
+				CE.get_plus("50")
+		end
+		if CG.cache.diff_info.deletions ~= 0 then
+			deletions = UC.highlight_text(tostring(CG.cache.diff_info.deletions), C.group_names.fg_diff_delete_bold) ..
+				CE.get_minus("50")
+		end
+		result = UU.join({ insertions, deletions }, CE.el.space)
 	end
-	if CG.cache.diff_info.deletions ~= 0 then
-		deletions = UC.highlight_text(tostring(CG.cache.diff_info.deletions), C.group_names.fg_diff_delete_bold)
-		deletions = deletions .. CE.get_minus("50") .. CE.el.space
-	end
-	return insertions .. deletions
+	return result
 end
 
 ---Returns path to the file
 ---@return string
 function M.get_filepath()
-	local path_parts = CP.get_filepath()
-	local path = "[No name]"
-	if #path_parts.relative.path ~= 0 and #path_parts.full.path ~= 0 then
-		local filename = M.bold(path_parts.relative.filename)
-		if S.opt.filepath.path == "tail" then
-			path = filename
-		elseif S.opt.filepath.path == "relative" then
-			local relative = S.opt.filepath.shorten and path_parts.relative.shorten or path_parts.relative.path
-			path = UC.highlight_text(relative, C.group_names.fg_60) .. filename
-		elseif S.opt.filepath.path == "full" then
-			local full = S.opt.filepath.shorten and path_parts.full.shorten or path_parts.full.path
-			path = UC.highlight_text(full, C.group_names.fg_60) .. filename
+	local result = ""
+	if S.opt.filepath.enabled == true then
+		local path_parts = CP.get_filepath()
+		result = "[No name]"
+		if #path_parts.relative.path ~= 0 and #path_parts.full.path ~= 0 then
+			local filename = M.bold(path_parts.relative.filename)
+			if S.opt.filepath.path == "tail" then
+				result = filename
+			elseif S.opt.filepath.path == "relative" then
+				local relative = S.opt.filepath.shorten and path_parts.relative.shorten or path_parts.relative.path
+				result = UC.highlight_text(relative, C.group_names.fg_60) .. filename
+			elseif S.opt.filepath.path == "full" then
+				local full = S.opt.filepath.shorten and path_parts.full.shorten or path_parts.full.path
+				result = UC.highlight_text(full, C.group_names.fg_60) .. filename
+			end
 		end
+		result = CE.el.truncate .. result
 	end
-	return CE.el.truncate .. path
+	return result
 end
 
 ---Returns netrw directory
 ---@param name string
 ---@return string
 function M.get_treedir(name)
-	local prog = M.title(name)
-	---@type string
-	local dir = vim.api.nvim_buf_get_name(0)
-	return M.spaced_text({ prog, CE.el.space, dir })
+	return CE.spaced_text(
+		UU.join({
+			M.title(name),
+			vim.api.nvim_buf_get_name(0)
+		}, CE.el.space)
+	)
 end
 
 ---Returns quickfix list
 ---@return string
 function M.get_quickfix()
+	local result = ""
 	local idx = M.bold(tostring(CQ.get_qflist_idx()))
 	local entries_count = CQ.get_entries_count()
 	local files_count = CQ.get_files_w_entries_count()
-	local title
-	local quickfix = ""
 	if tonumber(CQ.get_qflist_winid()) == tonumber(vim.api.nvim_get_current_win()) then
 		local text_in = UC.highlight_text("in", C.group_names.fg_60)
 		local text_file = UC.highlight_text(files_count > 1 and "files" or "file", C.group_names.fg_60)
-		title = M.title("Quickfix List")
 		local text_of = UC.highlight_text("of", C.group_names.fg_60)
-		quickfix = M.spaced_text({
-			title .. CE.el.space,
-			idx .. CE.el.space .. text_of .. CE.el.space .. entries_count .. CE.el.space,
-			files_count ~= 0 and text_in .. CE.el.space .. files_count .. CE.el.space .. text_file or "",
-		})
+		result = CE.spaced_text(UU.join({
+			M.title("Quickfix List"),
+			idx,
+			text_of,
+			entries_count,
+			(files_count ~= 0 and UU.join({ text_in, files_count, text_file }, CE.el.space) or ""),
+		}, CE.el.space))
 	else
-		if UU.laststatus() == 3 and not CQ.is_qflist_empty() then
-			title = UC.highlight_text("QF:", C.group_names.fg_60)
-			local text_slash = UC.highlight_text("/", C.group_names.fg_60)
-			quickfix = table.concat({
-				title .. CE.el.space,
-				idx .. text_slash .. entries_count,
-				CE.get_separator(S.opt.separator),
-			})
+		if S.opt.quickfix_list.enabled == true then
+			if UU.laststatus() == 3 and not CQ.is_qflist_empty() then
+				local text_slash = UC.highlight_text("/", C.group_names.fg_60)
+				result = M.title("QF: ") .. idx .. text_slash .. entries_count
+			end
 		end
 	end
-	return quickfix
+	return result
 end
 
 ---Returns help filename
@@ -202,7 +210,7 @@ function M.get_help()
 	local help = M.title("Help")
 	---@type string
 	local buff_name = vim.api.nvim_buf_get_name(0)
-	return M.spaced_text({
+	return CE.spaced_text({
 		help,
 		CE.el.space,
 		buff_name:match("[%s%w_]-%.%w-$")
@@ -212,13 +220,18 @@ end
 ---Returns file size
 ---@return string
 function M.get_filesize()
-	local size
-	if S.opt.filesize.metric == "decimal" then
-		size = UU.si_fsize()
-	elseif S.opt.filesize.metric == "binary" then
-		size = UU.bi_fsize()
+	local result = ""
+	if S.opt.filesize.enabled == true then
+		---@type si_fsize | bi_fsize
+		local size
+		if S.opt.filesize.metric == "decimal" then
+			size = UU.si_fsize()
+		elseif S.opt.filesize.metric == "binary" then
+			size = UU.bi_fsize()
+		end
+		result = size.size .. UC.highlight_text(size.postfix, C.group_names.fg_50)
 	end
-	return CE.get_separator(S.opt.separator) .. size.size .. UC.highlight_text(size.postfix, C.group_names.fg_50)
+	return result
 end
 
 ---Returns ruller
@@ -227,12 +240,16 @@ end
 ---@param show_loc boolean
 ---@return string
 function M.get_ruller(show_ln, show_col, show_loc)
-	return table.concat({
-		CE.get_separator(S.opt.separator),
-		show_ln and CE.get_ln() .. CE.get_comma() .. CE.el.space or "",
-		show_col and CE.get_col() .. CE.get_comma() .. CE.el.space or "",
-		show_loc and CE.get_loc() or "",
-	})
+	local result = ""
+	if S.opt.ruller.enabled == true then
+		local comma_space = CE.get_comma() .. CE.el.space
+		result = table.concat({
+			show_ln and CE.get_ln() .. comma_space or "",
+			show_col and CE.get_col() .. comma_space or "",
+			show_loc and CE.get_loc() or "",
+		})
+	end
+	return result
 end
 
 ---Helper. Creates auto command

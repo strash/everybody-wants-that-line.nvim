@@ -10,6 +10,7 @@ local M = {}
 ---@return string
 function M.get_buffer_symbol(buffer_prefix)
 	local is_focused = UU.is_focused()
+	buffer_prefix = tostring(buffer_prefix)
 	if #buffer_prefix ~= 0 then
 		return UC.highlight_text(buffer_prefix .. CE.el.space, C.group_names[is_focused and "fg_60" or "fg_nc_60"],
 			not is_focused)
@@ -53,8 +54,8 @@ function M.get_buf_nr(opts_buffer)
 		bufnr = bufnr,
 		result = ""
 	}
-	if opts_buffer.max_symbols > #nr then
-		bufnr_item.prefix = string.rep(opts_buffer.symbol, opts_buffer.max_symbols - #nr)
+	if tonumber(opts_buffer.max_symbols) > #nr then
+		bufnr_item.prefix = string.rep(tostring(opts_buffer.symbol), tonumber(opts_buffer.max_symbols) - #nr)
 		prefix = UC.highlight_text(bufnr_item.prefix, C.group_names.fg_30)
 	end
 	bufnr_item.result = prefix .. UC.highlight_text(nr, C.group_names[is_focused and "fg_bold" or "fg_nc_bold"], not is_focused)

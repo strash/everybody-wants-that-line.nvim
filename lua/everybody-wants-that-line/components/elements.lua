@@ -38,9 +38,30 @@ M.el = {
 	truncate = "%<",
 }
 
+---Returns string with spaces on each side
+---@param value string
+---@return string
+function M.with_offset(value)
+	if type(value) ~= "string" then
+		value = tostring(value)
+	end
+	return M.el.space .. value .. M.el.space
+end
+
+---Returns string with spacers on each side
+---@generic T : string | string[]
+---@param value T Table of strings or tables with strings
+---@return string
+function M.spaced_text(value)
+	if type(value) ~= "table" and type(value) ~= "string" then
+		value = tostring(value)
+	end
+	return M.el.spacer .. M.with_offset(type(value) == "table" and table.concat(value) or value) .. M.el.spacer
+end
+
 ---@alias sign_opacity "50"|"100"
 
----Returns plus `"+"`
+---Returns highlighted plus `"+"`
 ---@param opacity sign_opacity
 ---@return string
 function M.get_plus(opacity)
@@ -55,7 +76,7 @@ function M.get_plus(opacity)
 	return UC.highlight_text(M.el.plus, group_name, not is_focused)
 end
 
----Returns minus `"-"`
+---Returns highlighted minus `"-"`
 ---@param opacity sign_opacity
 ---@return string
 function M.get_minus(opacity)
@@ -70,23 +91,22 @@ function M.get_minus(opacity)
 	return UC.highlight_text(M.el.minus, group_name, not is_focused)
 end
 
----Returns separator `" | "`
+---Returns highlighted separator `"|"`
 ---@param separator string
 ---@return string
 function M.get_separator(separator)
 	local is_focused = UU.is_focused()
-	local text = M.el.space .. separator .. M.el.space
-	return UC.highlight_text(text, C.group_names[is_focused and "fg_20" or "fg_nc_20"], not is_focused)
+	return UC.highlight_text(tostring(separator), C.group_names[is_focused and "fg_20" or "fg_nc_20"], not is_focused)
 end
 
----Returns comma `","`
+---Returns highlighted comma `","`
 ---@return string
 function M.get_comma()
 	local is_focused = UU.is_focused()
 	return UC.highlight_text(M.el.comma, C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused)
 end
 
----Returns percentage through file in lines
+---Returns highlighted percentage through file in lines
 ---@return string
 function M.get_ln()
 	local is_focused = UU.is_focused()
@@ -94,18 +114,18 @@ function M.get_ln()
 	return UC.highlight_text(M.el.arrow_down, C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused) .. text
 end
 
----Returns column index
+---Returns highlighted column index
 ---@return string
 function M.get_col()
 	local is_focused = UU.is_focused()
 	return UC.highlight_text(M.el.arrow_right, C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused) .. M.el.column_idx
 end
 
----Returns lines of code
+---Returns highlighted lines of code
 ---@return string
 function M.get_loc()
 	local is_focused = UU.is_focused()
-	return M.el.lines_of_code .. UC.highlight_text("LOC", C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused) .. M.el.space
+	return M.el.lines_of_code .. UC.highlight_text("LOC", C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused)
 end
 
 return M

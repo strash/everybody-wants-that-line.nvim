@@ -1,38 +1,104 @@
 local M = {}
 
----@alias buffer_symbol string Symbol before buffer number, e.g. "0000.". If you don't want additional symbols to be displayed, set `buffer.max_symbols = 0`.
----@alias buffer_max_symbols integer Maximum number of symbols including buffer number.
----@alias filepath_path
----| "tail" # File name only
----| "relative" # Relative to working directory
----| "full" # Full path to the file
----@alias filepath_shorten boolean If `true` the path will be shortened, e.g. "/a/b/c/filename.lua". It only works if `path` is "relative" or "full".
----@alias filesize_metric "decimal"|"binary"
 
----@alias opts_buffer { show: boolean, prefix: string, symbol: buffer_symbol, max_symbols: buffer_max_symbols }
----@alias opts_filepath { path: filepath_path, shorten: filepath_shorten }
----@alias opts_filesize { metric: filesize_metric }
+-- BUFFER
+
+---@class opts_buffer
+---@field enabled boolean Enable or disable component.
+---@field prefix string
+---@field symbol string Symbol before buffer number, e.g. "0000.". If you don't want additional symbols to be displayed, set `buffer.max_symbols = 0`.
+---@field max_symbols integer Maximum number of symbols including buffer number.
+
+
+-- DIAGNOSTICS
+
+---@class opts_diagnostics
+---@field enabled boolean Enable or disable component.
+
+
+-- QUICKFIX LIST
+
+---@class opts_quickfixlist
+---@field enabled boolean Enable or disable component.
+
+
+-- GIT STATUS
+
+---@class opts_gitstatus
+---@field enabled boolean Enable or disable component.
+
+
+-- FILE PATH
+
+---@alias filepath_path
+---| '"tail"' # File name only
+---| '"relative"' # Relative to working directory
+---| '"full"' # Full path to the file
+
+---@class opts_filepath
+---@field enabled boolean Enable or disable component.
+---@field path filepath_path Size of the path.
+---@field shorten boolean If `true` the path will be shortened, e.g. "/a/b/c/filename.lua". It only works if `path` is "relative" or "full".
+
+
+-- FILE SIZE
+
+---@alias filesize_metric
+---| '"decimal"' # 1000 bytes == 1 kilobyte
+---| '"binary"' # 1024 bytes == 1 kibibyte
+
+---@class opts_filesize
+---@field enabled boolean Enable or disable component.
+---@field metric filesize_metric Filesize metric.
+
+
+-- RULLER
+
+---@class opts_ruller
+---@field enabled boolean Enable or disable component.
+
+
+-- OPTIONS
 
 ---@class opts
----@field buffer opts_buffer
----@field filepath opts_filepath
----@field separator string
----@field filesize opts_filesize
+---@field buffer opts_buffer Buffer number component
+---@field diagnostics opts_diagnostics Diagnostics component
+---@field quickfix_list opts_quickfixlist Quickfix list component
+---@field git_status opts_gitstatus Git status component
+---@field filepath opts_filepath Filepath component
+---@field filesize opts_filesize Filesize component
+---@field ruller opts_ruller Ruller component
+---@field separator string Separator between components
+
 
 ---@type opts
 M.opt = {
 	buffer = {
-		show = true,
+		enabled = true,
 		prefix = "B:",
 		symbol = "0",
 		max_symbols = 5,
 	},
+	diagnostics = {
+		enabled = true,
+	},
+	quickfix_list = {
+		enabled = true,
+	},
+	git_status = {
+		enabled = true,
+	},
 	filepath = {
+		enabled = true,
 		path = "relative",
 		shorten = false,
 	},
 	filesize = {
+		enabled = true,
 		metric = "decimal"
+	},
+	ruller = {
+		enabled = true,
 	},
 	separator = "│",
 }
