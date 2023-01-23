@@ -6,11 +6,11 @@ It adapts if you change colorscheme or switch to a light or a dark theme.
 https://user-images.githubusercontent.com/14233263/206051953-92085da0-a77d-4169-a087-d7d4e9837961.mp4
 
 ## Table of content
-[Features](#features)
-[Installation](#installation)
-[Configuration](#configuration)
-[Breaking changes](#breaking-changes)
-[Contribution](#contribution)
+- [Features](#features)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Breaking changes](#breaking-changes)
+- [Contribution](#contribution)
 
 ## Features
 - Zero dependencies, lightweight and fast
@@ -107,7 +107,7 @@ require("everybody-wants-that-line").setup({
 ```
 
 ## Breaking changes
-[413944b](https://github.com/strash/everybody-wants-that-line.nvim/commit/413944baa987d129b9616bf4b75a766020b92678)
+- [413944b](https://github.com/strash/everybody-wants-that-line.nvim/commit/413944baa987d129b9616bf4b75a766020b92678) 
 `opts.buffer.show` is deprecated. Use `opts.buffer.enabled` instead.
 
 ## Contribution
