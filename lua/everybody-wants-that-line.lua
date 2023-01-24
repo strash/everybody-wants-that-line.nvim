@@ -107,7 +107,7 @@ function M._set_statusline()
 	elseif wintype == "neogit" then
 		components = {
 			CE.spaced_text(UU.join({
-				CO.title("Neogit "),
+				CO.title("Neogit"),
 				CO.get_branch_status(),
 				CO.bold(CO.get_branch_name()),
 			}, CE.el.space)),
@@ -116,7 +116,7 @@ function M._set_statusline()
 	elseif wintype == "fugitive" then
 		components = {
 			CE.spaced_text(UU.join({
-				CO.title("Fugitive "),
+				CO.title("Fugitive"),
 				CO.get_branch_status(),
 				CO.bold(CO.get_branch_name()),
 			}, CE.el.space)),
