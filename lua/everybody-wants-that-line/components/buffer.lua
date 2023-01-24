@@ -55,7 +55,7 @@ function M.get_buf_nr(opts_buffer)
 		result = ""
 	}
 	if tonumber(opts_buffer.max_symbols) > #nr then
-		bufnr_item.prefix = string.rep(tostring(opts_buffer.symbol), tonumber(opts_buffer.max_symbols) - #nr)
+		bufnr_item.prefix = string.rep(tostring(opts_buffer.symbol):sub(0, 2), tonumber(opts_buffer.max_symbols) - #nr)
 		prefix = UC.highlight_text(bufnr_item.prefix, C.group_names.fg_30)
 	end
 	bufnr_item.result = prefix .. UC.highlight_text(nr, C.group_names[is_focused and "fg_bold" or "fg_nc_bold"], not is_focused)
