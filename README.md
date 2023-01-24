@@ -65,8 +65,9 @@ require("everybody-wants-that-line").setup({
 	buffer = {
 		enabled = true,
 		prefix = "B:",
-		-- Symbol before buffer number, e.g. "0000...".
-		-- If you don't want additional symbols to be displayed, set `buffer.max_symbols = 0`.
+		-- Placeholder before buffer number, e.g. "00001".
+		-- If you don't want additional symbols to be displayed,
+		-- set `symbol = ""` or `max_symbols = 0`.
 		symbol = "0",
 		-- Maximum number of symbols including buffer number.
 		max_symbols = 5,
@@ -87,7 +88,7 @@ require("everybody-wants-that-line").setup({
 		-- "relative" - relative to working directory
 		-- "full" - full path to the file
 		path = "relative",
-		-- If `true` the path will be shortened, e.g. "/a/b/c/filename.lua".
+		-- If `true` a path will be shortened, e.g. "/a/b/c/filename.lua".
 		-- It only works if `path` is "relative" or "full".
 		shorten = false,
 	},
