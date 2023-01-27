@@ -39,7 +39,7 @@ T["get_filepath"] = function()
 			shorten = "./d/",
 		}
 	}
-	eq(child.lua_get("M.get_filepath()"), filepath)
+	eq(child.lua_get("M.get_filepath(" .. vim.api.nvim_get_current_buf() .. ")"), filepath)
 end
 
 return T

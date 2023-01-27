@@ -17,8 +17,9 @@ local function split_path_and_filename(path)
 end
 
 ---Returns path to the file
+---@param buf_id number
 ---@return filepath_cache_path_parts
-function M.get_filepath()
+function M.get_filepath(buf_id)
 	---@type filepath_cache_path_parts
 	local path_parts = {
 		relative = {
@@ -33,7 +34,7 @@ function M.get_filepath()
 		},
 	}
 	---@type string
-	local fullpath = vim.api.nvim_buf_get_name(0)
+	local fullpath = vim.api.nvim_buf_get_name(buf_id)
 	if fullpath ~= nil and #fullpath ~= 0 then
 		if cache[fullpath] ~= nil then
 			path_parts = cache[fullpath]

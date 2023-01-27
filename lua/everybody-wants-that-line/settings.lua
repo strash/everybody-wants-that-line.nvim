@@ -58,6 +58,12 @@ local M = {}
 ---@field enabled boolean Enable or disable component.
 
 
+-- FILE NAME
+
+---@class opts_filename
+---@field enabled boolean Enable or disable component.
+
+
 -- OPTIONS
 
 ---@class opts
@@ -68,6 +74,7 @@ local M = {}
 ---@field filepath opts_filepath Filepath component
 ---@field filesize opts_filesize Filesize component
 ---@field ruller opts_ruller Ruller component
+---@field filename opts_filename Filename component
 ---@field separator string Separator between components
 
 
@@ -98,6 +105,9 @@ M.opt = {
 		metric = "decimal"
 	},
 	ruller = {
+		enabled = true,
+	},
+	filename = {
 		enabled = true,
 	},
 	separator = "│",

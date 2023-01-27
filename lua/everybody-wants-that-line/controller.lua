@@ -1,11 +1,12 @@
-local C = require("everybody-wants-that-line.colors")
-local S = require("everybody-wants-that-line.settings")
+local C  = require("everybody-wants-that-line.colors")
 local CB = require("everybody-wants-that-line.components.buffer")
 local CD = require("everybody-wants-that-line.components.diagnostics")
 local CE = require("everybody-wants-that-line.components.elements")
 local CG = require("everybody-wants-that-line.components.git")
+local CN = require("everybody-wants-that-line.components.filename")
 local CP = require("everybody-wants-that-line.components.filepath")
 local CQ = require("everybody-wants-that-line.components.qflist")
+local S  = require("everybody-wants-that-line.settings")
 local UC = require("everybody-wants-that-line.utils.color")
 local UU = require("everybody-wants-that-line.utils.util")
 
@@ -144,7 +145,7 @@ end
 function M.get_filepath()
 	local result = ""
 	if S.opt.filepath.enabled == true then
-		local path_parts = CP.get_filepath()
+		local path_parts = CP.get_filepath(vim.api.nvim_get_current_buf())
 		result = "[No name]"
 		if #path_parts.relative.path ~= 0 and #path_parts.full.path ~= 0 then
 			local filename = M.bold(path_parts.relative.filename)
@@ -276,6 +277,14 @@ local function create_user_autocmd(event, group, callback)
 	})
 end
 
+---@class event_args
+---@field buf number
+---@field event string
+---@field file string
+---@field group number
+---@field id number
+---@field match string
+
 ---Sets auto commands
 ---@param cb function
 local function setup_autocmd(cb)
@@ -288,14 +297,33 @@ local function setup_autocmd(cb)
 		cb()
 	end)
 
+	-- file name
+	create_autocmd({
+		"BufWinEnter",
+		"VimResized",
+		"WinClosed",
+		"WinLeave",
+		"WinScrolled",
+	}, autocmd_group, function(args)
+		if S.opt.filename.enabled == true then
+			CN.set_filename(args)
+		end
+	end)
+
+	--create_autocmd({
+	--	"ModeChanged",
+	--}, autocmd_group, function(args)
+	--	vim.pretty_print(args)
+	--end)
+
 	-- buffer number
 	-- buffer modified flag
 	-- diagnostics
 	create_autocmd({
 		"BufAdd",
 		"BufModifiedSet",
-		"DiagnosticChanged",
 		"CursorMoved",
+		"DiagnosticChanged",
 	}, autocmd_group, function()
 		cb()
 	end)
@@ -304,7 +332,7 @@ local function setup_autocmd(cb)
 	-- branch name
 	create_autocmd({
 		"BufEnter",
-		"BufWinEnter"
+		"BufWinEnter",
 	}, autocmd_group, function()
 		CG.set_git_branch()
 		CQ.set_qflist()
@@ -313,8 +341,8 @@ local function setup_autocmd(cb)
 
 	-- diff info
 	create_autocmd({
+		"BufReadPost",
 		"BufWritePost",
-		"BufReadPost"
 	}, autocmd_group, function()
 		CG.set_diff_info()
 		cb()
@@ -323,8 +351,8 @@ local function setup_autocmd(cb)
 	-- branch name
 	-- diff info
 	create_autocmd({
+		"FocusGained",
 		"VimEnter",
-		"FocusGained"
 	}, autocmd_group, function()
 		CG.set_git_branch()
 		CG.set_diff_info()
@@ -333,7 +361,7 @@ local function setup_autocmd(cb)
 
 	-- quickfix list
 	create_autocmd({
-		"QuickFixCmdPost"
+		"QuickFixCmdPost",
 	}, autocmd_group, function()
 		CQ.set_qflist()
 		cb()

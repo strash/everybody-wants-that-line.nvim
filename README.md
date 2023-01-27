@@ -102,6 +102,11 @@ require("everybody-wants-that-line").setup({
 	ruller = {
 		enabled = true,
 	},
+	-- Filename is a separate widget that is located in the upper right corner
+	of each open window.
+	filename = {
+		enabled = true,
+	},
 	-- Separator between components, e.g. " ... │ ... │ ... "
 	separator = "│",
 })

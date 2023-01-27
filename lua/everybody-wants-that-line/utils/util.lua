@@ -158,6 +158,13 @@ function M.get_bufnr()
 	return bufnr
 end
 
+---Check if window valid
+---@param win_id number
+---@return boolean
+function M.is_win_valid(win_id)
+	return win_id ~= nil and vim.api.nvim_win_is_valid(win_id)
+end
+
 ---@alias laststatus
 ---| 0 #never
 ---| 1 #only if there are at least two windows
@@ -222,10 +229,12 @@ end
 ---| "dirbuf"         # elihunter173/dirbuf.nvim
 
 ---Returns window type
+---@param win_id number|nil
 ---@return wintype enum
-function M.get_wintype()
+function M.get_wintype(win_id)
+	win_id = win_id or vim.fn.win_getid()
 	---@type vim_wintype
-	local vim_wintype = vim.fn.win_gettype(vim.fn.win_getid())
+	local vim_wintype = vim.fn.win_gettype(win_id)
 	---@type vim_buftype
 	local buftype = vim.o.buftype
 	---@type string
