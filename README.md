@@ -20,7 +20,7 @@ https://user-images.githubusercontent.com/14233263/214998937-5f960f9a-3528-4ced-
 - LSP diagnostics
 - Git branch and git status
 - Filename
-- Clean ruler
+- Clean ruler and filesize
 - Global statusline or per window
 - Support: Netrw, Quickfix List, Location List (soon) and Help
 - Plugin support:
@@ -103,8 +103,8 @@ require("everybody-wants-that-line").setup({
 	ruller = {
 		enabled = true,
 	},
-	-- Filename is a separate widget that is located in the upper right corner
-	of each open window.
+	-- Filename is a separate widget that is located
+	-- in the upper right corner of each open window.
 	filename = {
 		enabled = true,
 	},
