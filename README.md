@@ -3,7 +3,7 @@ Minimalistic, informative and elegant statusline for neovim.
 Plugin uses colors from your current colorscheme, so it looks natural.
 It adapts if you change colorscheme or switch to a light or a dark theme.
 
-https://user-images.githubusercontent.com/14233263/206051953-92085da0-a77d-4169-a087-d7d4e9837961.mp4
+https://user-images.githubusercontent.com/14233263/214998937-5f960f9a-3528-4ced-ab92-f16bee654400.mov
 
 ## Table of content
 - [Features](#features)
@@ -15,7 +15,8 @@ https://user-images.githubusercontent.com/14233263/206051953-92085da0-a77d-4169-
 ## Features
 - Zero dependencies, lightweight and fast
 - Adaptive colors
-- Current buffer number and buffer modified flag
+- Neat winbar
+- Buffer number and modified flag
 - LSP diagnostics
 - Git branch and git status
 - Filename
@@ -41,9 +42,9 @@ Neovim v0.7.0 and newer.
 ```lua
 {
 	"strash/everybody-wants-that-line.nvim",
-	opts = {
+	config = function()
 		[your configuration here]
-	}
+	end
 }
 ```
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
