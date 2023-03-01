@@ -49,7 +49,8 @@ local function create_float(win_id, filename)
 	vim.api.nvim_buf_set_option(buf_id, "bufhidden", "wipe")
 	vim.api.nvim_buf_set_option(buf_id, "filetype", UU.prefix)
 	vim.api.nvim_buf_set_option(buf_id, "buftype", "nofile")
-	vim.api.nvim_buf_set_lines(buf_id, 1, 1, false, { CE.with_offset(filename) })
+	local content = CE.with_offset(filename)
+	vim.api.nvim_buf_set_lines(buf_id, 0, 1, false, { string.rep(" ", #content), content })
 	local float_win_id = vim.api.nvim_open_win(buf_id, false, config)
 	cache[win_id] = {
 		win_id = win_id,
@@ -66,8 +67,8 @@ end
 local function update_filename(win_id, new_filename)
 	if new_filename ~= cache[win_id].filename then
 		cache[win_id].filename = new_filename
-		local content = { CE.with_offset(new_filename) }
-		vim.api.nvim_buf_set_lines(cache[win_id].float_buf_id, 1, 1, false, content)
+		local content = CE.with_offset(new_filename)
+		vim.api.nvim_buf_set_lines(cache[win_id].float_buf_id, 0, 1, false, { string.rep(" ", #content), content })
 	end
 end
 
@@ -103,7 +104,8 @@ end
 local function highlight_float(curwin_id, win_id)
 	local hlgroup = C.group_names[curwin_id == win_id and "fg_bold" or "fg_60_bold"]
 	vim.api.nvim_buf_clear_namespace(cache[win_id].float_buf_id, ns_id, 0, -1)
-	vim.api.nvim_buf_add_highlight(cache[win_id].float_buf_id, ns_id, hlgroup, 1, 1, #cache[win_id].filename + 1)
+	vim.api.nvim_buf_add_highlight(cache[win_id].float_buf_id, ns_id, hlgroup, 0, 0, #cache[win_id].filename + 2)
+	vim.api.nvim_buf_add_highlight(cache[win_id].float_buf_id, ns_id, hlgroup, 1, 0, #cache[win_id].filename + 2)
 end
 
 ---Sets file name floating windows
