@@ -172,11 +172,11 @@ function M.choose_right_color(group_name, rgb_component)
 		fg = M.get_hl_group_color(group_name, "foreground"),
 		bg = M.get_hl_group_color(group_name, "background"),
 	}
-	local is_fg_right_color = color.fg.rgb[c] > color.fg.rgb[U.wrapi(c - 1, 1, 3)] and color.fg.rgb[c] > color.fg.rgb[U.wrapi(c + 1, 1, 3)]
-	local is_bg_right_color = color.bg.rgb[c] > color.bg.rgb[U.wrapi(c - 1, 1, 3)] and color.bg.rgb[c] > color.bg.rgb[U.wrapi(c + 1, 1, 3)]
-	if is_fg_right_color and not is_bg_right_color then
-		return color.fg
-	elseif not is_fg_right_color and is_bg_right_color then
+	local lhs = U.wrapi(c - 1, 1, 3)
+	local rhs = U.wrapi(c + 1, 1, 3)
+	local is_fg_right_color = (color.fg.rgb[c] > color.fg.rgb[lhs]) and (color.fg.rgb[c] > color.fg.rgb[rhs])
+	local is_bg_right_color = (color.bg.rgb[c] > color.bg.rgb[lhs]) and (color.bg.rgb[c] > color.bg.rgb[rhs])
+	if not is_fg_right_color and is_bg_right_color then
 		return color.bg
 	else
 		return color.fg
