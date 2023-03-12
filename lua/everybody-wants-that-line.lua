@@ -4,8 +4,10 @@ local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
 
--- TODO: details in loclist
+-- TODO: add (bullet) sign to diagnostics
+-- TODO: title for the terminal buffer. (vim.b.term_title - title)
 -- TODO: add modes
+-- TODO: details in loclist
 --n	Normal mode
 --v	Visual and Select mode
 --x	Visual mode
