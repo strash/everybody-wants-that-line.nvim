@@ -13,7 +13,7 @@ local rgb = {
 	white = {255,255,255},
 	black = {0,0,0},
 }
-local hsb = {
+local hsv = {
 	white = {0,0,100},
 	black = {0,0,0},
 }
@@ -34,19 +34,19 @@ T["rgb_to_hex"] = function()
 	eq(UC.rgb_to_hex(rgb.white), hex.white)
 end
 
-T["rgb_to_hsb"] = function()
-	eq(UC.rgb_to_hsb(rgb.white), hsb.white)
+T["rgb_to_hsv"] = function()
+	eq(UC.rgb_to_hsv(rgb.white), hsv.white)
 end
 
-T["hsb_to_rgb"] = function()
-	eq(UC.hsb_to_rgb(hsb.white), rgb.white)
+T["hsv_to_rgb"] = function()
+	eq(UC.hsv_to_rgb(hsv.white), rgb.white)
 end
 
 T["blend_colors"] = function()
 	eq(UC.blend_colors(0.5,
-		{hex=hex.white, rgb=rgb.white, hsb=hsb.white},
-		{hex=hex.black, rgb=rgb.black, hsb=hsb.black}),
-		{hex="7F7F7F", rgb={127,127,127}, hsb={0,0,50}}
+		{hex=hex.white, rgb=rgb.white, hsv=hsv.white},
+		{hex=hex.black, rgb=rgb.black, hsv=hsv.black}),
+		{hex="7F7F7F", rgb={127,127,127}, hsv={0,0,50}}
 )
 end
 
@@ -67,18 +67,18 @@ T["color"] = MiniTest.new_set({
 		end,
 	},
 }, {
-	get_hl_group_color = function()
-		local palette = {hex="622323", rgb={98,35,35}, hsb={0,64,38}}
-		eq(child.lua([[return M.get_hl_group_color("]] .. UU.prefix .. [[StatusLine", "foreground")]]), palette)
+	get_vim_color_from_hl_group = function()
+		local palette = {hex="622323", rgb={98,35,35}, hsv={0,64,38}}
+		eq(child.lua([[return M.get_vim_color_from_hl_group("]] .. UU.prefix .. [[StatusLine", "foreground")]]), palette)
 	end,
 	choose_right_color = function()
-		local palette = {hex="622323", rgb={98,35,35}, hsb={0,64,38}}
+		local palette = {hex="622323", rgb={98,35,35}, hsv={0,64,38}}
 		eq(child.lua([[return M.choose_right_color("]] .. UU.prefix .. [[StatusLine", 2)]]), palette)
 	end,
 	adjust_color = function()
-		child.lua([[_G.palette_in = {hex="622323", rgb={98,35,35}, hsb={0,64,38}}]])
-		child.lua([[_G.palette_by = {hex="DFFFB6", rgb={223,255,182}, hsb={86,29,100}}]])
-		local palette_out = {hex="FF5C5C", rgb={255,92,92}, hsb={0,64,100}}
+		child.lua([[_G.palette_in = {hex="622323", rgb={98,35,35}, hsv={0,64,38}}]])
+		child.lua([[_G.palette_by = {hex="DFFFB6", rgb={223,255,182}, hsv={86,29,100}}]])
+		local palette_out = {hex="FF5C5C", rgb={255,92,92}, hsv={0,64,100}}
 		eq(child.lua([[return M.adjust_color(_G.palette_in,_G.palette_by)]]), palette_out)
 	end,
 })

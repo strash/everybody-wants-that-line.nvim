@@ -33,9 +33,9 @@ end
 ---@param b number
 ---@return number
 function M.lerp(v, a, b)
-	v = math.max(math.min(v, 1), 0)
+	local value = math.max(math.min(v, 1), 0)
 	if a and b then
-		return (1.0 - v) * a + b * v
+		return (1.0 - value) * a + b * value
 	else
 		return b
 	end

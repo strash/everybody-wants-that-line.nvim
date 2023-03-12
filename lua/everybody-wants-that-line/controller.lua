@@ -7,7 +7,6 @@ local CN = require("everybody-wants-that-line.components.filename")
 local CP = require("everybody-wants-that-line.components.filepath")
 local CQ = require("everybody-wants-that-line.components.qflist")
 local S  = require("everybody-wants-that-line.settings")
-local UC = require("everybody-wants-that-line.utils.color")
 local UU = require("everybody-wants-that-line.utils.util")
 
 local M = {}
@@ -22,14 +21,14 @@ end
 ---@param text string
 ---@return string
 function M.title(text)
-	return UC.highlight_text(text, C.group_names.fg_60_bold)
+	return C.highlight_text(text, C.group_names.fg_60_bold)
 end
 
 ---Returns bold text
 ---@param text string
 ---@return string
 function M.bold(text)
-	return UC.highlight_text(text, C.group_names.fg_bold)
+	return C.highlight_text(text, C.group_names.fg_bold)
 end
 
 ---Returns buffer
@@ -58,9 +57,9 @@ local function highlight_diagnostic(diagnostic_object, count_group_name, arrow_g
 		arrow = CE.el.arrow_right
 	end
 	return table.concat({
-		UC.highlight_text(tostring(diagnostic_object.count), count_group_name),
-		UC.highlight_text(arrow, arrow_group_name),
-		UC.highlight_text(tostring(diagnostic_object.first_lnum), lnum_group_name),
+		C.highlight_text(tostring(diagnostic_object.count), count_group_name),
+		C.highlight_text(arrow, arrow_group_name),
+		C.highlight_text(tostring(diagnostic_object.first_lnum), lnum_group_name),
 	})
 end
 
@@ -128,11 +127,11 @@ function M.get_branch_status()
 		local insertions = ""
 		local deletions = ""
 		if CG.cache.diff_info.insertions ~= 0 then
-			insertions = UC.highlight_text(tostring(CG.cache.diff_info.insertions), C.group_names.fg_diff_add_bold) ..
+			insertions = C.highlight_text(tostring(CG.cache.diff_info.insertions), C.group_names.fg_diff_add_bold) ..
 				CE.get_plus("50")
 		end
 		if CG.cache.diff_info.deletions ~= 0 then
-			deletions = UC.highlight_text(tostring(CG.cache.diff_info.deletions), C.group_names.fg_diff_delete_bold) ..
+			deletions = C.highlight_text(tostring(CG.cache.diff_info.deletions), C.group_names.fg_diff_delete_bold) ..
 				CE.get_minus("50")
 		end
 		result = UU.join({ insertions, deletions }, CE.el.space)
@@ -153,10 +152,10 @@ function M.get_filepath()
 				result = filename
 			elseif S.opt.filepath.path == "relative" then
 				local relative = S.opt.filepath.shorten and path_parts.relative.shorten or path_parts.relative.path
-				result = UC.highlight_text(relative, C.group_names.fg_60) .. filename
+				result = C.highlight_text(relative, C.group_names.fg_60) .. filename
 			elseif S.opt.filepath.path == "full" then
 				local full = S.opt.filepath.shorten and path_parts.full.shorten or path_parts.full.path
-				result = UC.highlight_text(full, C.group_names.fg_60) .. filename
+				result = C.highlight_text(full, C.group_names.fg_60) .. filename
 			end
 		end
 		result = CE.el.truncate .. result
@@ -184,9 +183,9 @@ function M.get_quickfix()
 	local entries_count = CQ.get_entries_count()
 	local files_count = CQ.get_files_w_entries_count()
 	if tonumber(CQ.get_qflist_winid()) == tonumber(vim.api.nvim_get_current_win()) then
-		local text_in = UC.highlight_text("in", C.group_names.fg_60)
-		local text_file = UC.highlight_text(files_count > 1 and "files" or "file", C.group_names.fg_60)
-		local text_of = UC.highlight_text("of", C.group_names.fg_60)
+		local text_in = C.highlight_text("in", C.group_names.fg_60)
+		local text_file = C.highlight_text(files_count > 1 and "files" or "file", C.group_names.fg_60)
+		local text_of = C.highlight_text("of", C.group_names.fg_60)
 		result = CE.spaced_text(UU.join({
 			M.title("Quickfix List"),
 			idx,
@@ -197,7 +196,7 @@ function M.get_quickfix()
 	else
 		if S.opt.quickfix_list.enabled == true then
 			if UU.laststatus() == 3 and not CQ.is_qflist_empty() then
-				local text_slash = UC.highlight_text("/", C.group_names.fg_60)
+				local text_slash = C.highlight_text("/", C.group_names.fg_60)
 				result = M.title("QF: ") .. idx .. text_slash .. entries_count
 			end
 		end
@@ -230,7 +229,7 @@ function M.get_filesize()
 		elseif S.opt.filesize.metric == "binary" then
 			size = UU.bi_fsize()
 		end
-		result = size.size .. UC.highlight_text(size.postfix, C.group_names.fg_50)
+		result = size.size .. C.highlight_text(size.postfix, C.group_names.fg_50)
 	end
 	return result
 end

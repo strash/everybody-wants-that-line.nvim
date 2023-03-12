@@ -1,33 +1,27 @@
-local U = require("everybody-wants-that-line.utils.util")
-
-local M = {}
 ---@alias rgb integer[] each number from 0 to 255
----@alias hsb integer[] h 0-360, s 0-100, b 0-100
----@alias color_palette { hex: string, rgb: rgb, hsb: hsb }
----@alias color_ground '"background"'|'"foreground"'
+---@alias hsv integer[] h 0-360, s 0-100, b 0-100
 
----Returns default color palette. Black color for "light" background
----or white color for "dark" background, e.g. `{ hex, rgb, hsb }`
----@return color_palette
-function M.get_default_color_palette()
-	if vim.o.background == "dark" then
-		return { hex = "FFFFFF", rgb = { 255, 255, 255 }, hsb = { 0, 0, 100 } }
-	else
-		return { hex = "000000", rgb = { 0, 0, 0 }, hsb = { 0, 0, 0 } }
-	end
-end
+---@class ColorData
+---@field hex string 8bit rgb color, e.g. `"FFFFFF"`
+---@field rgb rgb each number from 0 to 255
+---@field hsv hsv h 0-360, s 0-100, b 0-100
+---@field new fun(self: ColorData, vim_color: integer | nil): ColorData Creates new color data
+---@field blend fun(self: ColorData, intensity: number, with: ColorData): ColorData Blend colors
+---@field adjust_color fun(self: ColorData, by_color_data: ColorData): ColorData Returns adjusted copy of color
+
+local U = require("everybody-wants-that-line.utils.util")
 
 ---Convert 24bit rgb color to hex, e.g. `16777215` -> `FFFFFF`
 ---@param vim_color integer
 ---@return string
-function M.vim_to_hex(vim_color)
+local function vim_to_hex(vim_color)
 	return string.format("%06x", vim_color):upper()
 end
 
 ---Convert hex to 8bit rgb color, e.g. `FFFFFF` -> `{ 255, 255, 255 }`
 ---@param hex string
 ---@return rgb
-function M.hex_to_rgb(hex)
+local function hex_to_rgb(hex)
 	return {
 		tonumber(hex:sub(1, 2), 16),
 		tonumber(hex:sub(3, 4), 16),
@@ -38,7 +32,7 @@ end
 ---Convert 24bit rgb color to 8bit rgb, e.g. `16777215` -> `{ 255, 255, 255 }`
 ---@param vim_color integer
 ---@return rgb
-function M.vim_to_rgb(vim_color)
+local function vim_to_rgb(vim_color)
 	---@type rgb
 	local rgb = {
 		bit.band(bit.rshift(vim_color, 16), 255),
@@ -48,10 +42,17 @@ function M.vim_to_rgb(vim_color)
 	return rgb
 end
 
+---Convert 8bit rgb color to 24bit, e.g. `{ 255, 255, 255 }` -> `16777215`
+---@param rgb rgb
+---@return integer
+local function rgb_to_vim(rgb)
+	return bit.lshift(rgb[1], 16) + bit.lshift(rgb[2], 8) + rgb[3]
+end
+
 ---Convert 8bit rgb to hex color, e.g. `{ 255, 255, 255 }` -> `FFFFFF`
 ---@param rgb rgb
 ---@return string
-function M.rgb_to_hex(rgb)
+local function rgb_to_hex(rgb)
 	return table.concat({
 		string.format("%02x", rgb[1]),
 		string.format("%02x", rgb[2]),
@@ -59,10 +60,10 @@ function M.rgb_to_hex(rgb)
 	}):upper()
 end
 
----Convert 8bit rgb to hsb color, e.g. `{ 255, 255, 255 }` -> `{ 0, 0, 100 }`
+---Convert 8bit rgb to hsv color, e.g. `{ 255, 255, 255 }` -> `{ 0, 0, 100 }`
 ---@param rgb rgb
----@return hsb
-function M.rgb_to_hsb(rgb)
+---@return hsv
+local function rgb_to_hsv(rgb)
 	local _r, _g, _b = rgb[1] / 255, rgb[2] / 255, rgb[3] / 255
 	local max, min = math.max(_r, _g, _b), math.min(_r, _g, _b)
 	local d, h, s, v
@@ -83,11 +84,11 @@ function M.rgb_to_hsb(rgb)
 	}
 end
 
----Convert hsb to 8bit rgb color, e.g. `{ 0, 0, 100 }` -> `{ 255, 255, 255 }`
----@param hsb hsb
+---Convert hsv to 8bit rgb color, e.g. `{ 0, 0, 100 }` -> `{ 255, 255, 255 }`
+---@param hsv hsv
 ---@return rgb
-function M.hsb_to_rgb(hsb)
-	local _h, _s, _b = hsb[1] / 360, hsb[2] / 100, hsb[3] / 100
+local function hsv_to_rgb(hsv)
+	local _h, _s, _b = hsv[1] / 360, hsv[2] / 100, hsv[3] / 100
 	local r, g, b, i, f, p, q, t, a
 	i = math.floor(_h * 6)
 	f = _h * 6 - i
@@ -109,118 +110,81 @@ function M.hsb_to_rgb(hsb)
 	}
 end
 
----Blend colors between two color palettes
----@param intensity number from 0.0 to 1.0
----@param from color_palette
----@param to color_palette
----@return color_palette
-function M.blend_colors(intensity, from, to)
-	if from.rgb ~= nil and to.rgb ~= nil then
-		local rgb = {}
-		for i = 1, 3 do
-			local rgb_c = math.floor(U.lerp(intensity, from.rgb[i], to.rgb[i]))
-			table.insert(rgb, rgb_c)
-		end
-		local hex = M.rgb_to_hex(rgb)
-		local hsb = M.rgb_to_hsb(rgb)
-		return { hex = hex, rgb = rgb, hsb = hsb }
-	end
-	return M.get_default_color_palette()
-end
-
----Returns reversed color ground `"foreground" -> "background"`
----@param color color_ground
----@return color_ground
-function M.reverse_color_ground(color)
-	if color == "background" then
-		return "foreground"
-	else
-		return "background"
-	end
-end
-
---- Get hightlight group color palette
----@param group_name string name of the hightlight group, e.g. `"StatusLine"`
----@param color color_ground
----@return color_palette
-function M.get_hl_group_color(group_name, color)
-	local hlid = vim.fn.hlID(group_name)
-	if hlid ~= 0 then
-		---@type { background: string|nil, foreground: string|nil, reverse: boolean|nil, bold: boolean|nil }
-		local group_table = vim.api.nvim_get_hl_by_id(hlid, true)
-		local c = color
-		if group_table["reverse"] ~= nil and group_table["reverse"] == true then
-			c = M.reverse_color_ground(c)
-		end
-		if group_table[c] ~= nil then
-			local hex = M.vim_to_hex(group_table[c])
-			local rgb = bit ~= nil and M.vim_to_rgb(group_table[c]) or M.hex_to_rgb(hex)
-			local hsb = M.rgb_to_hsb(rgb)
-			return { hex = hex, rgb = rgb, hsb = hsb }
-		end
-	end
-	return M.get_default_color_palette()
-end
-
----Guessing color by its rgb component between `"foreground"` and `"background"` colors
----@param group_name string name of the hightlight group, e.g. `"StatusLine"`
+---Static. Guessing color by its rgb component between `"foreground"` and `"background"` colors
+---@param bg_color_data ColorData
+---@param fg_color_data ColorData
 ---@param rgb_component 1|2|3
----@return color_palette
-function M.choose_right_color(group_name, rgb_component)
-	local c = rgb_component
-	local color = {
-		fg = M.get_hl_group_color(group_name, "foreground"),
-		bg = M.get_hl_group_color(group_name, "background"),
-	}
-	local lhs = U.wrapi(c - 1, 1, 3)
-	local rhs = U.wrapi(c + 1, 1, 3)
-	local is_fg_right_color = (color.fg.rgb[c] > color.fg.rgb[lhs]) and (color.fg.rgb[c] > color.fg.rgb[rhs])
-	local is_bg_right_color = (color.bg.rgb[c] > color.bg.rgb[lhs]) and (color.bg.rgb[c] > color.bg.rgb[rhs])
+---@return ColorData
+local function choose_right_color(bg_color_data, fg_color_data, rgb_component)
+	local lhs = U.wrapi(rgb_component - 1, 1, 3)
+	local rhs = U.wrapi(rgb_component + 1, 1, 3)
+	local is_bg_right_color = (bg_color_data.rgb[rgb_component] > bg_color_data.rgb[lhs]) and (bg_color_data.rgb[rgb_component] > bg_color_data.rgb[rhs])
+	local is_fg_right_color = (fg_color_data.rgb[rgb_component] > fg_color_data.rgb[lhs]) and (fg_color_data.rgb[rgb_component] > fg_color_data.rgb[rhs])
 	if not is_fg_right_color and is_bg_right_color then
-		return color.bg
+		return bg_color_data
 	else
-		return color.fg
+		return fg_color_data
 	end
 end
 
----Returns adjusted copy of color palette
----@param color_palette color_palette
----@param by_color_palette color_palette
----@return color_palette
-function M.adjust_color(color_palette, by_color_palette)
-	local hex, rgb
-	local hsb = color_palette.hsb
-	if hsb[2] < by_color_palette.hsb[2] then hsb[2] = by_color_palette.hsb[2] end
+---@type ColorData
+local ColorData = {
+	hex = "FFFFFF",
+	rgb = { 255, 255, 255 },
+	hsv = { 0, 0, 100 },
+	choose_right_color = choose_right_color
+}
+
+---Create new color data
+---@param vim_color integer | nil
+---@return ColorData
+function ColorData:new(vim_color)
+	local t = {}
+	setmetatable(t, self)
+	self.__index = self
+	if vim_color then
+		self.hex = vim_to_hex(vim_color)
+		self.rgb = bit ~= nil and vim_to_rgb(vim_color) or hex_to_rgb(self.hex)
+		self.hsv = rgb_to_hsv(self.rgb)
+	end
+	return t
+end
+
+---Blend colors
+---@param intensity number from 0.0 to 1.0
+---@param with ColorData
+---@return ColorData
+function ColorData:blend(intensity, with)
+	local rgb = { self.rgb[1], self.rgb[2], self.rgb[3] }
+	for i = 1, 3 do
+		rgb[i] = math.floor(U.lerp(intensity, rgb[i], with.rgb[i]))
+	end
+	return ColorData:new(rgb_to_vim(rgb))
+end
+
+---Returns adjusted copy of color
+---@param by_color_data ColorData
+---@return ColorData
+function ColorData:adjust_color(by_color_data)
+	---@type hsv
+	local hsv = self.hsv
+	if hsv[2] < by_color_data.hsv[2] then
+		hsv[2] = by_color_data.hsv[2]
+	end
 	if vim.o.background == "dark" then
-		if hsb[3] < by_color_palette.hsb[3] then hsb[3] = by_color_palette.hsb[3] end
+		if hsv[3] < by_color_data.hsv[3] then
+			hsv[3] = by_color_data.hsv[3]
+		end
 	else
-		if hsb[3] > by_color_palette.hsb[3] then hsb[3] = by_color_palette.hsb[3] end
+		if hsv[3] > by_color_data.hsv[3] then
+			hsv[3] = by_color_data.hsv[3]
+		end
 	end
-	rgb = M.hsb_to_rgb(hsb)
-	hex = M.rgb_to_hex(rgb)
-	return { hex = hex, rgb = rgb, hsb = hsb }
+	local new_color = ColorData:new()
+	new_color.hsv = hsv
+	new_color.rgb = hsv_to_rgb(hsv)
+	new_color.hex = rgb_to_hex(new_color.rgb)
+	return new_color
 end
 
----Returns right group name. `...Nc` (not current) or current (in active StatusLine)
----@param group_name string
----@return string
-function M.get_group_name(group_name)
-	if U.is_focused() then
-		return group_name
-	end
-	return U.prefix .. group_name:sub(#U.prefix + 1, #U.prefix + 2) .. "Nc" .. group_name:sub(#U.prefix + 3)
-end
-
----Returns highlighted text
----@param text string
----@param group_name string
----@param is_exact_group_name nil|boolean If `true` then return formatted `group_name`. Default is `false`
----@return string
-function M.highlight_text(text, group_name, is_exact_group_name)
-	if is_exact_group_name == nil then
-		is_exact_group_name = false
-	end
-	return "%#" .. (is_exact_group_name and group_name or M.get_group_name(group_name)) .. "#" .. text .. "%*"
-end
-
-return M
+return ColorData
