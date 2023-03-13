@@ -6,7 +6,7 @@
 ---@field rgb rgb each number from 0 to 255
 ---@field hsv hsv h 0-360, s 0-100, b 0-100
 ---@field new fun(self: ColorData, vim_color: integer | nil): ColorData Creates new color data
----@field blend fun(self: ColorData, intensity: number, with: ColorData): ColorData Blend colors
+---@field blend fun(self: ColorData, intensity: number, with: ColorData): ColorData Blend color to itself with intensity
 ---@field adjust_color fun(self: ColorData, by_color_data: ColorData): ColorData Returns adjusted copy of color
 
 local U = require("everybody-wants-that-line.utils.util")
@@ -143,15 +143,15 @@ function ColorData:new(vim_color)
 	setmetatable(t, self)
 	self.__index = self
 	if vim_color then
-		self.hex = vim_to_hex(vim_color)
-		self.rgb = bit ~= nil and vim_to_rgb(vim_color) or hex_to_rgb(self.hex)
-		self.hsv = rgb_to_hsv(self.rgb)
+		t.hex = vim_to_hex(vim_color)
+		t.rgb = bit ~= nil and vim_to_rgb(vim_color) or hex_to_rgb(t.hex)
+		t.hsv = rgb_to_hsv(t.rgb)
 	end
 	return t
 end
 
----Blend colors
----@param intensity number from 0.0 to 1.0
+---Blend color to itself with intensity
+---@param intensity number How mutch color add to itself. A number from 0.0 to 1.0
 ---@param with ColorData
 ---@return ColorData
 function ColorData:blend(intensity, with)

@@ -73,19 +73,17 @@ end
 local function set_colors()
 	-- base colors
 	cache.bg = ColorData:new(get_vim_color("StatusLine", "background"))
-	vim.pretty_print(cache.bg)
 	cache.fg = ColorData:new(get_vim_color("StatusLine", "foreground"))
-	vim.pretty_print(cache.bg)
 	cache.bg_nc = ColorData:new(get_vim_color("StatusLineNC", "background"))
 	cache.fg_nc = ColorData:new(get_vim_color("StatusLineNC", "foreground"))
 	cache.fg_error = ColorData:new(get_vim_color("DiagnosticError", "foreground"))
 	cache.fg_warn = ColorData:new(get_vim_color("DiagnosticWarn", "foreground"))
 	cache.fg_hint = ColorData:new(get_vim_color("DiagnosticHint", "foreground"))
 	cache.fg_info = ColorData:new(get_vim_color("DiagnosticInfo", "foreground"))
-	cache.fg_nc_error = cache.fg_error:blend(0.8, cache.bg)
-	cache.fg_nc_warn = cache.fg_warn:blend(0.8, cache.bg)
-	cache.fg_nc_hint = cache.fg_hint:blend(0.8, cache.bg)
-	cache.fg_nc_info = cache.fg_info:blend(0.8, cache.bg)
+	cache.fg_nc_error = cache.fg_error:blend(0.2, cache.bg)
+	cache.fg_nc_warn = cache.fg_warn:blend(0.2, cache.bg)
+	cache.fg_nc_hint = cache.fg_hint:blend(0.2, cache.bg)
+	cache.fg_nc_info = cache.fg_info:blend(0.2, cache.bg)
 	-- diff colors
 	local fg_diff_add = ColorData.choose_right_color(
 		ColorData:new(get_vim_color("DiffAdd", "background")),
@@ -95,12 +93,12 @@ local function set_colors()
 		ColorData:new(get_vim_color("DiffDelete", "foreground")), 1)
 	cache.fg_diff_add = fg_diff_add:adjust_color(cache.fg_info)
 	cache.fg_diff_delete = fg_diff_delete:adjust_color(cache.fg_info)
-	cache.fg_nc_diff_add = cache.fg_diff_add:blend(0.8, cache.bg)
-	cache.fg_nc_diff_delete = cache.fg_diff_delete:blend(0.8, cache.bg)
+	cache.fg_nc_diff_add = cache.fg_diff_add:blend(0.4, cache.bg)
+	cache.fg_nc_diff_delete = cache.fg_diff_delete:blend(0.4, cache.bg)
 	-- blended colors
 	for _, v in ipairs({ 20, 30, 50, 60 }) do
-		cache["fg_" .. v] = cache.fg:blend(v / 100, cache.bg)
-		cache["fg_nc_" .. v] = cache.fg_nc:blend(v / 100, cache.bg_nc)
+		cache["fg_" .. v] = cache.bg:blend(v / 100, cache.fg)
+		cache["fg_nc_" .. v] = cache.bg_nc:blend(v / 100, cache.fg_nc)
 	end
 	-- blended colors
 	local diagnostics = { "error", "warn", "hint", "info", "diff_add", "diff_delete" }
