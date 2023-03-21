@@ -1,5 +1,5 @@
 local C = require("everybody-wants-that-line.colors")
-local UU = require("everybody-wants-that-line.utils.util")
+local Window = require("everybody-wants-that-line.utils.window")
 
 local M = {}
 
@@ -64,7 +64,7 @@ end
 ---@param opacity sign_opacity
 ---@return string
 function M.get_plus(opacity)
-	local is_focused = UU.is_focused()
+	local is_focused = Window.is_focused()
 	---@type string
 	local group_name
 	if opacity == "100" then
@@ -79,7 +79,7 @@ end
 ---@param opacity sign_opacity
 ---@return string
 function M.get_minus(opacity)
-	local is_focused = UU.is_focused()
+	local is_focused = Window.is_focused()
 	---@type string
 	local group_name
 	if opacity == "100" then
@@ -94,21 +94,21 @@ end
 ---@param separator string
 ---@return string
 function M.get_separator(separator)
-	local is_focused = UU.is_focused()
+	local is_focused = Window.is_focused()
 	return C.highlight_text(tostring(separator), C.group_names[is_focused and "fg_20" or "fg_nc_20"], not is_focused)
 end
 
 ---Returns highlighted comma `","`
 ---@return string
 function M.get_comma()
-	local is_focused = UU.is_focused()
+	local is_focused = Window.is_focused()
 	return C.highlight_text(M.el.comma, C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused)
 end
 
 ---Returns highlighted percentage through file in lines
 ---@return string
 function M.get_ln()
-	local is_focused = UU.is_focused()
+	local is_focused = Window.is_focused()
 	local text = M.el.percentage_in_lines .. M.el.percent
 	return C.highlight_text(M.el.arrow_down, C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused) .. text
 end
@@ -116,14 +116,14 @@ end
 ---Returns highlighted column index
 ---@return string
 function M.get_col()
-	local is_focused = UU.is_focused()
+	local is_focused = Window.is_focused()
 	return C.highlight_text(M.el.arrow_right, C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused) .. M.el.column_idx
 end
 
 ---Returns highlighted lines of code
 ---@return string
 function M.get_loc()
-	local is_focused = UU.is_focused()
+	local is_focused = Window.is_focused()
 	return M.el.lines_of_code .. C.highlight_text("LOC", C.group_names[is_focused and "fg_50" or "fg_nc_50"], not is_focused)
 end
 

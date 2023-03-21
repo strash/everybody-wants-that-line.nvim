@@ -1,7 +1,7 @@
 local C  = require("everybody-wants-that-line.colors")
 local CE = require("everybody-wants-that-line.components.elements")
 local CF = require("everybody-wants-that-line.components.filepath")
-local UU = require("everybody-wants-that-line.utils.util")
+local Window = require("everybody-wants-that-line.utils.window")
 
 local M = {}
 
@@ -15,7 +15,7 @@ local M = {}
 ---@type { [number]: filename_win_cache }
 local cache = {}
 
-local ns_id = vim.api.nvim_create_namespace(UU.prefix)
+local ns_id = vim.api.nvim_create_namespace(Window.prefix)
 
 ---Returns floating window config
 ---@param win_id number
@@ -47,7 +47,7 @@ local function create_float(win_id, filename)
 	local config = get_config(win_id, filename)
 	local buf_id = vim.api.nvim_create_buf(false, true)
 	vim.api.nvim_buf_set_option(buf_id, "bufhidden", "wipe")
-	vim.api.nvim_buf_set_option(buf_id, "filetype", UU.prefix)
+	vim.api.nvim_buf_set_option(buf_id, "filetype", Window.prefix)
 	vim.api.nvim_buf_set_option(buf_id, "buftype", "nofile")
 	local content = CE.with_offset(filename)
 	vim.api.nvim_buf_set_lines(buf_id, 0, 1, false, { string.rep(" ", #content), content })
@@ -91,7 +91,7 @@ local function clean_floats(win_ids)
 		end
 	end
 	for _, win_cache in ipairs(ids_to_clean) do
-		if UU.is_win_valid(win_cache.float_win_id) then
+		if Window.is_win_valid(win_cache.float_win_id) then
 			vim.api.nvim_win_close(win_cache.float_win_id, false)
 			cache[win_cache.win_id] = nil
 		end
@@ -124,18 +124,18 @@ function M.set_filename(args)
 		if cache[curwin_id] == nil then
 			local filepath = CF.get_filepath(vim.api.nvim_get_current_buf())
 			if #filepath.full.filename > 0 then
-				local wintype = UU.get_wintype(curwin_id)
+				local wintype = Window.get_wintype(curwin_id)
 				if wintype == "normal" or wintype == "help" then
 					create_float(curwin_id, filepath.full.filename)
 				end
 			end
 		end
 		for _, win_id in ipairs(win_ids) do
-			if cache[win_id] ~= nil and UU.is_win_valid(win_id) then
+			if cache[win_id] ~= nil and Window.is_win_valid(win_id) then
 				cache[win_id].buf_id = vim.api.nvim_win_get_buf(win_id)
 				local filepath = CF.get_filepath(cache[win_id].buf_id)
 				-- <C-w o> closes all floats, so we have to recreate them
-				if not UU.is_win_valid(cache[win_id].float_win_id) then
+				if not Window.is_win_valid(cache[win_id].float_win_id) then
 					create_float(win_id, filepath.full.filename)
 				end
 				update_filename(win_id, filepath.full.filename)

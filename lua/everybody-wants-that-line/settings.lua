@@ -1,4 +1,4 @@
-local M = {}
+local Settings = {}
 
 
 -- BUFFER
@@ -79,7 +79,7 @@ local M = {}
 
 
 ---@type opts
-M.opt = {
+Settings.opt = {
 	buffer = {
 		enabled = true,
 		prefix = "B:",
@@ -135,28 +135,28 @@ end
 
 ---Setup
 ---@param opt opts
-function M.setup(opt)
+function Settings.setup(opt)
 	if opt ~= nil and type(opt) == "table" then
 		for k, v in pairs(opt) do
 			if type(v) == "table" then
 				for vk, vv in pairs(v) do
-					if M.opt[k][vk] ~= nil and type(M.opt[k][vk]) == type(vv) then
+					if Settings.opt[k][vk] ~= nil and type(Settings.opt[k][vk]) == type(vv) then
 						if k == "filepath" and vk == "path" then
-							M.opt[k][vk] = check_filepath(vv)
+							Settings.opt[k][vk] = check_filepath(vv)
 						elseif k == "filesize" and vk == "metric" then
-							M.opt[k][vk] = check_filesize_metric(vv)
+							Settings.opt[k][vk] = check_filesize_metric(vv)
 						else
-							M.opt[k][vk] = vv
+							Settings.opt[k][vk] = vv
 						end
 					end
 				end
 			else
-				if M.opt[k] ~= nil and type(M.opt[k]) == type(v) then
-					M.opt[k] = v
+				if Settings.opt[k] ~= nil and type(Settings.opt[k]) == type(v) then
+					Settings.opt[k] = v
 				end
 			end
 		end
 	end
 end
 
-return M
+return Settings

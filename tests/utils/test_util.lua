@@ -54,7 +54,7 @@ T["fsize"] = MiniTest.new_set({
 		pre_case = function()
 			child.restart({ "-u", "tests/minimal_init.lua" })
 			child.lua([[M = require("everybody-wants-that-line.utils.util")]])
-			child.lua([[_G.fsize = { size = 0, postfix = "B" }]])
+			child.lua([[_G.fsize = { size = 0, suffix = "B" }]])
 			child.cmd("e tests/utils/test_file")
 		end,
 		post_case = function()
@@ -77,7 +77,7 @@ T["fsize"] = MiniTest.new_set({
 		end
 		child.api.nvim_buf_set_text(0, 0, 0, 0, 0, text)
 		child.cmd("w")
-		child.lua([[_G.fsize.size = 1; _G.fsize.postfix = "KB"]])
+		child.lua([[_G.fsize.size = 1; _G.fsize.suffix = "KB"]])
 		eq(child.lua("return M.si_fsize()"), child.lua_get("_G.fsize"))
 	end,
 
@@ -88,12 +88,12 @@ T["fsize"] = MiniTest.new_set({
 		end
 		child.api.nvim_buf_set_text(0, 0, 0, 0, 0, text)
 		child.cmd("w")
-		child.lua([[_G.fsize.size = 1; _G.fsize.postfix = "MB"]])
+		child.lua([[_G.fsize.size = 1; _G.fsize.suffix = "MB"]])
 		eq(child.lua("return M.si_fsize()"), child.lua_get("_G.fsize"))
 	end,
 
 	bi_bytes = function()
-		eq(child.lua("return M.bi_fsize()"), child.lua_get("_G.fsize"))
+		eq(child.lua("return M.binary_file_size()"), child.lua_get("_G.fsize"))
 	end,
 
 	bi_kibibytes = function()
@@ -103,8 +103,8 @@ T["fsize"] = MiniTest.new_set({
 		end
 		child.api.nvim_buf_set_text(0, 0, 0, 0, 0, text)
 		child.cmd("w")
-		child.lua([[_G.fsize.size = 1.07; _G.fsize.postfix = "KiB"]])
-		eq(child.lua("return M.bi_fsize()"), child.lua_get("_G.fsize"))
+		child.lua([[_G.fsize.size = 1.07; _G.fsize.suffix = "KiB"]])
+		eq(child.lua("return M.binary_file_size()"), child.lua_get("_G.fsize"))
 	end,
 
 	bi_mibibytes = function()
@@ -114,8 +114,8 @@ T["fsize"] = MiniTest.new_set({
 		end
 		child.api.nvim_buf_set_text(0, 0, 0, 0, 0, text)
 		child.cmd("w")
-		child.lua([[_G.fsize.size = 1; _G.fsize.postfix = "MiB"]])
-		eq(child.lua("return M.bi_fsize()"), child.lua_get("_G.fsize"))
+		child.lua([[_G.fsize.size = 1; _G.fsize.suffix = "MiB"]])
+		eq(child.lua("return M.binary_file_size()"), child.lua_get("_G.fsize"))
 	end
 })
 

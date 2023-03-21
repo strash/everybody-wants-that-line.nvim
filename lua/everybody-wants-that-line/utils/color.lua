@@ -1,15 +1,4 @@
----@alias rgb integer[] each number from 0 to 255
----@alias hsv integer[] h 0-360, s 0-100, b 0-100
-
----@class ColorData
----@field hex string 8bit rgb color, e.g. `"FFFFFF"`
----@field rgb rgb each number from 0 to 255
----@field hsv hsv h 0-360, s 0-100, b 0-100
----@field new fun(self: ColorData, vim_color: integer | nil): ColorData Creates new color data
----@field blend fun(self: ColorData, intensity: number, with: ColorData): ColorData Blend color to itself with intensity
----@field adjust_color fun(self: ColorData, by_color_data: ColorData): ColorData Returns adjusted copy of color
-
-local U = require("everybody-wants-that-line.utils.util")
+local Math = require("everybody-wants-that-line.utils.math")
 
 ---Convert 24bit rgb color to hex, e.g. `16777215` -> `FFFFFF`
 ---@param vim_color integer
@@ -78,9 +67,9 @@ local function rgb_to_hsv(rgb)
 		end
 	end
 	return {
-		U.round(h / 6 * 360),
-		U.round(s * 100),
-		U.round(v * 100)
+		Math.round(h / 6 * 360),
+		Math.round(s * 100),
+		Math.round(v * 100)
 	}
 end
 
@@ -104,20 +93,38 @@ local function hsv_to_rgb(hsv)
 	elseif a == 5 then r = _b g = p  b = q
 	end
 	return {
-		U.round(r * 255),
-		U.round(g * 255),
-		U.round(b * 255)
+		Math.round(r * 255),
+		Math.round(g * 255),
+		Math.round(b * 255)
 	}
 end
+
+---@alias rgb integer[] each number from 0 to 255
+---@alias hsv integer[] h 0-360, s 0-100, b 0-100
+
+---@class ColorData
+---@field hex string 8bit rgb color, e.g. `"FFFFFF"`
+---@field rgb rgb each number from 0 to 255
+---@field hsv hsv h 0-360, s 0-100, b 0-100
+---@field new fun(self: ColorData, vim_color: integer | nil): ColorData Creates new color data
+---@field blend fun(self: ColorData, intensity: number, with: ColorData): ColorData Blend color to itself with intensity
+---@field adjust_color fun(self: ColorData, by_color_data: ColorData): ColorData Returns adjusted copy of color
+
+---@type ColorData
+local ColorData = {
+	hex = "FFFFFF",
+	rgb = { 255, 255, 255 },
+	hsv = { 0, 0, 100 },
+}
 
 ---Static. Guessing color by its rgb component between `"foreground"` and `"background"` colors
 ---@param bg_color_data ColorData
 ---@param fg_color_data ColorData
 ---@param rgb_component 1|2|3
 ---@return ColorData
-local function choose_right_color(bg_color_data, fg_color_data, rgb_component)
-	local lhs = U.wrapi(rgb_component - 1, 1, 3)
-	local rhs = U.wrapi(rgb_component + 1, 1, 3)
+function ColorData.choose_right_color(bg_color_data, fg_color_data, rgb_component)
+	local lhs = Math.wrapi(rgb_component - 1, 1, 3)
+	local rhs = Math.wrapi(rgb_component + 1, 1, 3)
 	local is_bg_right_color = (bg_color_data.rgb[rgb_component] > bg_color_data.rgb[lhs]) and (bg_color_data.rgb[rgb_component] > bg_color_data.rgb[rhs])
 	local is_fg_right_color = (fg_color_data.rgb[rgb_component] > fg_color_data.rgb[lhs]) and (fg_color_data.rgb[rgb_component] > fg_color_data.rgb[rhs])
 	if not is_fg_right_color and is_bg_right_color then
@@ -126,14 +133,6 @@ local function choose_right_color(bg_color_data, fg_color_data, rgb_component)
 		return fg_color_data
 	end
 end
-
----@type ColorData
-local ColorData = {
-	hex = "FFFFFF",
-	rgb = { 255, 255, 255 },
-	hsv = { 0, 0, 100 },
-	choose_right_color = choose_right_color
-}
 
 ---Create new color data
 ---@param vim_color integer | nil
@@ -157,7 +156,7 @@ end
 function ColorData:blend(intensity, with)
 	local rgb = { self.rgb[1], self.rgb[2], self.rgb[3] }
 	for i = 1, 3 do
-		rgb[i] = math.floor(U.lerp(intensity, rgb[i], with.rgb[i]))
+		rgb[i] = math.floor(Math.lerp(intensity, rgb[i], with.rgb[i]))
 	end
 	return ColorData:new(rgb_to_vim(rgb))
 end
@@ -188,3 +187,4 @@ function ColorData:adjust_color(by_color_data)
 end
 
 return ColorData
+

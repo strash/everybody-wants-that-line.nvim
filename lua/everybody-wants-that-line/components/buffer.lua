@@ -1,6 +1,6 @@
 local C = require("everybody-wants-that-line.colors")
 local CE = require("everybody-wants-that-line.components.elements")
-local UU = require("everybody-wants-that-line.utils.util")
+local Window = require("everybody-wants-that-line.utils.window")
 
 local M = {}
 
@@ -8,7 +8,7 @@ local M = {}
 ---@param buffer_prefix string
 ---@return string
 function M.get_buffer_symbol(buffer_prefix)
-	local is_focused = UU.is_focused()
+	local is_focused = Window.is_focused()
 	buffer_prefix = tostring(buffer_prefix)
 	if #buffer_prefix ~= 0 then
 		return C.highlight_text(buffer_prefix .. CE.el.space, C.group_names[is_focused and "fg_60" or "fg_nc_60"],
@@ -20,7 +20,7 @@ end
 ---Returns buffer modified flag
 ---@return string
 function M.get_buf_modflag()
-	local bufnr = UU.get_bufnr()
+	local bufnr = Window.get_bufnr()
 	local is_modifiable = vim.api.nvim_buf_get_option(bufnr, "mod") --[[@as boolean]]
 	---@type vim_buftype
 	local buftype = vim.o.buftype
@@ -43,8 +43,8 @@ end
 ---@param opts_buffer opts_buffer
 ---@return buffer_bufnr
 function M.get_buf_nr(opts_buffer)
-	local bufnr = UU.get_bufnr()
-	local is_focused = UU.is_focused()
+	local bufnr = Window.get_bufnr()
+	local is_focused = Window.is_focused()
 	local nr, prefix = tostring(bufnr), ""
 	---@type buffer_bufnr
 	local bufnr_item = {

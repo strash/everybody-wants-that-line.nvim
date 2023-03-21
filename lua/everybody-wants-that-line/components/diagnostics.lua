@@ -1,4 +1,4 @@
-local UU = require("everybody-wants-that-line.utils.util")
+local Window = require("everybody-wants-that-line.utils.window")
 
 local M = {}
 
@@ -30,7 +30,7 @@ end
 function M.get_diagnostics()
 	---@type diagnostics
 	local diagnostics = {}
-	local bufnr = UU.get_bufnr()
+	local bufnr = Window.get_bufnr()
 	local is_lsp_attached = #vim.lsp.get_active_clients() > 0
 	if is_lsp_attached then
 		diagnostics.error = get_diagnostic_object(bufnr, vim.diagnostic.severity.ERROR)

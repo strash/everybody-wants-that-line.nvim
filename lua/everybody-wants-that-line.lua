@@ -1,6 +1,8 @@
 local CE = require("everybody-wants-that-line.components.elements")
 local CO = require("everybody-wants-that-line.controller")
-local UU = require("everybody-wants-that-line.utils.util")
+-- utils
+local String = require("everybody-wants-that-line.utils.string")
+local Window = require("everybody-wants-that-line.utils.window")
 
 local M = {}
 
@@ -8,6 +10,7 @@ local M = {}
 -- TODO: title for the terminal buffer. (vim.b.term_title - title)
 -- TODO: add modes
 -- TODO: details in loclist
+-- TODO: tests
 --n	Normal mode
 --v	Visual and Select mode
 --x	Visual mode
@@ -22,7 +25,7 @@ local M = {}
 ---Sets that line
 ---@return string
 function M._set_statusline()
-	local wintype = UU.get_wintype()
+	local wintype = Window.get_wintype()
 
 	---@type string[]
 	local components
@@ -33,7 +36,7 @@ function M._set_statusline()
 			CO.get_buffer(),
 			CO.get_diagnostics(),
 			CO.get_quickfix(),
-			CE.spaced_text(UU.join({
+			CE.spaced_text(String.join({
 				CO.title(CO.get_branch_name()),
 				CO.get_branch_status(),
 				CO.get_filepath(),
@@ -108,7 +111,7 @@ function M._set_statusline()
 	-- NEOGIT
 	elseif wintype == "neogit" then
 		components = {
-			CE.spaced_text(UU.join({
+			CE.spaced_text(String.join({
 				CO.title("Neogit"),
 				CO.get_branch_status(),
 				CO.bold(CO.get_branch_name()),
@@ -117,7 +120,7 @@ function M._set_statusline()
 	-- FUGITIVE
 	elseif wintype == "fugitive" then
 		components = {
-			CE.spaced_text(UU.join({
+			CE.spaced_text(String.join({
 				CO.title("Fugitive"),
 				CO.get_branch_status(),
 				CO.bold(CO.get_branch_name()),
@@ -130,7 +133,7 @@ function M._set_statusline()
 		}
 	end
 
-	return CE.with_offset(UU.join(components, CO.separator()))
+	return CE.with_offset(String.join(components, CO.separator()))
 end
 
 ---Callback for setting statusline

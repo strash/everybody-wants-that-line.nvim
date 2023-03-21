@@ -1,4 +1,6 @@
+-- colors
 local C  = require("everybody-wants-that-line.colors")
+-- components
 local CB = require("everybody-wants-that-line.components.buffer")
 local CD = require("everybody-wants-that-line.components.diagnostics")
 local CE = require("everybody-wants-that-line.components.elements")
@@ -6,8 +8,12 @@ local CG = require("everybody-wants-that-line.components.git")
 local CN = require("everybody-wants-that-line.components.filename")
 local CP = require("everybody-wants-that-line.components.filepath")
 local CQ = require("everybody-wants-that-line.components.qflist")
+-- settings
 local S  = require("everybody-wants-that-line.settings")
-local UU = require("everybody-wants-that-line.utils.util")
+-- utils
+local Math = require("everybody-wants-that-line.utils.math")
+local String = require("everybody-wants-that-line.utils.string")
+local Window = require("everybody-wants-that-line.utils.window")
 
 local M = {}
 
@@ -102,7 +108,7 @@ function M.get_diagnostics()
 				C.group_names.fg_info
 			)
 		end
-		result = UU.join({ err, warn, hint, info }, CE.get_comma() .. CE.el.space)
+		result = String.join({ err, warn, hint, info }, CE.get_comma() .. CE.el.space)
 	end
 	return result
 end
@@ -134,7 +140,7 @@ function M.get_branch_status()
 			deletions = C.highlight_text(tostring(CG.cache.diff_info.deletions), C.group_names.fg_diff_delete_bold) ..
 				CE.get_minus("50")
 		end
-		result = UU.join({ insertions, deletions }, CE.el.space)
+		result = String.join({ insertions, deletions }, CE.el.space)
 	end
 	return result
 end
@@ -168,7 +174,7 @@ end
 ---@return string
 function M.get_treedir(name)
 	return CE.spaced_text(
-		UU.join({
+		String.join({
 			M.title(name),
 			vim.api.nvim_buf_get_name(0)
 		}, CE.el.space)
@@ -186,16 +192,16 @@ function M.get_quickfix()
 		local text_in = C.highlight_text("in", C.group_names.fg_60)
 		local text_file = C.highlight_text(files_count > 1 and "files" or "file", C.group_names.fg_60)
 		local text_of = C.highlight_text("of", C.group_names.fg_60)
-		result = CE.spaced_text(UU.join({
+		result = CE.spaced_text(String.join({
 			M.title("Quickfix List"),
 			idx,
 			text_of,
 			entries_count,
-			(files_count ~= 0 and UU.join({ text_in, files_count, text_file }, CE.el.space) or ""),
+			(files_count ~= 0 and String.join({ text_in, files_count, text_file }, CE.el.space) or ""),
 		}, CE.el.space))
 	else
 		if S.opt.quickfix_list.enabled == true then
-			if UU.laststatus() == 3 and not CQ.is_qflist_empty() then
+			if Window.laststatus() == 3 and not CQ.is_qflist_empty() then
 				local text_slash = C.highlight_text("/", C.group_names.fg_60)
 				result = M.title("QF: ") .. idx .. text_slash .. entries_count
 			end
@@ -222,14 +228,14 @@ end
 function M.get_filesize()
 	local result = ""
 	if S.opt.filesize.enabled == true then
-		---@type si_fsize | bi_fsize
+		---@type file_size
 		local size
 		if S.opt.filesize.metric == "decimal" then
-			size = UU.si_fsize()
+			size = Math.decimal_file_size()
 		elseif S.opt.filesize.metric == "binary" then
-			size = UU.bi_fsize()
+			size = Math.binary_file_size()
 		end
-		result = size.size .. C.highlight_text(size.postfix, C.group_names.fg_50)
+		result = size.size .. C.highlight_text(size.suffix, C.group_names.fg_50)
 	end
 	return result
 end
@@ -288,7 +294,7 @@ end
 ---@param cb function
 local function setup_autocmd(cb)
 	---@type string
-	local autocmd_group = vim.api.nvim_create_augroup(UU.prefix .. "Group", { clear = true })
+	local autocmd_group = vim.api.nvim_create_augroup(Window.prefix .. "Group", { clear = true })
 
 	-- colors
 	create_autocmd({ "ColorScheme" }, autocmd_group, function()
