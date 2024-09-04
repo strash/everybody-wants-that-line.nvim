@@ -31,7 +31,7 @@ function M.get_diagnostics()
 	---@type diagnostics
 	local diagnostics = {}
 	local bufnr = UU.get_bufnr()
-	local is_lsp_attached = #vim.lsp.get_active_clients() > 0
+	local is_lsp_attached = #vim.lsp.get_clients() > 0
 	if is_lsp_attached then
 		diagnostics.error = get_diagnostic_object(bufnr, vim.diagnostic.severity.ERROR)
 		diagnostics.warn = get_diagnostic_object(bufnr, vim.diagnostic.severity.WARN)
