@@ -1,9 +1,9 @@
-local C  = require("everybody-wants-that-line.colors")
-local CE = require("everybody-wants-that-line.components.elements")
-local CF = require("everybody-wants-that-line.components.filepath")
+local C      = require("everybody-wants-that-line.colors")
+local CE     = require("everybody-wants-that-line.components.elements")
+local CF     = require("everybody-wants-that-line.components.filepath")
 local Window = require("everybody-wants-that-line.utils.window")
 
-local M = {}
+local M      = {}
 
 ---@class filename_win_cache
 ---@field win_id number
@@ -13,9 +13,9 @@ local M = {}
 ---@field filename string
 
 ---@type { [number]: filename_win_cache }
-local cache = {}
+local cache  = {}
 
-local ns_id = vim.api.nvim_create_namespace(Window.prefix)
+local ns_id  = vim.api.nvim_create_namespace(Window.prefix)
 
 ---Returns floating window config
 ---@param win_id number
@@ -30,9 +30,9 @@ local function get_config(win_id, filename)
 		win = win_id,
 		anchor = "NE",
 		width = width + 2,
-		height = 2,
+		height = 1,
 		row = 0,
-		col = win_width - 1,
+		col = win_width,
 		focusable = false,
 		style = "minimal",
 		noautocmd = true,
@@ -50,7 +50,7 @@ local function create_float(win_id, filename)
 	vim.api.nvim_buf_set_option(buf_id, "filetype", Window.prefix)
 	vim.api.nvim_buf_set_option(buf_id, "buftype", "nofile")
 	local content = CE.with_offset(filename)
-	vim.api.nvim_buf_set_lines(buf_id, 0, 1, false, { string.rep(" ", #content), content })
+	vim.api.nvim_buf_set_lines(buf_id, 0, 0, false, { content })
 	local float_win_id = vim.api.nvim_open_win(buf_id, false, config)
 	cache[win_id] = {
 		win_id = win_id,
@@ -68,7 +68,7 @@ local function update_filename(win_id, new_filename)
 	if new_filename ~= cache[win_id].filename then
 		cache[win_id].filename = new_filename
 		local content = CE.with_offset(new_filename)
-		vim.api.nvim_buf_set_lines(cache[win_id].float_buf_id, 0, 1, false, { string.rep(" ", #content), content })
+		vim.api.nvim_buf_set_lines(cache[win_id].float_buf_id, 0, 0, false, { content })
 	end
 end
 

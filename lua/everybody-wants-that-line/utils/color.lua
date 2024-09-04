@@ -77,20 +77,20 @@ end
 ---@param hsv hsv
 ---@return rgb
 local function hsv_to_rgb(hsv)
-	local _h, _s, _b = hsv[1] / 360, hsv[2] / 100, hsv[3] / 100
+	local _h, _s, _v = hsv[1] / 360, hsv[2] / 100, hsv[3] / 100
 	local r, g, b, i, f, p, q, t, a
 	i = math.floor(_h * 6)
 	f = _h * 6 - i
-	p = _b * (1 - _s)
-	q = _b * (1 - f * _s)
-	t = _b * (1 - (1 - f) * _s)
+	p = _v * (1 - _s)
+	q = _v * (1 - f * _s)
+	t = _v * (1 - (1 - f) * _s)
 	a = i % 6
-	if     a == 0 then r = _b g = t  b = p
-	elseif a == 1 then r = q  g = _b b = p
-	elseif a == 2 then r = p  g = _b b = t
-	elseif a == 3 then r = p  g = q  b = _b
-	elseif a == 4 then r = t  g = p  b = _b
-	elseif a == 5 then r = _b g = p  b = q
+	if     a == 0 then r = _v g = t  b = p
+	elseif a == 1 then r = q  g = _v b = p
+	elseif a == 2 then r = p  g = _v b = t
+	elseif a == 3 then r = p  g = q  b = _v
+	elseif a == 4 then r = t  g = p  b = _v
+	elseif a == 5 then r = _v g = p  b = q
 	end
 	return {
 		Math.round(r * 255),
